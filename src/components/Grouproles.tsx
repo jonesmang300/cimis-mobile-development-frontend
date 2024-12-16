@@ -1,140 +1,180 @@
 import React, { useState } from "react";
 import {
-  IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
   IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar,
   IonList,
   IonItem,
   IonLabel,
-  IonButton,
   IonIcon,
-  IonAvatar,
-  IonPopover,
+  IonButton,
+  IonButtons,
+  IonBackButton,
+  IonModal,
   IonInput,
 } from "@ionic/react";
-import { create } from "ionicons/icons"; // Removed menu icon import
-import { useHistory } from "react-router-dom";
+import { pencilOutline, closeOutline } from "ionicons/icons";
+import { Formik, Field, Form, ErrorMessage } from "formik";
+import * as Yup from "yup";
 
-const Grouproles: React.FC = () => {
-  const [members, setMembers] = useState([
-    { role: "Chairperson", name: "" },
-    { role: "Vice Chairperson", name: "" },
-    { role: "Secretary", name: "" },
-    { role: "Treasurer", name: "" },
-    { role: "Publicity", name: "" },
+// Yup validation schema
+const validationSchema = Yup.object().shape({
+  name: Yup.string().required("Name is required"),
+  phone: Yup.string()
+    .required("Phone number is required")
+    .matches(/^\+?\d{9,15}$/, "Phone number is not valid"),
+});
+
+const GroupRoles = () => {
+  const [roles, setRoles] = useState([
+    { role: "Chairperson", name: "Chikondi Emmanuel", phone: "+265984334433" },
+    { role: "Secretary", name: "", phone: "" },
+    { role: "Treasurer", name: "", phone: "" },
+    { role: "Vice Chairperson", name: "", phone: "" },
+    { role: "Publicity", name: "", phone: "" },
+    { role: "Money Counter", name: "Uchizi Nyirongo", phone: "+265994567899" },
   ]);
-  const [popoverOpen, setPopoverOpen] = useState(false);
-  const [selectedRole, setSelectedRole] = useState("");
-  const [nameInput, setNameInput] = useState("");
-  const [anchorElement, setAnchorElement] = useState<HTMLElement | null>(null);
 
-  const history = useHistory();
+  const [showModal, setShowModal] = useState(false);
+  const [currentRoleIndex, setCurrentRoleIndex] = useState<number | null>(null);
 
-  const handleAddMember = () => {
-    history.push("/add-member");
+  // Open modal and populate with role data
+  const openEditModal = (index: number) => {
+    setCurrentRoleIndex(index);
+    setShowModal(true);
   };
 
-  const handleEditRole = (role: string, event: React.MouseEvent) => {
-    setSelectedRole(role);
-    //setAnchorElement(event.currentTarget);
-    setPopoverOpen(true);
-  };
-
-  const handleUpdateName = () => {
-    setMembers((prevMembers) =>
-      prevMembers.map((member) =>
-        member.role === selectedRole ? { ...member, name: nameInput } : member
-      )
-    );
-    setPopoverOpen(false);
+  // Handle form submission
+  const handleSave = (values: { name: string; phone: string }) => {
+    if (currentRoleIndex !== null) {
+      const updatedRoles = [...roles];
+      updatedRoles[currentRoleIndex] = {
+        ...updatedRoles[currentRoleIndex],
+        ...values,
+      };
+      setRoles(updatedRoles);
+    }
+    setShowModal(false);
   };
 
   return (
     <IonPage>
       {/* Header */}
       <IonHeader>
-        <IonToolbar style={{ backgroundColor: "#4CAF50", color: "white" }}>
-          {/* Removed the menu icon */}
-          <IonTitle style={{ color: "#4CAF50" }}>Group Roles</IonTitle> {/* Changed the title color to green */}
+        <IonToolbar style={{ backgroundColor: "#4CAF50" }}>
+          <IonButtons slot="start">
+            <IonBackButton defaultHref="/dashboard" />
+          </IonButtons>
+          <IonTitle>Group Roles</IonTitle>
         </IonToolbar>
       </IonHeader>
 
+      {/* Content */}
       <IonContent className="ion-padding">
         <IonList>
-          {members.map((member, index) => (
-            <IonItem key={index} button>
-              <IonAvatar slot="start">
-                <div
-                  style={{
-                    backgroundColor: "#4CAF50",
-                    color: "#fff",
-                    width: "40px",
-                    height: "40px",
-                    borderRadius: "50%",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    fontWeight: "bold",
-                  }}
-                >
-                  {member.role
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")}
-                </div>
-              </IonAvatar>
+          {roles.map((role, index) => (
+            <IonItem key={index} lines="none">
               <IonLabel>
-                <h2>{member.role}</h2>
-                <p>{member.name || "Not Assigned"}</p>
+                <h2 style={{ fontWeight: "bold", fontSize: "1.1em" }}>
+                  {role.role}
+                </h2>
+                <p style={{ margin: "4px 0" }}>{role.name || "—"}</p>
+                <p style={{ color: "#007BFF", margin: 0 }}>
+                  {role.phone || "—"}
+                </p>
               </IonLabel>
-              <IonButton
-                fill="clear"
+              <IonIcon
+                icon={pencilOutline}
                 slot="end"
-                onClick={(e) => handleEditRole(member.role, e)}
-              >
-                <IonIcon
-                  icon={create}
-                  style={{ color: "white", fontSize: "20px" }}
-                />
-              </IonButton>
+                color="success"
+                onClick={() => openEditModal(index)}
+                style={{ cursor: "pointer", fontSize: "2em" }}
+              />
             </IonItem>
           ))}
         </IonList>
 
-        {/* Popover for editing the name of the person for a role */}
-        <IonPopover
-          isOpen={popoverOpen}
-          event={anchorElement}
-          onDidDismiss={() => setPopoverOpen(false)}
-        >
-          <IonContent>
-            <div style={{ padding: "20px" }}>
-              <h2>Edit {selectedRole}</h2>
-              <IonInput
-                value={nameInput}
-                placeholder="Enter Name"
-                onIonChange={(e) => setNameInput(e.detail.value!)}
-                style={{ marginBottom: "20px" }}
-              />
-              <IonButton expand="block" onClick={handleUpdateName}>
-                Update Name
-              </IonButton>
-              <IonButton
-                expand="block"
-                color="danger"
-                style={{ marginTop: "10px" }}
-                onClick={() => setPopoverOpen(false)}
+        {/* Edit Modal */}
+        <IonModal isOpen={showModal} onDidDismiss={() => setShowModal(false)}>
+          <IonHeader>
+            <IonToolbar style={{ backgroundColor: "#4CAF50" }}>
+              <IonTitle>Edit Role</IonTitle>
+              <IonButtons slot="end">
+                <IonButton onClick={() => setShowModal(false)}>
+                  <IonIcon icon={closeOutline} />
+                </IonButton>
+              </IonButtons>
+            </IonToolbar>
+          </IonHeader>
+          <IonContent className="ion-padding" style={{ textAlign: "center" }}>
+            {currentRoleIndex !== null && (
+              <Formik
+                initialValues={{
+                  name: roles[currentRoleIndex].name,
+                  phone: roles[currentRoleIndex].phone,
+                }}
+                validationSchema={validationSchema}
+                onSubmit={handleSave}
               >
-                Cancel
-              </IonButton>
-            </div>
+                {({ touched, errors }) => (
+                  <Form>
+                    <IonItem style={{ marginBottom: "15px", borderRadius: "8px" }}>
+                      <IonLabel position="stacked" style={{ fontWeight: "bold" }}>
+                        Name
+                      </IonLabel>
+                      <Field
+                        name="name"
+                        as={IonInput}
+                        placeholder="Enter Name"
+                        style={{
+                          borderBottom: "2px solid #4CAF50",
+                        }}
+                      />
+                      {touched.name && errors.name && (
+                        <div style={{ color: "red", fontSize: "12px" }}>
+                          {errors.name}
+                        </div>
+                      )}
+                    </IonItem>
+
+                    <IonItem style={{ marginBottom: "15px", borderRadius: "8px" }}>
+                      <IonLabel position="stacked" style={{ fontWeight: "bold" }}>
+                        Phone
+                      </IonLabel>
+                      <Field
+                        name="phone"
+                        as={IonInput}
+                        placeholder="Enter Phone"
+                        style={{
+                          borderBottom: "2px solid #4CAF50",
+                        }}
+                      />
+                      {touched.phone && errors.phone && (
+                        <div style={{ color: "red", fontSize: "12px" }}>
+                          {errors.phone}
+                        </div>
+                      )}
+                    </IonItem>
+
+                    <IonButton
+                      expand="block"
+                      color="success"
+                      type="submit"
+                      style={{ borderRadius: "20px", marginTop: "20px" }}
+                    >
+                      Save
+                    </IonButton>
+                  </Form>
+                )}
+              </Formik>
+            )}
           </IonContent>
-        </IonPopover>
+        </IonModal>
       </IonContent>
     </IonPage>
   );
 };
 
-export default Grouproles;
+export default GroupRoles;

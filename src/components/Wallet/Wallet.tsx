@@ -11,11 +11,16 @@ import {
   IonCardTitle,
   IonCardContent,
   IonIcon,
-  IonRouterLink,
+  IonButton,
+  IonButtons,
+  IonHeader,
+  IonTitle,
+  IonToolbar,
 } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
-import { cashOutline, walletOutline, shieldOutline } from 'ionicons/icons';
+import { add, cashOutline } from 'ionicons/icons';
 import './Wallet.css';
+
 
 const Wallet: React.FC = () => {
   const history = useHistory();
@@ -24,10 +29,16 @@ const Wallet: React.FC = () => {
     history.push(path);
   };
 
+
   return (
     <IonPage>
       <IonContent className="ion-padding">
         {/* Header Text */}
+        <IonHeader>
+        <IonToolbar style={{ backgroundColor: "#4CAF50" }}>
+          <IonTitle>Wallet</IonTitle>
+        </IonToolbar>
+      </IonHeader>
         <IonGrid>
           <IonRow>
             <IonCol className="text-center">
@@ -36,7 +47,7 @@ const Wallet: React.FC = () => {
             </IonCol>
           </IonRow>
 
-          {/* First Container - Green Card */}
+          {/* Cashbox Card */}
           <IonRow>
             <IonCol>
               <IonCard
@@ -57,53 +68,6 @@ const Wallet: React.FC = () => {
                   <p className="balance-text">Available Cashbox Balance</p>
                   <IonCardTitle className="balance-amount">K 500,000</IonCardTitle>
                 </div>
-              </IonCard>
-            </IonCol>
-          </IonRow>
-
-          {/* Second Container - Green Card */}
-          <IonRow>
-            <IonCol>
-              <IonCard
-                className="custom-green-card"
-                button
-                onClick={() => navigateTo('/wallet-details')} // Navigate to the Wallet details page
-              >
-                <IonCardHeader>
-                  <IonCardSubtitle className="ion-card-subtitle-custom">
-                    <IonIcon icon={walletOutline} className="icon-subtitle" />
-                    Group Wallet
-                  </IonCardSubtitle>
-                </IonCardHeader>
-                <IonCardContent>
-                  Keep group savings securely in a mobile money wallet.
-                </IonCardContent>
-                <div className="balance-section">
-                  <p className="balance-text">Available Wallet Balance</p>
-                  <IonCardTitle className="balance-amount">K 200,000</IonCardTitle>
-                </div>
-              </IonCard>
-            </IonCol>
-          </IonRow>
-
-          {/* Third Container - Blue Card */}
-          <IonRow>
-            <IonCol>
-              <IonCard
-                className="custom-blue-card"
-                button
-                onClick={() => navigateTo('/reserve-wallet-details')} // Navigate to the Reserve Wallet details page
-              >
-                <IonCardHeader>
-                  <IonCardSubtitle className="ion-card-subtitle-custom">
-                    <IonIcon icon={shieldOutline} className="icon-subtitle" />
-                    Reserve Wallet
-                  </IonCardSubtitle>
-                  <IonCardTitle>Accessible Reserve</IonCardTitle>
-                </IonCardHeader>
-                <IonCardContent>
-                  This is the reserve cash you can access via the reserve wallet.
-                </IonCardContent>
               </IonCard>
             </IonCol>
           </IonRow>
