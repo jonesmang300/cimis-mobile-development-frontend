@@ -20,7 +20,7 @@ const schema = Yup.object().shape({
   constituency: Yup.string().required("Constituency is required"),
   village: Yup.string().required("Village is required"),
   phoneNumber: Yup.string().required("Phone number is required").matches(/^\d+$/, "Phone number must be digits only"),
-  groupId: Yup.number().required("Group ID is required").positive("Group ID must be a positive number"),
+  
 });
 
 const AddMember: React.FC = () => {
@@ -66,7 +66,8 @@ const AddMember: React.FC = () => {
             constituency: "",
             village: "",
             phoneNumber: "",
-            groupId: "",
+            clusterCode: "2001/CLS/000001",
+           
           }}
           validationSchema={schema}
           onSubmit={handleSubmit}
@@ -103,7 +104,7 @@ const AddMember: React.FC = () => {
               <TextInputField name="nextOfKinAddress" id="nextOfKinAddress" label="Next Of Kin Address" placeholder="Enter next of kin address" />
               <TextInputField name="constituency" id="constituency" label="Constituency" placeholder="Enter constituency" />
               <TextInputField name="village" id="village" label="Village" placeholder="Enter village" />
-              <TextInputField name="groupId" id="groupId" label="Group ID" placeholder="Enter group ID" type="number" />
+              
 
               <IonButton type="submit" expand="block" style={{ marginTop: "20px" }}>
                 Add Member

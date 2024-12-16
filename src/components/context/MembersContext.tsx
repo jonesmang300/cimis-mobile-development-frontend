@@ -27,7 +27,7 @@ export const MembersProvider: React.FC<MembersProviderProps> = ({ children }) =>
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/memberships");
+        const response = await axios.get("http://46.202.141.116:3000/membership");
         setMembers(response.data || []);
       } catch (error) {
         console.error("Error fetching members:", error);
