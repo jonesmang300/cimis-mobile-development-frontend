@@ -1,232 +1,92 @@
-import React, { useState } from "react";
-import {
-  IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonItem,
-  IonLabel,
-  IonInput,
-  IonSelect,
-  IonSelectOption,
-  IonButton,
-  IonText,
-} from "@ionic/react";
+import { IonPage, IonContent, IonButton, IonHeader, IonTitle, IonToolbar } from "@ionic/react";
+import { FormikInit, TextInputField, SelectInputField } from "../form"; // Assuming you have these components
+import * as Yup from "yup";
 
-const RequestLoanPage: React.FC = () => {
-  // State hooks for the loan information and location details
-  const [loanAmount, setLoanAmount] = useState("");
-  const [loanPurpose, setLoanPurpose] = useState("");
-  const [loanTerm, setLoanTerm] = useState("");
-  const [incomeSource, setIncomeSource] = useState("");
-  const [loanRequiredBy, setLoanRequiredBy] = useState("");
-  const [installments, setInstallments] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [region, setRegion] = useState("");
-  const [district, setDistrict] = useState("");
-  const [village, setVillage] = useState("");
+const loanSchema = Yup.object().shape({
+  loanAmount: Yup.number().required("Loan amount is required").positive().min(1, "Loan amount must be at least 1"),
+  incomeSource: Yup.string().required("Income source is required"),
+  phoneNumber: Yup.string()
+    .required("Phone number is required")
+    .matches(/^\d+$/, "Phone number must be numeric"),
+  loanPurpose: Yup.string().required("Purpose of loan is required"),
+  loanTerm: Yup.number().required("Loan term is required").positive().integer(),
+  loanRequiredBy: Yup.date().required("Loan required by date is required"),
+  installments: Yup.string().required("Installments are required"),
+  region: Yup.string().required("Region is required"),
+  district: Yup.string().required("District is required"),
+  village: Yup.string().required("Village is required"),
+});
+const RequestLoanPage = () => {
+  const initialValues = {
+    loanAmount: "",
+    incomeSource: "",
+    phoneNumber: "",
+    loanPurpose: "",
+    loanTerm: "",
+    loanRequiredBy: "",
+    installments: "",
+    region: "",
+    district: "",
+    village: "",
+  };
 
-  // Handle form save
-  const handleSave = () => {
-    console.log("Loan Application Details:", {
-      loanAmount,
-      loanPurpose,
-      loanTerm,
-      incomeSource,
-      loanRequiredBy,
-      installments,
-      phoneNumber,
-      region,
-      district,
-      village,
-    });
-    // You can save the loan application details here (e.g., to a database or state)
+  const handleSubmit = (values: any) => {
+    console.log("Loan Application Details:", values);
+    // Perform further actions (e.g., API call or database save)
   };
 
   return (
+    
     <IonPage>
-      {/* Header */}
-      <IonHeader>
+       <IonHeader>
         <IonToolbar style={{ backgroundColor: "#4CAF50" }}>
-          <IonTitle>Loan Application</IonTitle>
+          <IonTitle>Loan Request</IonTitle>
         </IonToolbar>
       </IonHeader>
+      <IonContent>
+        <FormikInit initialValues={initialValues} validationSchema={loanSchema} onSubmit={handleSubmit}>
+          <TextInputField name="loanAmount" label="Loan Amount" placeholder="Enter loan amount" type="number" id={""} />
+          <SelectInputField
+            name="incomeSource"
+            label="Income Source"
+            selectItems={[
+              { label: "Salary", value: "Salary" },
+              { label: "Business", value: "Business" },
+              { label: "Investments", value: "Investments" },
+              { label: "Other", value: "others" },
+            ]}
+          />
+          <TextInputField name="phoneNumber" id="Phone Number" placeholder="Enter phone number" label="tel" />
+          <TextInputField name="loanPurpose" label="Purpose of Loan" placeholder="Enter the purpose" id={""} />
+          <TextInputField name="loanTerm" label="Loan Term (Months)" placeholder="Enter loan term" type="number" id={""} />
+          <TextInputField name="loanRequiredBy" label="Loan Required By" type="date" id={""} />
+          <SelectInputField
+            name="installments"
+            label="Installments"
+            selectItems={[
+              { label: "1", value: "1" },
+              { label: "3", value: "3" },
+              { label: "6", value: "6" },
+              { label: "12", value: "12" },
+              { label: "24", value: "24" },
+            ]}
+          />
+          <SelectInputField
+            name="region"
+            label="Region"
+            selectItems={[
+              { label: "North", value: "north" },
+              { label: "Central", value: "central" },
+              { label: "South", value: "south" },
+            ]}
+          />
+          <TextInputField name="district" label="District" placeholder="Enter district" id={""} />
+          <TextInputField name="village" label="Village" placeholder="Enter village" id={""} />
 
-      {/* Content */}
-      <IonContent className="ion-padding" style={{ backgroundColor: "#f4f7fa" }}>
-        <IonText>
-          <h2 style={{ color: "#4CAF50", textAlign: "center" }}>Apply for a Loan</h2>
-        </IonText>
-
-        {/* Loan Information Section */}
-        <div className="form-section">
-          <IonLabel className="section-title">Loan Information</IonLabel>
-
-          {/* Loan Amount */}
-          <IonItem style={{ marginBottom: "10px", backgroundColor: "#ffffff" }}>
-            <IonLabel position="stacked" style={{ color: "#4CAF50" }}>
-              Loan Amount
-            </IonLabel>
-            <IonInput
-              value={loanAmount}
-              placeholder="Enter loan amount"
-              onIonChange={(e) => setLoanAmount(e.detail.value!)}
-              type="number"
-              style={{ borderColor: "#4CAF50" }}
-            />
-          </IonItem>
-
-          {/* Income Source */}
-          <IonItem style={{ marginBottom: "10px", backgroundColor: "#ffffff" }}>
-            <IonLabel position="stacked" style={{ color: "#4CAF50" }}>
-              Income Source
-            </IonLabel>
-            <IonSelect
-              value={incomeSource}
-              onIonChange={(e) => setIncomeSource(e.detail.value)}
-              placeholder="Select income source"
-              style={{ borderColor: "#4CAF50" }}
-            >
-              <IonSelectOption value="Agriculture">Salary</IonSelectOption>
-              <IonSelectOption value="Business">Business</IonSelectOption>
-              <IonSelectOption value="Employment">Investments</IonSelectOption>
-              <IonSelectOption value="others">Other</IonSelectOption>
-            </IonSelect>
-          </IonItem>
-
-          {/* Phone Number */}
-          <IonItem style={{ marginBottom: "10px", backgroundColor: "#ffffff" }}>
-            <IonLabel position="stacked" style={{ color: "#4CAF50" }}>
-              Phone Number
-            </IonLabel>
-            <IonInput
-              value={phoneNumber}
-              placeholder="Enter phone number"
-              onIonChange={(e) => setPhoneNumber(e.detail.value!)}
-              type="tel"
-              style={{ borderColor: "#4CAF50" }}
-            />
-          </IonItem>
-
-          {/* Loan Purpose */}
-          <IonItem style={{ marginBottom: "10px", backgroundColor: "#ffffff" }}>
-            <IonLabel position="stacked" style={{ color: "#4CAF50" }}>
-              Purpose of Loan
-            </IonLabel>
-            <IonInput
-              value={loanPurpose}
-              placeholder="Enter the purpose of the loan"
-              onIonChange={(e) => setLoanPurpose(e.detail.value!)}
-              style={{ borderColor: "#4CAF50" }}
-            />
-          </IonItem>
-
-          {/* Loan Term */}
-          <IonItem style={{ marginBottom: "10px", backgroundColor: "#ffffff" }}>
-            <IonLabel position="stacked" style={{ color: "#4CAF50" }}>
-              Loan Term (Months)
-            </IonLabel>
-            <IonInput
-              value={loanTerm}
-              placeholder="Enter loan term in months"
-              onIonChange={(e) => setLoanTerm(e.detail.value!)}
-              type="number"
-              style={{ borderColor: "#4CAF50" }}
-            />
-          </IonItem>
-
-          {/* Loan Required By */}
-          <IonItem style={{ marginBottom: "10px", backgroundColor: "#ffffff" }}>
-            <IonLabel position="stacked" style={{ color: "#4CAF50" }}>
-              Loan Required By
-            </IonLabel>
-            <IonInput
-              type="date"
-              value={loanRequiredBy}
-              onIonChange={(e) => setLoanRequiredBy(e.detail.value!)}
-              style={{ borderColor: "#4CAF50" }}
-            />
-          </IonItem>
-
-          {/* Installments */}
-          <IonItem style={{ marginBottom: "10px", backgroundColor: "#ffffff" }}>
-            <IonLabel position="stacked" style={{ color: "#4CAF50" }}>
-              Number of Installments
-            </IonLabel>
-            <IonSelect
-              value={installments}
-              onIonChange={(e) => setInstallments(e.detail.value)}
-              placeholder="Select number of installments"
-              style={{ borderColor: "#4CAF50" }}
-            >
-              <IonSelectOption value="1">1</IonSelectOption>
-              <IonSelectOption value="3">3</IonSelectOption>
-              <IonSelectOption value="6">6</IonSelectOption>
-              <IonSelectOption value="12">12</IonSelectOption>
-              <IonSelectOption value="24">24</IonSelectOption>
-            </IonSelect>
-          </IonItem>
-        </div>
-
-        {/* Location Details Section */}
-        <div className="form-section">
-          <IonLabel className="section-title">Location Details</IonLabel>
-
-          {/* Region */}
-          <IonItem style={{ marginBottom: "10px", backgroundColor: "#ffffff" }}>
-            <IonLabel position="stacked" style={{ color: "#4CAF50" }}>
-              Region
-            </IonLabel>
-            <IonSelect
-              value={region}
-              onIonChange={(e) => setRegion(e.detail.value)}
-              placeholder="Select Region"
-              style={{ borderColor: "#4CAF50" }}
-            >
-              <IonSelectOption value="north">North</IonSelectOption>
-              <IonSelectOption value="central">Central</IonSelectOption>
-              <IonSelectOption value="south">South</IonSelectOption>
-            </IonSelect>
-          </IonItem>
-
-          {/* District */}
-          <IonItem style={{ marginBottom: "10px", backgroundColor: "#ffffff" }}>
-            <IonLabel position="stacked" style={{ color: "#4CAF50" }}>
-              District
-            </IonLabel>
-            <IonInput
-              value={district}
-              placeholder="Enter district"
-              onIonChange={(e) => setDistrict(e.detail.value!)}
-              style={{ borderColor: "#4CAF50" }}
-            />
-          </IonItem>
-
-          {/* Village */}
-          <IonItem style={{ marginBottom: "10px", backgroundColor: "#ffffff" }}>
-            <IonLabel position="stacked" style={{ color: "#4CAF50" }}>
-              Village
-            </IonLabel>
-            <IonInput
-              value={village}
-              placeholder="Enter your village"
-              onIonChange={(e) => setVillage(e.detail.value!)}
-              style={{ borderColor: "#4CAF50" }}
-            />
-          </IonItem>
-        </div>
-
-        {/* Submit Button */}
-        <IonButton
-  expand="block"
-  color="success"
-  onClick={handleSave}
-  style={{ marginTop: '1em' }}
->
-  Submit Application
-</IonButton>
-
+          <IonButton expand="block" type="submit" color="success" style={{ marginTop: "1em" }}>
+            Submit Application
+          </IonButton>
+        </FormikInit>
       </IonContent>
     </IonPage>
   );

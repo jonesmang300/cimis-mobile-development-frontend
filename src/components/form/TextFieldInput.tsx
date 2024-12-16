@@ -1,6 +1,5 @@
 import React, { FC, useEffect } from "react";
-
-import { IonInput, IonItem } from "@ionic/react";
+import { IonInput, IonItem, IonTextarea } from "@ionic/react";
 import { useFormikField } from "../../hooks/UseFormikField";
 
 type Prop = {
@@ -29,7 +28,7 @@ export const TextInputField: FC<Prop> = ({
   type = "text",
   placeholder = "",
   size = "medium",
-  rows,
+  rows = 4, // Default number of rows for textarea
   getValue,
   showHelperText = true,
   disabled = false,
@@ -78,21 +77,39 @@ export const TextInputField: FC<Prop> = ({
           border: hasError ? "1px solid red" : "1px solid #ccc",
         }}
       >
-        <IonInput
-          id={id}
-          type={type}
-          name={name}
-          value={value}
-          onIonInput={handleChange}
-          onBlur={handleBlur}
-          placeholder={placeholder}
-          disabled={disabled}
-          style={{
-            padding: "10px",
-            fontSize: "14px",
-            borderRadius: "6px",
-          }}
-        />
+        {multiline ? (
+          <IonTextarea
+            id={id}
+            name={name}
+            value={value}
+            rows={rows}
+            onIonInput={(e) => handleChange(e)}
+            onBlur={handleBlur}
+            placeholder={placeholder}
+            disabled={disabled}
+            style={{
+              padding: "10px",
+              fontSize: "14px",
+              borderRadius: "6px",
+            }}
+          />
+        ) : (
+          <IonInput
+            id={id}
+            type={type}
+            name={name}
+            value={value}
+            onIonInput={(e) => handleChange(e)}
+            onBlur={handleBlur}
+            placeholder={placeholder}
+            disabled={disabled}
+            style={{
+              padding: "10px",
+              fontSize: "14px",
+              borderRadius: "6px",
+            }}
+          />
+        )}
       </IonItem>
       {hasError && (
         <div

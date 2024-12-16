@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   IonPage,
   IonHeader,
@@ -15,38 +15,43 @@ import {
   IonAvatar,
   IonButtons,
 } from "@ionic/react";
-import { add, menu, refresh, search, peopleOutline } from "ionicons/icons";
+import { add, menu, search, peopleOutline } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
+import { useMembers } from "../context/MembersContext"; // Import the custom hook
 
 const GroupMembers: React.FC = () => {
-  const [members, setMembers] = useState([
-    { name: "Doreen Phiri", subtitle: "Tsabango", phone: "+265883248049" },
-    { name: "William Ndau", subtitle: "TBC", phone: "+265880267693" },
-  ]);
-
-  const history = useHistory(); // Used for navigation
-
-  const handleAddMember = () => {
-    history.push("/add-member"); // Navigate to the Add Member page
-  };
+  const history = useHistory();
+  const { members } = useMembers(); // Use the context
 
   const handleMeetingsClick = () => {
-    history.push("/meetings"); // Navigate to the Meetings page
+    history.push("/meetings");
   };
+
+  const handleAddMember = () => {
+    history.push("add-member")
+  }
+
+  if (!members.length) {
+    return (
+      <IonPage>
+        <IonHeader>
+          <IonToolbar>
+            <IonTitle>Members</IonTitle>
+          </IonToolbar>
+        </IonHeader>
+        <IonContent className="ion-padding">
+          <p>Loading...</p>
+        </IonContent>
+      </IonPage>
+    );
+  }
 
   return (
     <IonPage>
-      {/* Header */}
       <IonHeader>
-        <IonToolbar style={{ backgroundColor: "#4CAF50" }}>
-          <IonButtons slot="start">
-            <IonButton>
-              <IonIcon icon={menu} />
-            </IonButton>
-          </IonButtons>
+        <IonToolbar>
           <IonTitle>Members</IonTitle>
           <IonButtons slot="end">
-            {/* Meetings Icon */}
             <IonButton onClick={handleMeetingsClick}>
               <IonIcon icon={peopleOutline} />
             </IonButton>
@@ -57,9 +62,7 @@ const GroupMembers: React.FC = () => {
         </IonToolbar>
       </IonHeader>
 
-      {/* Content */}
       <IonContent className="ion-padding">
-        {/* Members List */}
         <IonList>
           {members.map((member, index) => (
             <IonItem key={index} button>
@@ -77,15 +80,12 @@ const GroupMembers: React.FC = () => {
                     fontWeight: "bold",
                   }}
                 >
-                  {member.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")}
+                  {member.firstName[0]}{member.lastName[0]}
                 </div>
               </IonAvatar>
               <IonLabel>
-                <h2>{member.name}</h2>
-                <p>{member.subtitle}</p>
+                <h2>{member.firstName} {member.lastName}</h2>
+                <p>{member.village}</p>
               </IonLabel>
               <IonButton fill="clear" slot="end">
                 <IonIcon icon={menu} />
@@ -94,9 +94,8 @@ const GroupMembers: React.FC = () => {
           ))}
         </IonList>
 
-        {/* Floating Action Button */}
         <IonFab vertical="bottom" horizontal="end" slot="fixed">
-          <IonFabButton color="success" onClick={handleAddMember}>
+          <IonFabButton  color="success" onClick={handleAddMember}>
             <IonIcon icon={add} />
           </IonFabButton>
         </IonFab>

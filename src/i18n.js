@@ -18,6 +18,7 @@ const resources = {
       userName: "Uchizi Nyirongo",
       phoneNumber: "+265984227262",
       role: "Money Counter",
+      
     },
   },
   ny: {

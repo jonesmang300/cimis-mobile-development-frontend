@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   IonContent,
   IonPage,
@@ -13,27 +13,19 @@ import {
   IonGrid,
   IonRow,
   IonCol,
-  IonSelect,
-  IonSelectOption,
 } from "@ionic/react";
 import {
   shieldOutline,
   walletOutline,
   cashOutline,
   logOutOutline,
-  globeOutline,
+  helpOutline,
 } from "ionicons/icons";
-import { useTranslation } from "react-i18next"; // Import useTranslation hook
-import "./Settings.css"; // Import custom CSS for styling
+import { useTranslation } from "react-i18next";
+import "./Settings.css";
 
 const SettingsPage: React.FC = () => {
-  const { t, i18n } = useTranslation(); // Initialize translation hook
-  const [selectedLanguage, setSelectedLanguage] = useState(i18n.language);
-
-  const handleLanguageChange = (lang: string) => {
-    setSelectedLanguage(lang);
-    i18n.changeLanguage(lang); // Update language dynamically
-  };
+  const { t } = useTranslation();
 
   return (
     <IonPage>
@@ -50,7 +42,7 @@ const SettingsPage: React.FC = () => {
         <IonGrid>
           <IonRow>
             <IonCol>
-              <IonItem lines="none" className="ion-padding-vertical">
+              <IonItem lines="none" className="ion-padding-vertical custom-item">
                 <IonLabel>
                   <h3>{t("userName")}</h3>
                   <p>{t("phoneNumber")}</p>
@@ -67,38 +59,24 @@ const SettingsPage: React.FC = () => {
 
         {/* Group Settings Section */}
         <IonList>
-          <IonItem button>
+          <IonItem button routerLink="/group-roles">
             <IonIcon icon={shieldOutline} slot="start" className="custom-icon" />
             <IonLabel>{t("groupRoles")}</IonLabel>
           </IonItem>
 
-          <IonItem button>
+          <IonItem button routerLink="/loan-products">
             <IonIcon icon={walletOutline} slot="start" className="custom-icon" />
             <IonLabel>{t("loanProducts")}</IonLabel>
           </IonItem>
 
-          <IonItem button>
+          <IonItem button routerLink="/savings-products">
             <IonIcon icon={cashOutline} slot="start" className="custom-icon" />
             <IonLabel>{t("savingsProducts")}</IonLabel>
           </IonItem>
-        </IonList>
 
-        {/* Change Language Section */}
-        <IonLabel>
-          <p>{t("preferences")}</p>
-        </IonLabel>
-        <IonList>
-          <IonItem>
-            <IonIcon icon={globeOutline} slot="start" className="custom-icon" />
-            <IonLabel>{t("changeLanguage")}</IonLabel>
-            <IonSelect
-              value={selectedLanguage}
-              placeholder="Select Language"
-              onIonChange={(e) => handleLanguageChange(e.detail.value)}
-            >
-              <IonSelectOption value="en">English</IonSelectOption>
-              <IonSelectOption value="ny">Chichewa</IonSelectOption>
-            </IonSelect>
+          <IonItem button routerLink="/support">
+            <IonIcon icon={helpOutline} slot="start" className="custom-icon" />
+            <IonLabel>{t("support")}</IonLabel>
           </IonItem>
         </IonList>
 
@@ -107,6 +85,7 @@ const SettingsPage: React.FC = () => {
           <IonRow>
             <IonCol>
               <IonButton
+                routerLink="/"
                 expand="block"
                 color="success"
                 className="logout-button ion-margin-top"
