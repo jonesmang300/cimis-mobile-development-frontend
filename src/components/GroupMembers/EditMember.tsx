@@ -1,5 +1,5 @@
 import MemberForm from "./MemberForm";
 
-export const AddMember = () => {
+export const EditMember = () => {
   return <MemberForm />;
 };

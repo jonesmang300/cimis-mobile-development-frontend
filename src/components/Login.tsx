@@ -1,71 +1,126 @@
-import React from "react";
-import {
-  IonContent,
-  IonPage,
-  IonButton,
-  IonImg,
-} from "@ionic/react";
-import { Formik, Form } from "formik"; // Updated to include Form
-import { TextInputField } from "./form"; // Assuming you've created these components
+import React, { useEffect, useState } from "react";
+import { IonContent, IonPage, IonButton, IonImg } from "@ionic/react";
+import { Formik, Form } from "formik";
+import { TextInputField } from "./form";
 import * as Yup from "yup";
-import axiosInstance from "../api/axiosInstance";
 import { useHistory } from "react-router-dom";
-
+import { getData } from "../services/apiServices"; // Assuming the service function for fetching data
+import { useClusters } from "./context/ClustersContext";
+import { useNotificationMessage } from "./context/notificationMessageContext";
+import { NotificationMessage } from "./notificationMessage";
 
 import "./Login.css";
 
 const Login: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
   const history = useHistory();
+  const { messageState, setMessage } = useNotificationMessage();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const { clusters, returnClusters, setTheSelectedCluster } = useClusters();
+
+  const [dataLoaded, setDataLoaded] = useState<boolean>(false); // State to track if clusters are loaded
 
   // Yup validation schema
   const schema = Yup.object().shape({
-    groupId: Yup.string().required("Group ID is required").min(2).max(5),
-    pin: Yup.string().min(4, "PIN must be at least 4 digits").required("PIN is required"),
+    clusterCode: Yup.string()
+      .matches(
+        /^\d{4}\/[A-Z]{3}\/\d{6}$/,
+        "Invalid format. Expected format like 2025/CLS/000001"
+      )
+      .min(15, "Cluster Code must be exactly 15 characters")
+      .max(15, "Cluster Code must be exactly 15 characters")
+      .required("Cluster Code is required"),
+    pin: Yup.string()
+      .min(4, "PIN must be exactly 4 digits")
+      .max(4, "PIN must be exactly 4 digits")
+      .required("PIN is required"),
   });
 
-  const handleLoginSubmit = (values: { groupId: string; pin: string }) => {
-    onLogin();
-    history.push("/home");
-    
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const result = await getData("/api/cluster");
+      returnClusters(result);
+      setDataLoaded(true); // Set dataLoaded to true once data is fetched
+    } catch (error) {
+      setError("Failed to fetch clusters");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const handleLoginSubmit = async (formData: any) => {
+    const { clusterCode, pin } = formData;
+
+    try {
+      const cluster = clusters.filter(
+        (m: any) => m.clusterCode === clusterCode && m.pin === pin
+      );
+
+      if (cluster.length !== 0) {
+        setTheSelectedCluster(cluster);
+        setMessage(
+          `${cluster[0]?.name} Cluster logged in successfully!`,
+          "success"
+        );
+        onLogin();
+        history.push("/home");
+      } else {
+        setMessage(
+          "Failed to login. Please check Cluster Code or PIN and try again.",
+          "error"
+        );
+      }
+    } catch (error) {
+      setMessage("Failed to login. Please try again.", "error");
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <IonPage>
       <IonContent className="ion-padding login-content">
+        {messageState.type === "error" && (
+          <NotificationMessage
+            text={messageState.text}
+            type={messageState.type}
+          />
+        )}
         <IonImg src="/comsip.jpg" className="login-img" />
         <Formik
-          initialValues={{ groupId: "", pin: "" }}
+          initialValues={{ clusterCode: "", pin: "" }}
           validationSchema={schema}
           onSubmit={handleLoginSubmit}
-        
         >
-          {() => (
-            <Form> {/* Wrap form elements with Form */}
+          {({ isSubmitting }) => (
+            <Form>
               <div className="login-header">
                 <h2>Welcome Back!</h2>
                 <p>Please log in to continue.</p>
               </div>
-
               <TextInputField
-                name="groupId"
-                label="Group ID"
-                placeholder="Enter Group ID"
-                id={""}
+                id="clusterCode"
+                name="clusterCode"
+                label="Cluster Code"
+                placeholder="Enter Cluster Code"
+                type="text"
               />
-
               <TextInputField
+                id="pin"
                 name="pin"
                 label="PIN"
                 type="password"
                 placeholder="Enter PIN"
-                id={""}
               />
-
               <IonButton
                 expand="block"
                 color="success"
                 type="submit"
                 style={{ marginTop: "1em" }}
+                disabled={isSubmitting || !dataLoaded} // Disable submit if data isn't loaded
               >
                 Log In
               </IonButton>

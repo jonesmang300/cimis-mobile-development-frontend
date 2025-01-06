@@ -37,7 +37,8 @@ import Transactions from "./components/Transaction/Transactions";
 import Settings from "./components/Settings";
 import GroupMembers from "./components/GroupMembers/GroupMembers";
 import Wallet from "./components/Wallet/Wallet";
-import AddMember from "./components/GroupMembers/AddMember";
+import { AddMember } from "./components/GroupMembers/AddMember";
+import { EditMember } from "./components/GroupMembers/EditMember";
 import SavingsPage from "./components/SavingsPage/SavingsPage";
 import LoansPage from "./components/Loans/LoansPage";
 import CashBoxDetails from "./components/Wallet/CashBoxDetails";
@@ -49,7 +50,6 @@ import Meetings from "./components/Meetings";
 import LoanProducts from "./components/LoanProducts";
 import SupportPage from "./components/SupportPage";
 import SavingsProducts from "./components/SavingsProducts";
-import { MembersProvider } from "./components/context/MembersContext"; // Import MembersProvider
 
 /* Icons */
 import {
@@ -70,71 +70,75 @@ const App: React.FC = () => {
       <IonReactRouter>
         {isLoggedIn ? (
           // Tabs and Navbar for Logged-In Users
-          <MembersProvider>
-            <IonTabs>
-              <IonRouterOutlet>
-                <Route exact path="/home">
-                  <Home />
-                </Route>
-                <Route exact path="/transactions">
-                  <Transactions />
-                </Route>
-                <Route exact path="/settings">
-                  <Settings />
-                </Route>
-                <Route exact path="/group-members">
-                  <GroupMembers />
-                </Route>
-                <Route exact path="/wallet">
-                  <Wallet />
-                </Route>
-                <Route exact path="/add-member">
-                  <AddMember />
-                </Route>
-                <Route exact path="/add-transaction">
-                  <AddTransactionForm />
-                </Route>
-                <Route path="/savings" component={SavingsPage} exact />
-                <Route path="/loans" component={LoansPage} exact />
-                <Route path="/request-loan" component={RequestLoanPage} exact />
-                <Route path="/cashbox-details" component={CashBoxDetails} />
-                <Route path="/group-roles" component={Grouproles} exact />
-                <Route path="/meetings" component={Meetings} />
-                <Route path="/loan-products" component={LoanProducts} exact />
-                <Route path="/support" component={SupportPage} exact />
-                <Route path="/savings-products" component={SavingsProducts} exact />
-                
+          <IonTabs>
+            <IonRouterOutlet>
+              <Route exact path="/home">
+                <Home />
+              </Route>
+              <Route exact path="/transactions">
+                <Transactions />
+              </Route>
+              <Route exact path="/settings">
+                <Settings />
+              </Route>
+              <Route exact path="/group-members">
+                <GroupMembers />
+              </Route>
+              <Route exact path="/wallet">
+                <Wallet />
+              </Route>
+              <Route exact path="/add-member">
+                <AddMember />
+              </Route>
+              <Route exact path="/edit-member">
+                <EditMember />
+              </Route>
+              <Route exact path="/add-transaction">
+                <AddTransactionForm />
+              </Route>
+              <Route path="/savings" component={SavingsPage} exact />
+              <Route path="/loans" component={LoansPage} exact />
+              <Route path="/request-loan" component={RequestLoanPage} exact />
+              <Route path="/cashbox-details" component={CashBoxDetails} />
+              <Route path="/group-roles" component={Grouproles} exact />
+              <Route path="/meetings" component={Meetings} />
+              <Route path="/loan-products" component={LoanProducts} exact />
+              <Route path="/support" component={SupportPage} exact />
+              <Route
+                path="/savings-products"
+                component={SavingsProducts}
+                exact
+              />
 
-                <Route exact path="/">
-                  <Redirect to="/home" />
-                </Route>
-              </IonRouterOutlet>
+              <Route exact path="/">
+                <Redirect to="/home" />
+              </Route>
+            </IonRouterOutlet>
 
-              {/* Bottom Navigation Bar */}
-              <IonTabBar slot="bottom" style={{ backgroundColor: "#4CAF50" }}>
-                <IonTabButton tab="home" href="/home">
-                  <IonIcon icon={homeOutline} />
-                  <IonLabel>Home</IonLabel>
-                </IonTabButton>
-                <IonTabButton tab="transactions" href="/transactions">
-                  <IonIcon icon={listOutline} />
-                  <IonLabel>Transactions</IonLabel>
-                </IonTabButton>
-                <IonTabButton tab="group-members" href="/group-members">
-                  <IonIcon icon={peopleOutline} />
-                  <IonLabel>Members</IonLabel>
-                </IonTabButton>
-                <IonTabButton tab="wallet" href="/wallet">
-                  <IonIcon icon={walletOutline} />
-                  <IonLabel>Wallet</IonLabel>
-                </IonTabButton>
-                <IonTabButton tab="settings" href="/settings">
-                  <IonIcon icon={settingsOutline} />
-                  <IonLabel>Settings</IonLabel>
-                </IonTabButton>
-              </IonTabBar>
-            </IonTabs>
-          </MembersProvider>
+            {/* Bottom Navigation Bar */}
+            <IonTabBar slot="bottom" style={{ backgroundColor: "#4CAF50" }}>
+              <IonTabButton tab="home" href="/home">
+                <IonIcon icon={homeOutline} />
+                <IonLabel>Home</IonLabel>
+              </IonTabButton>
+              <IonTabButton tab="transactions" href="/transactions">
+                <IonIcon icon={listOutline} />
+                <IonLabel>Transactions</IonLabel>
+              </IonTabButton>
+              <IonTabButton tab="group-members" href="/group-members">
+                <IonIcon icon={peopleOutline} />
+                <IonLabel>Members</IonLabel>
+              </IonTabButton>
+              <IonTabButton tab="wallet" href="/wallet">
+                <IonIcon icon={walletOutline} />
+                <IonLabel>Wallet</IonLabel>
+              </IonTabButton>
+              <IonTabButton tab="settings" href="/settings">
+                <IonIcon icon={settingsOutline} />
+                <IonLabel>Settings</IonLabel>
+              </IonTabButton>
+            </IonTabBar>
+          </IonTabs>
         ) : (
           // Login Page for Non-Logged-In Users
           <IonRouterOutlet>
