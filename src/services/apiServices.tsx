@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://46.202.141.116:3000"; // Replace with your API URL
+const BASE_URL = "http://localhost:3000"; // Replace with your API URL
 
 export const postData = async (endpoint: any, data: any) => {
   try {

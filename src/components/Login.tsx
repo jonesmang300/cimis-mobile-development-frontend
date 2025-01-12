@@ -40,10 +40,11 @@ const Login: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
     setLoading(true);
     try {
       const result = await getData("/api/cluster");
+
       returnClusters(result);
       setDataLoaded(true); // Set dataLoaded to true once data is fetched
     } catch (error) {
-      setError("Failed to fetch clusters");
+      setMessage("Failed to fetch cluster", "error");
     } finally {
       setLoading(false);
     }
@@ -120,7 +121,7 @@ const Login: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
                 color="success"
                 type="submit"
                 style={{ marginTop: "1em" }}
-                disabled={isSubmitting || !dataLoaded} // Disable submit if data isn't loaded
+                //disabled={isSubmitting || !dataLoaded} // Disable submit if data isn't loaded
               >
                 Log In
               </IonButton>

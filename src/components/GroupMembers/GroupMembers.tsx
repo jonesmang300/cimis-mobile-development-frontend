@@ -101,13 +101,15 @@ const GroupMembers: React.FC = () => {
   // Filter members based on the search query
   const filteredMembers = members.filter(
     (member) =>
-      member.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      member.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      member.village.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      member.phoneNumber.includes(searchQuery) // Include phone number if needed
+      member.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      member.lastName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      member.village?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      member.phoneNumber?.includes(searchQuery) // Include phone number if needed
   );
 
-  const handleMeetingClick = () => {};
+  const handleMeetingClick = () => {
+    history.push("meetings");
+  };
 
   if (!members.length) {
     return (

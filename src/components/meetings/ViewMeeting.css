@@ -1,0 +1,12 @@
+/* For larger screens */
+.member-info-label {
+    font-size: 16px;
+  }
+  
+  /* For smaller screens (max-width of 480px) */
+  @media (max-width: 480px) {
+    .member-info-label {
+      font-size: 12px;  /* Smaller font size for mobile */
+    }
+  }
+  
