@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { IonContent, IonPage, IonButton, IonImg } from "@ionic/react";
+import {
+  IonContent,
+  IonPage,
+  IonButton,
+  IonImg,
+  IonSpinner,
+} from "@ionic/react";
 import { Formik, Form } from "formik";
 import { TextInputField } from "./form";
 import * as Yup from "yup";
@@ -44,7 +50,10 @@ const Login: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
       returnClusters(result);
       setDataLoaded(true); // Set dataLoaded to true once data is fetched
     } catch (error) {
-      setMessage("Failed to fetch cluster", "error");
+      setMessage(
+        "Failed to fetch cluster, please tap on Reflesh icon",
+        "error"
+      );
     } finally {
       setLoading(false);
     }
@@ -90,44 +99,58 @@ const Login: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
             type={messageState.type}
           />
         )}
-        <IonImg src="/comsip.jpg" className="login-img" />
-        <Formik
-          initialValues={{ clusterCode: "", pin: "" }}
-          validationSchema={schema}
-          onSubmit={handleLoginSubmit}
-        >
-          {({ isSubmitting }) => (
-            <Form>
-              <div className="login-header">
-                <h2>Welcome Back!</h2>
-                <p>Please log in to continue.</p>
-              </div>
-              <TextInputField
-                id="clusterCode"
-                name="clusterCode"
-                label="Cluster Code"
-                placeholder="Enter Cluster Code"
-                type="text"
-              />
-              <TextInputField
-                id="pin"
-                name="pin"
-                label="PIN"
-                type="password"
-                placeholder="Enter PIN"
-              />
-              <IonButton
-                expand="block"
-                color="success"
-                type="submit"
-                style={{ marginTop: "1em" }}
-                //disabled={isSubmitting || !dataLoaded} // Disable submit if data isn't loaded
-              >
-                Log In
-              </IonButton>
-            </Form>
-          )}
-        </Formik>
+
+        {/* Show loading spinner while data is being fetched */}
+        {loading && (
+          <div className="loading-container">
+            <IonSpinner name="bubbles" />
+            <p>Loading...</p>
+          </div>
+        )}
+
+        {/* Display the form once data is loaded */}
+        {!loading && dataLoaded && (
+          <>
+            <IonImg src="/comsip.jpg" className="login-img" />
+            <Formik
+              initialValues={{ clusterCode: "", pin: "" }}
+              validationSchema={schema}
+              onSubmit={handleLoginSubmit}
+            >
+              {({ isSubmitting }) => (
+                <Form>
+                  <div className="login-header">
+                    <h2>Welcome Back!</h2>
+                    <p>Please log in to continue.</p>
+                  </div>
+                  <TextInputField
+                    id="clusterCode"
+                    name="clusterCode"
+                    label="Cluster Code"
+                    placeholder="Enter Cluster Code"
+                    type="text"
+                  />
+                  <TextInputField
+                    id="pin"
+                    name="pin"
+                    label="PIN"
+                    type="password"
+                    placeholder="Enter PIN"
+                  />
+                  <IonButton
+                    expand="block"
+                    color="success"
+                    type="submit"
+                    style={{ marginTop: "1em" }}
+                    disabled={isSubmitting}
+                  >
+                    Log In
+                  </IonButton>
+                </Form>
+              )}
+            </Formik>
+          </>
+        )}
       </IonContent>
     </IonPage>
   );

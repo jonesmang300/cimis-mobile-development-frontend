@@ -7,6 +7,7 @@ import { MeetingsProvider } from "./components/context/MeetingsContext";
 import { ClustersProvider } from "./components/context/ClustersContext";
 import { NotificationMessageProvider } from "./components/context/notificationMessageContext";
 import { MeetingAttendanceProvider } from "./components/context/MeetingAttendanceContext";
+import { GroupMemberRolesProvider } from "./components/context/GroupMemberRolesContext";
 const container = document.getElementById("root");
 const root = createRoot(container!);
 root.render(
@@ -16,7 +17,9 @@ root.render(
         <NotificationMessageProvider>
           <MeetingsProvider>
             <MeetingAttendanceProvider>
-              <App />
+              <GroupMemberRolesProvider>
+                <App />
+              </GroupMemberRolesProvider>
             </MeetingAttendanceProvider>
           </MeetingsProvider>
         </NotificationMessageProvider>

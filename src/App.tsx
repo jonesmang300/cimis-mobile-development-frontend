@@ -45,7 +45,6 @@ import CashBoxDetails from "./components/Wallet/CashBoxDetails";
 import Login from "./components/Login";
 import AddTransactionForm from "./components/Transaction/AddTransactionsForm";
 import RequestLoanPage from "./components/Loans/RequestLoanPage";
-import Grouproles from "./components/Grouproles";
 import MeetingsList from "./components/meetings/MeetingsList";
 import LoanProducts from "./components/LoanProducts";
 import SupportPage from "./components/SupportPage";
@@ -63,6 +62,9 @@ import { AddMeeting } from "./components/meetings/AddMeeting";
 import ViewMeeting from "./components/meetings/ViewMeeting";
 import AddAttendance from "./components/attendance/AddAttendance";
 import { EditMeeting } from "./components/meetings/EditMeeting";
+import GroupRoles from "./components/GroupRoles/Grouproles";
+import { AddGroupRoles } from "./components/GroupRoles/AddGroupRoles";
+import { EditGroupRoles } from "./components/GroupRoles/EditGroupRoles";
 
 setupIonicReact();
 
@@ -104,7 +106,13 @@ const App: React.FC = () => {
               <Route path="/loans" component={LoansPage} exact />
               <Route path="/request-loan" component={RequestLoanPage} exact />
               <Route path="/cashbox-details" component={CashBoxDetails} />
-              <Route path="/group-roles" component={Grouproles} exact />
+              <Route path="/group-roles" component={GroupRoles} exact />
+              <Route path="/add-group-roles" component={AddGroupRoles} exact />
+              <Route
+                path="/edit-group-roles"
+                component={EditGroupRoles}
+                exact
+              />
               <Route path="/meetings" component={MeetingsList} />
               <Route path="/add-meeting" component={AddMeeting} />
               <Route path="/edit-meeting" component={EditMeeting} />

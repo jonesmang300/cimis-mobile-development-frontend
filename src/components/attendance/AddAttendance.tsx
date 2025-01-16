@@ -105,10 +105,16 @@ const AddAttendance: React.FC = () => {
         .filter(Boolean);
 
       formDataList.map(async (formData: any) => {
-        await postData("/api/meetingattendance", formData);
+        const result = await postData("/api/meetingattendance", formData);
+        console.log("result", result);
 
-        addMeetingAttendance(formData);
+        addMeetingAttendance(result);
       });
+
+      // Clear the form after submission
+      setSelectedParticipants([]);
+      setSearchQuery("");
+      setSelectAll(false);
 
       history.push("view-meeting");
     } catch (err) {
