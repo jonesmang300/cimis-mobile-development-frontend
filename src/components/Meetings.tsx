@@ -1,6 +1,13 @@
 import React from "react";
-import { IonContent, IonPage, IonHeader, IonToolbar, IonTitle, IonButton } from "@ionic/react";
-import { FormikInit, TextInputField  } from "./form"; // Reusing your existing components
+import {
+  IonContent,
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonButton,
+} from "@ionic/react";
+import { FormikInit, TextInputField } from "./form"; // Reusing your existing components
 import * as Yup from "yup";
 import { useHistory } from "react-router-dom";
 
@@ -9,9 +16,13 @@ const Meetings: React.FC = () => {
 
   // Validation schema
   const schema = Yup.object().shape({
-    purpose: Yup.string().required("Purpose is required").min(3, "Purpose is too short"),
+    purpose: Yup.string()
+      .required("Purpose is required")
+      .min(3, "Purpose is too short"),
     date: Yup.string().required("Date is required"),
-    location: Yup.string().required("Location is required").min(3, "Location is too short"),
+    location: Yup.string()
+      .required("Location is required")
+      .min(3, "Location is too short"),
     summary: Yup.string()
       .required("Summary is required")
       .min(10, "Summary must be at least 10 characters"),
@@ -24,8 +35,6 @@ const Meetings: React.FC = () => {
     location: string;
     summary: string;
   }) => {
-    console.log("Meeting Details Submitted:", values);
-
     // Example success action
     alert("Meeting scheduled successfully!");
     history.push("/home"); // Redirect to the dashboard or another page
@@ -92,10 +101,13 @@ const Meetings: React.FC = () => {
             rows={6}
           />
 
-
-
           {/* Submit Button */}
-          <IonButton expand="block" color="success" type="submit" style={{ marginTop: "1em" }}>
+          <IonButton
+            expand="block"
+            color="success"
+            type="submit"
+            style={{ marginTop: "1em" }}
+          >
             Schedule Meeting
           </IonButton>
         </FormikInit>

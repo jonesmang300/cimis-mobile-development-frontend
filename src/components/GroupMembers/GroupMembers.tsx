@@ -198,17 +198,27 @@ const GroupMembers: React.FC = () => {
                     alignItems: "center",
                     fontWeight: "bold",
                   }}
+                  onClick={() => {
+                    history.push("/view-member");
+                    setTheSelectedMember(member);
+                  }}
                 >
                   {member.firstName[0]}
                   {member.lastName[0]}
                 </div>
               </IonAvatar>
-              <IonLabel>
+              <IonLabel
+                onClick={() => {
+                  history.push("/view-member");
+                  setTheSelectedMember(member);
+                }}
+              >
                 <h2>
                   {member.firstName} {member.lastName}
                 </h2>
                 <p>{member.village} Village</p>
                 <p style={{ fontWeight: "bold" }}>{member.phoneNumber}</p>
+                <p>{member.memberCode}</p>
               </IonLabel>
               <IonButton
                 fill="clear"
@@ -221,7 +231,7 @@ const GroupMembers: React.FC = () => {
           ))}
         </IonList>
 
-        {/* {loading && <p>Loading more members...</p>} */}
+        {loading && <p>Loading more members...</p>}
       </IonContent>
     </IonPage>
   );

@@ -95,6 +95,11 @@ const SettingsPage: React.FC = () => {
             <IonIcon icon={helpOutline} slot="start" className="custom-icon" />
             <IonLabel>{t("support")}</IonLabel>
           </IonItem>
+
+          <IonItem button routerLink="/expenses">
+            <IonIcon icon={helpOutline} slot="start" className="custom-icon" />
+            <IonLabel>{t("Cluster Expenses")}</IonLabel>
+          </IonItem>
         </IonList>
 
         {/* Logout Button */}

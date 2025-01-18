@@ -65,6 +65,11 @@ import { EditMeeting } from "./components/meetings/EditMeeting";
 import GroupRoles from "./components/GroupRoles/Grouproles";
 import { AddGroupRoles } from "./components/GroupRoles/AddGroupRoles";
 import { EditGroupRoles } from "./components/GroupRoles/EditGroupRoles";
+import ViewMember from "./components/GroupMembers/ViewMember";
+import { AddSavingsDeposit } from "./components/SavingsDeposit/AddSavingsDeposit";
+import { AddFeesFine } from "./components/FeesFines/AddFeesFine";
+import { AddExpense } from "./components/Expenses/AddExpense";
+import Expenses from "./components/Expenses/Expenses";
 
 setupIonicReact();
 
@@ -119,6 +124,11 @@ const App: React.FC = () => {
               <Route path="/view-meeting" component={ViewMeeting} />
               <Route path="/add-attendance" component={AddAttendance} />
               <Route path="/loan-products" component={LoanProducts} exact />
+              <Route path="/view-member" component={ViewMember} />
+              <Route path="/add-deposit" component={AddSavingsDeposit} />
+              <Route path="/add-fees-fine" component={AddFeesFine} />
+              <Route path="/add-expense" component={AddExpense} />
+              <Route path="/expenses" component={Expenses} />
               <Route path="/support" component={SupportPage} exact />
               <Route
                 path="/savings-products"

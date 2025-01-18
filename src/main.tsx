@@ -8,6 +8,10 @@ import { ClustersProvider } from "./components/context/ClustersContext";
 import { NotificationMessageProvider } from "./components/context/notificationMessageContext";
 import { MeetingAttendanceProvider } from "./components/context/MeetingAttendanceContext";
 import { GroupMemberRolesProvider } from "./components/context/GroupMemberRolesContext";
+import { SavingsProductProvider } from "./components/context/SavingsProductsContext";
+import { DepositsProvider } from "./components/context/DepositContext";
+import { FeesFinesProvider } from "./components/context/FeesFinesContext";
+import { ExpensesProvider } from "./components/context/ExpenseContext";
 const container = document.getElementById("root");
 const root = createRoot(container!);
 root.render(
@@ -18,7 +22,15 @@ root.render(
           <MeetingsProvider>
             <MeetingAttendanceProvider>
               <GroupMemberRolesProvider>
-                <App />
+                <SavingsProductProvider>
+                  <DepositsProvider>
+                    <FeesFinesProvider>
+                      <ExpensesProvider>
+                        <App />
+                      </ExpensesProvider>
+                    </FeesFinesProvider>
+                  </DepositsProvider>
+                </SavingsProductProvider>
               </GroupMemberRolesProvider>
             </MeetingAttendanceProvider>
           </MeetingsProvider>
