@@ -48,6 +48,7 @@ export const MeetingsProvider: React.FC<MeetingsProviderProps> = ({
 
   // Function to edit existing data by ID
   const editMeeting = (id: string, updatedData: any) => {
+    console.log("idx", id);
     // Clone the current rows array
     const newRows = [...meetings];
 

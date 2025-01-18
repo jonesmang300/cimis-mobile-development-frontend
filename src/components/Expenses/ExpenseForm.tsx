@@ -27,6 +27,7 @@ import { useHistory } from "react-router";
 import { useSavingsProducts } from "../context/SavingsProductsContext";
 import { useFeesFines } from "../context/FeesFinesContext";
 import { useExpenses } from "../context/ExpenseContext";
+import { EditExpense } from "./EditExpense";
 
 // Validation schema for the form
 const schema = Yup.object().shape({
@@ -49,7 +50,7 @@ const ExpenseForm: React.FC = () => {
     selectedMemberId,
   } = useMembers(); // Use the context
   const { selectedCluster } = useClusters(); // Use the context
-  const { selectedExpense, addExpense } = useExpenses(); // Use the context
+  const { selectedExpense, addExpense, editExpense } = useExpenses(); // Use the context
   const {
     savingsProducts,
     returnSavingsProducts,
@@ -61,7 +62,7 @@ const ExpenseForm: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [pageTitle, setPageTitle] = useState("");
   const [buttonTitle, setButtonTitle] = useState("");
-  const memberId = selectedMemberId;
+  const expenseId = selectedExpense?.id;
 
   const [initialValues, setInitialValues] = useState({
     id: "",
@@ -72,9 +73,32 @@ const ExpenseForm: React.FC = () => {
   });
 
   useEffect(() => {
-    setPageTitle("Add Cluster Expense");
-    setButtonTitle("Add Cluster Expense");
-  }, []);
+    if (expenseId) {
+      const date = new Date(selectedExpense.date);
+      const formattedDate = date.toISOString().split("T")[0];
+
+      setInitialValues({
+        id: selectedExpense.id,
+        amount: selectedExpense.amount,
+        description: selectedExpense.description,
+        date: formattedDate,
+        clusterCode: selectedExpense.clusterCode,
+      });
+      setPageTitle("Edit Expense");
+      setButtonTitle("Edit Expense");
+      setLoading(false);
+    } else {
+      setInitialValues({
+        id: "",
+        amount: "",
+        description: "",
+        date: "",
+        clusterCode: "",
+      });
+      setPageTitle("Add Expense");
+      setButtonTitle("Add Expense");
+    }
+  }, [selectedExpense, expenseId]);
 
   const handleSubmit = async (formData: any, { resetForm }: any) => {
     // Ensure selectedCluster and selectedMember are valid
@@ -91,20 +115,27 @@ const ExpenseForm: React.FC = () => {
     };
 
     try {
-      console.log("formattedFormData", formattedFormData);
-      // Attempt to send the formatted form data
-      await postData("/api/expenses", formattedFormData);
+      if (expenseId) {
+        const newFormatedData = { ...formattedFormData, id: expenseId };
+        await putData(`/api/expenses/${expenseId}`, newFormatedData);
+        console.log("newFormatedData", newFormatedData);
 
-      // If successful, add the deposit and show success message
-      addExpense(formattedFormData);
-      setMessage("Cluster Expense added successfully!", "success");
+        editExpense(expenseId, newFormatedData);
+        setMessage(`Cluster Expense updated successfully!`, "success");
+      } else {
+        const addResponse = await postData("/api/expenses", formattedFormData);
 
-      // Reset the form and navigate to the group members page
+        addExpense(addResponse);
+        setMessage(`Cluster expense added successfully!`, "success");
+      }
+
+      // Reset the form after successful submission
       resetForm();
+
+      // Navigate back to the group members page
       history.push("expenses");
     } catch (error) {
-      // Handle any errors
-      setMessage("Failed to save Cluster Expense. Please try again.", "error");
+      setMessage("Failed to save Expense. Please try again.", "error");
     }
   };
 

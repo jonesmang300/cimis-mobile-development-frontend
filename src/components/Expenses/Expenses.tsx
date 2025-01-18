@@ -11,15 +11,15 @@ import {
   IonButton,
   IonIcon,
   IonAvatar,
-  IonButtons,
   IonSearchbar,
   IonFabButton,
+  IonAlert,
 } from "@ionic/react";
-import { peopleOutline, search, pencil, add } from "ionicons/icons";
+import { peopleOutline, search, pencil, add, trash } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
 import { useExpenses } from "../context/ExpenseContext";
 import { useClusters } from "../context/ClustersContext";
-import { getData } from "../../services/apiServices";
+import { deleteData, getData } from "../../services/apiServices";
 import { useNotificationMessage } from "../context/notificationMessageContext";
 import { NotificationMessage } from "../notificationMessage";
 
@@ -27,13 +27,15 @@ const Expenses: React.FC = () => {
   const history = useHistory();
   const { expenses, returnExpenses, setTheSelectedExpense } = useExpenses();
   const { selectedCluster } = useClusters();
-  const { messageState } = useNotificationMessage();
+  const { messageState, setMessage } = useNotificationMessage();
 
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState<number>(1);
-  const [hasMore, setHasMore] = useState<boolean>(true);
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+  const [expenseToRemove, setExpenseToRemove] = useState<any>();
 
   const itemsPerPage = 20;
 
@@ -60,7 +62,7 @@ const Expenses: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [loading, page, selectedCluster, returnExpenses]);
+  }, [page, selectedCluster, returnExpenses]);
 
   useEffect(() => {
     fetchExpenses();
@@ -105,19 +107,35 @@ const Expenses: React.FC = () => {
     history.push("add-expense");
   };
 
+  const handleRemoveExpenseClick = async () => {
+    if (!expenseToRemove) return;
+
+    try {
+      setLoading(true);
+      await deleteData(`/api/expenses`, expenseToRemove.id);
+
+      const updatedExpenses = expenses.filter(
+        (expense: any) => expense.id !== expenseToRemove.id
+      );
+
+      returnExpenses(updatedExpenses);
+      setMessage("Expense removed successfully!", "success");
+    } catch (error) {
+      setMessage("Failed to remove expense.", "error");
+    } finally {
+      setLoading(false);
+      setShowDeleteAlert(false);
+    }
+  };
+
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
           <IonTitle>Cluster Expenses</IonTitle>
-          <IonButtons slot="end">
-            <IonButton onClick={() => history.push("/expenses")}>
-              <IonIcon icon={peopleOutline} />
-            </IonButton>
-            <IonButton>
-              <IonIcon icon={search} />
-            </IonButton>
-          </IonButtons>
+          <IonButton slot="end">
+            <IonIcon icon={peopleOutline} />
+          </IonButton>
         </IonToolbar>
       </IonHeader>
 
@@ -145,58 +163,102 @@ const Expenses: React.FC = () => {
         />
 
         <IonList>
-          {filteredExpenses.map((expense, index) => (
-            <IonItem
-              key={expense.id || `${expense.clusterCode}-${index}`}
-              button
-            >
-              <IonAvatar slot="start">
-                <div
-                  style={{
-                    backgroundColor: "#4CAF50",
-                    color: "#fff",
-                    width: "40px",
-                    height: "40px",
-                    borderRadius: "50%",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    fontWeight: "bold",
-                  }}
-                >
-                  {index + 1}
-                </div>
-              </IonAvatar>
-              <IonLabel>
-                <h2>
-                  {expense.description?.length > 40
-                    ? `${expense.description.slice(0, 40)}...`
-                    : expense.description}
-                </h2>
-                <p>
-                  {new Date(expense.date).toLocaleDateString("en-GB", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
-                </p>
-                <p style={{ fontWeight: "bold" }}>
-                  {CurrencyFormatter(expense.amount)}
-                </p>
+          {filteredExpenses.length > 0 ? (
+            filteredExpenses.map((expense, index) => (
+              <IonItem key={expense.id}>
+                <IonAvatar slot="start">
+                  <div
+                    style={{
+                      backgroundColor: "#4CAF50",
+                      color: "#fff",
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "50%",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {index + 1}
+                  </div>
+                </IonAvatar>
+                <IonLabel>
+                  <h2>
+                    {expense.description?.length > 30
+                      ? `${expense.description.slice(0, 30)}...`
+                      : expense.description}
+                  </h2>
+                  <p>
+                    {new Date(expense.date).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  </p>
+                  <p style={{ fontWeight: "bold" }}>
+                    {CurrencyFormatter(expense.amount)}
+                  </p>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "flex-start",
+                      gap: "10px",
+                      marginTop: "8px",
+                    }}
+                  >
+                    <IonButton
+                      fill="outline"
+                      size="small"
+                      color="success"
+                      onClick={() => handleEditClick(expense.id)}
+                    >
+                      <IonIcon icon={pencil} />
+                    </IonButton>
+                    <IonButton
+                      fill="outline"
+                      size="small"
+                      color="danger"
+                      onClick={() => {
+                        setExpenseToRemove(expense);
+                        setShowDeleteAlert(true);
+                      }}
+                    >
+                      <IonIcon icon={trash} />
+                    </IonButton>
+                  </div>
+                </IonLabel>
+              </IonItem>
+            ))
+          ) : (
+            <IonItem lines="none">
+              <IonLabel className="ion-text-center">
+                <h2>There are no expenses yet.</h2>
               </IonLabel>
-              <IonButton
-                fill="clear"
-                slot="end"
-                onClick={() => handleEditClick(expense.id)}
-              >
-                <IonIcon icon={pencil} />
-              </IonButton>
             </IonItem>
-          ))}
+          )}
         </IonList>
 
         {loading && <p>Loading more expenses...</p>}
         {error && <p style={{ color: "red" }}>{error}</p>}
+
+        <IonAlert
+          isOpen={showDeleteAlert}
+          onDidDismiss={() => setShowDeleteAlert(false)}
+          header="Confirm Delete"
+          message={"Are you sure you want to delete this Expense?"}
+          buttons={[
+            {
+              text: "Cancel",
+              role: "cancel",
+              handler: () => setShowDeleteAlert(false),
+            },
+            {
+              text: "Delete",
+              handler: handleRemoveExpenseClick,
+            },
+          ]}
+        />
       </IonContent>
     </IonPage>
   );

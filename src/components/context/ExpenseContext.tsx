@@ -57,6 +57,9 @@ export const ExpensesProvider: React.FC<ExpensesProviderProps> = ({
 
     // Find the index of the row that matches the updatedData id
     const index = newRows.findIndex((row) => row.id === updatedData.id);
+    console.log("id", id);
+    console.log("updatedData", updatedData);
+    console.log("index", index);
 
     // If a matching row is found, update it
     if (index !== -1) {
