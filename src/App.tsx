@@ -70,7 +70,10 @@ import { AddSavingsDeposit } from "./components/SavingsDeposit/AddSavingsDeposit
 import { AddFeesFine } from "./components/FeesFines/AddFeesFine";
 import { AddExpense } from "./components/Expenses/AddExpense";
 import Expenses from "./components/Expenses/Expenses";
+import Income from "./components/Income/Income";
 import { EditExpense } from "./components/Expenses/EditExpense";
+import { AddIncome } from "./components/Income/AddIncome";
+import { EditIncome } from "./components/Income/EditIncome";
 
 setupIonicReact();
 
@@ -131,6 +134,9 @@ const App: React.FC = () => {
               <Route path="/add-expense" component={AddExpense} />
               <Route path="/edit-expense" component={EditExpense} />
               <Route path="/expenses" component={Expenses} />
+              <Route path="/income" component={Income} />
+              <Route path="/add-income" component={AddIncome} />
+              <Route path="/edit-income" component={EditIncome} />
               <Route path="/support" component={SupportPage} exact />
               <Route
                 path="/savings-products"

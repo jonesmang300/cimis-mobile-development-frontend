@@ -12,6 +12,7 @@ import { SavingsProductProvider } from "./components/context/SavingsProductsCont
 import { DepositsProvider } from "./components/context/DepositContext";
 import { FeesFinesProvider } from "./components/context/FeesFinesContext";
 import { ExpensesProvider } from "./components/context/ExpenseContext";
+import { IncomesProvider } from "./components/context/IncomeContext";
 const container = document.getElementById("root");
 const root = createRoot(container!);
 root.render(
@@ -26,7 +27,9 @@ root.render(
                   <DepositsProvider>
                     <FeesFinesProvider>
                       <ExpensesProvider>
-                        <App />
+                        <IncomesProvider>
+                          <App />
+                        </IncomesProvider>
                       </ExpensesProvider>
                     </FeesFinesProvider>
                   </DepositsProvider>

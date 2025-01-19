@@ -20,6 +20,8 @@ import {
   cashOutline,
   logOutOutline,
   helpOutline,
+  statsChartOutline,
+  trendingUpOutline,
 } from "ionicons/icons";
 import { useTranslation } from "react-i18next";
 import "./Settings.css";
@@ -97,8 +99,21 @@ const SettingsPage: React.FC = () => {
           </IonItem>
 
           <IonItem button routerLink="/expenses">
-            <IonIcon icon={helpOutline} slot="start" className="custom-icon" />
+            <IonIcon
+              icon={statsChartOutline}
+              slot="start"
+              className="custom-icon"
+            />
             <IonLabel>{t("Cluster Expenses")}</IonLabel>
+          </IonItem>
+
+          <IonItem button routerLink="/income">
+            <IonIcon
+              icon={trendingUpOutline}
+              slot="start"
+              className="custom-icon"
+            />
+            <IonLabel>{t("Cluster Income")}</IonLabel>
           </IonItem>
         </IonList>
 
