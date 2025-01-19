@@ -9,7 +9,7 @@ import {
   IonToast,
 } from "@ionic/react";
 import { Formik, Form } from "formik"; // Import Formik components
-import { RadioGroupInput, TextInputField } from "../form";
+import { RadioGroupInput, SelectInputField, TextInputField } from "../form";
 import * as Yup from "yup";
 import axios from "axios"; // Import Axios
 import { useMembers } from "../context/MembersContext"; // Import the custom hook
@@ -68,7 +68,10 @@ const FeesFinesForm: React.FC = () => {
     memberCode: "",
     amount: "",
     date: "",
+    feesOrFinesId: "",
   });
+  const [feesOrFines, setFeesOrFines] = useState([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setPageTitle("Add Fees or Fine");
@@ -88,6 +91,7 @@ const FeesFinesForm: React.FC = () => {
       description: formData.description,
       amount: formData.amount,
       date: formData.date,
+      feesOrFinesId: formData.feesOrFinesId,
     };
 
     try {
@@ -107,6 +111,24 @@ const FeesFinesForm: React.FC = () => {
       setMessage("Failed to save Fee or Fine. Please try again.", "error");
     }
   };
+
+  const fetchFeesOrFines = async () => {
+    setLoading(true);
+
+    try {
+      const result = await getData(`/api/feesorfines`);
+
+      setFeesOrFines(result);
+    } catch (error) {
+      setError("Failed to fetch data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFeesOrFines();
+  }, []);
 
   return (
     <IonPage>
@@ -132,6 +154,23 @@ const FeesFinesForm: React.FC = () => {
         >
           {({ resetForm }) => (
             <Form>
+              <div
+                style={{
+                  paddingTop: "15px",
+                  paddingLeft: "15px",
+                  paddingRight: "15px",
+                }}
+              >
+                <SelectInputField
+                  name="feesOrFinesId"
+                  selectItems={feesOrFines.map((m: any) => ({
+                    label: m.feesOrFine,
+                    value: m.id,
+                    key: m.id,
+                  }))}
+                  label="Select Fees or Fines"
+                />
+              </div>
               <TextInputField
                 name="description"
                 id="description"
