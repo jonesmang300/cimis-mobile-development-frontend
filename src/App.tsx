@@ -46,7 +46,6 @@ import Login from "./components/Login";
 import AddTransactionForm from "./components/Transaction/AddTransactionsForm";
 import RequestLoanPage from "./components/Loans/RequestLoanPage";
 import MeetingsList from "./components/meetings/MeetingsList";
-import LoanProducts from "./components/LoanProducts";
 import SupportPage from "./components/SupportPage";
 import SavingsProducts from "./components/SavingsProducts";
 
@@ -74,6 +73,14 @@ import Income from "./components/Income/Income";
 import { EditExpense } from "./components/Expenses/EditExpense";
 import { AddIncome } from "./components/Income/AddIncome";
 import { EditIncome } from "./components/Income/EditIncome";
+import { AddLoanProduct } from "./components/LoanProducts/AddLoanProduct";
+import { EditLoanProduct } from "./components/LoanProducts/EditLoanProduct";
+import LoanProducts from "./components/LoanProducts/LoanProducts";
+import { AddLoanApplication } from "./components/Loans/LoanApplication/AddLoanApplication";
+import { AddLoanApproval } from "./components/Loans/LoanApproval/AddLoanApproval";
+import { AddLoanDisbursed } from "./components/Loans/LoanDisbursed/AddLoanDisbursed";
+import { AddLoanRepayment } from "./components/Loans/LoanRepayment/AddLoanRepayment";
+//import {LoanProducts} from "./components/LoanProducts/LoanProducts";
 
 setupIonicReact();
 
@@ -127,7 +134,7 @@ const App: React.FC = () => {
               <Route path="/edit-meeting" component={EditMeeting} />
               <Route path="/view-meeting" component={ViewMeeting} />
               <Route path="/add-attendance" component={AddAttendance} />
-              <Route path="/loan-products" component={LoanProducts} exact />
+              {/* <Route path="/loan-products" component={LoanProducts} exact /> */}
               <Route path="/view-member" component={ViewMember} />
               <Route path="/add-deposit" component={AddSavingsDeposit} />
               <Route path="/add-fees-fine" component={AddFeesFine} />
@@ -137,10 +144,33 @@ const App: React.FC = () => {
               <Route path="/income" component={Income} />
               <Route path="/add-income" component={AddIncome} />
               <Route path="/edit-income" component={EditIncome} />
+              <Route path="/loan-products" component={LoanProducts} />
+              <Route path="/add-loan-product" component={AddLoanProduct} />
+              <Route path="/edit-loan-product" component={EditLoanProduct} />
               <Route path="/support" component={SupportPage} exact />
               <Route
                 path="/savings-products"
                 component={SavingsProducts}
+                exact
+              />
+              <Route
+                path="/add-loan-application"
+                component={AddLoanApplication}
+                exact
+              />
+              <Route
+                path="/add-loan-approval"
+                component={AddLoanApproval}
+                exact
+              />
+              <Route
+                path="/add-loan-disbursement"
+                component={AddLoanDisbursed}
+                exact
+              />
+              <Route
+                path="/add-loan-repayment"
+                component={AddLoanRepayment}
                 exact
               />
 

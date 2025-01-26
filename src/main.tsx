@@ -13,6 +13,11 @@ import { DepositsProvider } from "./components/context/DepositContext";
 import { FeesFinesProvider } from "./components/context/FeesFinesContext";
 import { ExpensesProvider } from "./components/context/ExpenseContext";
 import { IncomesProvider } from "./components/context/IncomeContext";
+import { LoanProductsProvider } from "./components/context/LoanProductsContext";
+import { LoanApplicationsProvider } from "./components/context/loanApplicationContext";
+import { LoanApprovalsProvider } from "./components/context/LoanApprovalContext";
+import { LoanDisbursementsProvider } from "./components/context/LoanDisbursementContext";
+import { LoanRepaymentsProvider } from "./components/context/LoanRepaymentsContext";
 const container = document.getElementById("root");
 const root = createRoot(container!);
 root.render(
@@ -28,7 +33,17 @@ root.render(
                     <FeesFinesProvider>
                       <ExpensesProvider>
                         <IncomesProvider>
-                          <App />
+                          <LoanProductsProvider>
+                            <LoanApplicationsProvider>
+                              <LoanApprovalsProvider>
+                                <LoanDisbursementsProvider>
+                                  <LoanRepaymentsProvider>
+                                    <App />
+                                  </LoanRepaymentsProvider>
+                                </LoanDisbursementsProvider>
+                              </LoanApprovalsProvider>
+                            </LoanApplicationsProvider>
+                          </LoanProductsProvider>
                         </IncomesProvider>
                       </ExpensesProvider>
                     </FeesFinesProvider>
