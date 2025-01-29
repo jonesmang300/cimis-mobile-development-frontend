@@ -6,71 +6,76 @@ import {
   IonTitle,
   IonToolbar,
   IonButton,
+  IonSpinner,
 } from "@ionic/react";
-import { Formik, Form, Field } from "formik"; // Import Formik components
-import { SelectInputField, TextInputField } from "../form"; // Adjust import paths
+import { Formik, Form, Field } from "formik";
+import { SelectInputField, TextInputField } from "../form";
 import * as Yup from "yup";
 import { useMembers } from "../context/MembersContext";
 import { useClusters } from "../context/ClustersContext";
-import { useExpenses } from "../context/ExpenseContext";
 import { useNotificationMessage } from "../context/notificationMessageContext";
 import { NotificationMessage } from "../notificationMessage";
 import { useHistory } from "react-router";
 import { getData, postData, putData } from "../../services/apiServices";
 import { useLoanProducts } from "../context/LoanProductsContext";
 
-// Validation schema
 const schema = Yup.object().shape({
   loanProduct: Yup.string().required("Loan product is required"),
   interest: Yup.number().required("Interest is required"),
   paymentFrequencyId: Yup.number().required("Payment frequency is required"),
+  interestMethodId: Yup.number().required("Interest Method is required"),
 });
 
 const LoanProductForm: React.FC = () => {
   const history = useHistory();
   const { messageState, setMessage } = useNotificationMessage();
-  const { members } = useMembers();
   const { selectedCluster } = useClusters();
   const { selectedLoanProduct, addLoanProduct, editLoanProduct } =
     useLoanProducts();
 
   const [loading, setLoading] = useState(true);
   const [paymentFrequencies, setPaymentFrequencies] = useState([]);
-  const [membership, setMembership] = useState([]);
-  const [selectedPaymentFrequency, setSelectedPaymentFrequency] = useState<
-    number | null
-  >(null);
+  const [interestMethods, setInterestMethods] = useState([]);
 
   const initialValues = {
     id: selectedLoanProduct?.id || "",
     loanProduct: selectedLoanProduct?.loanProduct || "",
     interest: Number(selectedLoanProduct?.interest) || "",
     paymentFrequencyId: selectedLoanProduct?.paymentFrequencyId || "",
+    interestMethodId: selectedLoanProduct?.interestMethodId || "",
     clusterCode: selectedCluster[0]?.clusterCode || "",
   };
 
-  const fetchPaymentFrequencies = async () => {
-    try {
-      const result = await getData(`/api/paymentfrequencies`);
-      setPaymentFrequencies(result);
-    } catch (error) {
-      setMessage("Failed to fetch payment frequencies", "error");
-    }
-  };
-
   useEffect(() => {
-    fetchPaymentFrequencies();
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const [frequencies, methods] = await Promise.all([
+          getData(`/api/paymentfrequencies`),
+          getData(`/api/interestmethods`),
+        ]);
+        setPaymentFrequencies(frequencies);
+        setInterestMethods(methods);
+      } catch (error) {
+        setMessage("Failed to fetch data. Please try again.", "error");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const handleSubmit = async (formData: any, { resetForm }: any) => {
-    // Submission logic
     const formattedFormData = {
       clusterCode: selectedCluster[0]?.clusterCode,
       interest: Number(formData.interest),
+      loanProduct: formData.loanProduct,
       paymentFrequencyId: Number(formData.paymentFrequencyId),
-      ...formData,
+      interestMethodId: Number(formData.interestMethodId),
     };
-
+    console.log("formattedFormData", formattedFormData);
+    setLoading(true);
     try {
       if (selectedLoanProduct?.id) {
         await putData(
@@ -81,17 +86,28 @@ const LoanProductForm: React.FC = () => {
         setMessage("Loan Product updated successfully!", "success");
       } else {
         await postData("/api/loanproducts", formattedFormData);
-
         addLoanProduct(formattedFormData);
         setMessage("Loan Product added successfully!", "success");
       }
       resetForm();
       history.push("/loan-products");
     } catch (error) {
-      console.log("error", error);
       setMessage("Failed to save Loan Product. Please try again.", "error");
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return (
+      <IonPage>
+        <IonContent className="ion-text-center ion-padding">
+          <IonSpinner name="crescent" />
+          <p>Loading...</p>
+        </IonContent>
+      </IonPage>
+    );
+  }
 
   return (
     <IonPage>
@@ -115,56 +131,74 @@ const LoanProductForm: React.FC = () => {
           onSubmit={handleSubmit}
           enableReinitialize
         >
-          {({ values, setFieldValue }) => {
-            useEffect(() => {
-              setSelectedPaymentFrequency(values.paymentFrequencyId);
-            }, [values.paymentFrequencyId]);
-
-            return (
-              <Form>
-                <TextInputField
-                  name="loanProduct"
-                  id="loanProduct"
-                  label="Loan Product Name"
-                  placeholder="Enter Loan Product Name"
+          {({ values }) => (
+            <Form>
+              <TextInputField
+                name="loanProduct"
+                id="loanProduct"
+                label="Loan Product Name"
+                placeholder="Enter Loan Product Name"
+              />
+              <div
+                style={{
+                  paddingTop: "15px",
+                  paddingLeft: "15px",
+                  paddingRight: "15px",
+                }}
+              >
+                <SelectInputField
+                  name="paymentFrequencyId"
+                  selectItems={paymentFrequencies.map((p: any) => ({
+                    label: p.paymentFrequency,
+                    value: p.id,
+                    key: p.id,
+                  }))}
+                  label="Select Payment Frequency"
                 />
-                <div
-                  style={{
-                    paddingTop: "15px",
-                    paddingLeft: "15px",
-                    paddingRight: "15px",
-                  }}
-                >
-                  <SelectInputField
-                    name="paymentFrequencyId"
-                    selectItems={paymentFrequencies.map((p: any) => ({
-                      label: p.paymentFrequency,
-                      value: p.id,
-                      key: p.id,
-                    }))}
-                    label="Select Payment Frequency"
-                  />
-                </div>
-                <TextInputField
-                  name="interest"
-                  id="interest"
-                  label="interest (%)"
-                  placeholder="Enter interest as Percentage"
-                  type="number"
+              </div>
+              <TextInputField
+                name="interest"
+                id="interest"
+                label="Interest (%)"
+                placeholder="Enter interest as Percentage"
+                type="number"
+              />
+              <div
+                style={{
+                  paddingTop: "15px",
+                  paddingLeft: "15px",
+                  paddingRight: "15px",
+                }}
+              >
+                <SelectInputField
+                  name="interestMethodId"
+                  selectItems={interestMethods.map((im: any) => ({
+                    label: im.method,
+                    value: im.id,
+                    key: im.id,
+                  }))}
+                  label="Select Interest Method"
                 />
-
-                <IonButton
-                  type="submit"
-                  expand="block"
-                  style={{ marginTop: "20px" }}
-                >
-                  {selectedLoanProduct
-                    ? "Edit Loan Product"
-                    : "Add Loan Product"}
-                </IonButton>
-              </Form>
-            );
-          }}
+              </div>
+              <IonButton
+                type="submit"
+                expand="block"
+                style={{ marginTop: "20px" }}
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <IonSpinner name="dots" />
+                    Saving...
+                  </>
+                ) : selectedLoanProduct ? (
+                  "Edit Loan Product"
+                ) : (
+                  "Add Loan Product"
+                )}
+              </IonButton>
+            </Form>
+          )}
         </Formik>
       </IonContent>
     </IonPage>

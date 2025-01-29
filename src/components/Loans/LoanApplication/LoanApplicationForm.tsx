@@ -22,10 +22,6 @@ import { getData, postData, putData } from "../../../services/apiServices";
 const schema = Yup.object().shape({
   loanPurposeId: Yup.number().required("Loan purpose is required"),
   loanProductId: Yup.number().required("Loan product is required"),
-  loanDurationId: Yup.number().required("Loan duration is required"),
-  interestChargeTimesId: Yup.number().required(
-    "Frequency of Interest is required"
-  ),
   loanNeededDate: Yup.date().required("Date is required"),
   requestedAmount: Yup.string().required("Requested amount is required"),
   justification: Yup.string().required("Loan justification is required"),
@@ -56,9 +52,6 @@ const LoanApplicationForm: React.FC = () => {
     justification: selectedLoanApplication?.justification || "",
     numberOfInstallments: selectedLoanApplication?.numberOfInstallments || "",
     //memberCode: selectedLoanApplication?.memberCode || "",
-    loanDurationId: Number(selectedLoanApplication?.loanDurationId) || "",
-    interestChargeTimesId:
-      Number(selectedLoanApplication?.interestChargeTimesId) || "",
   };
 
   const fetchLoanPurposes = async () => {
@@ -104,8 +97,6 @@ const LoanApplicationForm: React.FC = () => {
   useEffect(() => {
     fetchLoanPurposes();
     fetchLoanProducts();
-    fetchLoanDuration();
-    fetchInterestFrequency();
   }, []);
 
   const handleSubmit = async (formData: any, { resetForm }: any) => {
@@ -113,11 +104,10 @@ const LoanApplicationForm: React.FC = () => {
       memberCode: selectedMember?.memberCode,
       loanPurposeId: Number(formData?.loanPurposeId),
       loanProductId: Number(formData?.loanProductId),
-      loanDurationId: Number(formData?.loanDurationId),
-      interestChargeTimesId: Number(formData?.interestChargeTimesId),
       status: "Applied",
       ...formData,
     };
+    console.log("formattedFormData", formattedFormData);
 
     try {
       if (formData.id) {
@@ -220,39 +210,6 @@ const LoanApplicationForm: React.FC = () => {
                 type="number"
                 id={""}
               />
-              <div
-                style={{
-                  paddingTop: "15px",
-                  paddingLeft: "15px",
-                  paddingRight: "15px",
-                }}
-              >
-                <SelectInputField
-                  name="loanDurationId"
-                  selectItems={loanDuration.map((d: any) => ({
-                    label: d.duration,
-                    value: d.id,
-                  }))}
-                  label="Select Loan Duration"
-                />
-              </div>
-              <div
-                style={{
-                  paddingTop: "15px",
-                  paddingLeft: "15px",
-                  paddingRight: "15px",
-                }}
-              >
-                <SelectInputField
-                  name="interestChargeTimesId"
-                  selectItems={interestFrequency.map((p: any) => ({
-                    label: p.period,
-                    value: p.id,
-                  }))}
-                  label="Select Interest Frequency"
-                />
-              </div>
-
               <TextInputField
                 name="justification"
                 label="Loan Justification"

@@ -43,20 +43,37 @@ const LoanProducts: React.FC = () => {
     id: number;
     paymentFrequency: string;
   }
+
+  interface InterestMethod {
+    id: number;
+    method: string;
+  }
+
+  interface InterestFrequency {
+    id: number;
+    interestFrequency: string;
+  }
+
   const [paymentFrequencies, setPaymentFrequencies] = useState<
     PaymentFrequency[]
   >([]);
+  const [interestMethods, setInterestMethods] = useState<InterestMethod[]>([]);
 
   const itemsPerPage = 20;
 
-  const fetchLoanProducts = useCallback(async () => {
-    if (loading || !hasMore) return; // Prevent multiple fetches
+  const fetchAllData = useCallback(async () => {
     setLoading(true);
 
     try {
-      const result = await getData(
-        `/api/loanproducts?page=${page}&limit=${itemsPerPage}`
-      );
+      const [
+        loanProductsResult,
+        paymentFrequenciesResult,
+        interestMethodsResult,
+      ] = await Promise.all([
+        getData(`/api/loanproducts?page=${page}&limit=${itemsPerPage}`),
+        getData(`/api/paymentfrequencies`),
+        getData(`/api/interestmethods`),
+      ]);
 
       if (!selectedCluster || selectedCluster.length === 0) {
         console.error("selectedCluster is empty or undefined");
@@ -65,9 +82,12 @@ const LoanProducts: React.FC = () => {
         return;
       }
 
-      const filteredLoanProducts = result.filter(
+      const filteredLoanProducts = loanProductsResult.filter(
         (l: any) => l.clusterCode === selectedCluster[0]?.clusterCode
       );
+
+      setPaymentFrequencies(paymentFrequenciesResult);
+      setInterestMethods(interestMethodsResult);
 
       if (filteredLoanProducts.length === 0) {
         setHasMore(false);
@@ -75,25 +95,16 @@ const LoanProducts: React.FC = () => {
         returnLoanProducts(filteredLoanProducts);
       }
     } catch (err) {
-      setError("Failed to fetch loan products.");
+      setError("Failed to fetch data.");
+      setMessage("Failed to fetch data.", "error");
       console.error(err);
     } finally {
       setLoading(false);
     }
-  }, [loading, hasMore, page, selectedCluster, returnLoanProducts]);
-
-  const fetchPaymentFrequencies = async () => {
-    try {
-      const result = await getData(`/api/paymentfrequencies`);
-      setPaymentFrequencies(result);
-    } catch (error) {
-      setMessage("Failed to fetch payment frequencies", "error");
-    }
-  };
+  }, [page, selectedCluster, returnLoanProducts, setMessage]);
 
   useEffect(() => {
-    fetchLoanProducts();
-    fetchPaymentFrequencies();
+    fetchAllData();
   }, [selectedCluster]);
 
   const handleScroll = (e: any) => {
@@ -125,6 +136,7 @@ const LoanProducts: React.FC = () => {
       );
 
       returnLoanProducts(updatedLoanProducts);
+      setTheSelectedLoanProduct({});
       setMessage("Loan Product removed successfully!", "success");
     } catch (err) {
       setMessage("Failed to remove loan product.", "error");
@@ -190,14 +202,22 @@ const LoanProducts: React.FC = () => {
                 </IonAvatar>
                 <IonLabel>
                   <h2>{loan.loanProduct}</h2>
-                  <p>Interest: {loan.interest}%</p>
-                  <p>
-                    Frequency:{" "}
+                  <p style={{ fontWeight: "bold" }}>
+                    Interest: {loan.interest}%
+                  </p>
+                  <p style={{ fontWeight: "bold" }}>
+                    Payment Frequency:{" "}
                     {paymentFrequencies.find(
                       (pf: any) => pf.id === loan?.paymentFrequencyId
                     )?.paymentFrequency || "N/A"}
                   </p>
-                  {/* Buttons moved here */}
+                  <p style={{ fontWeight: "bold" }}>
+                    Interest Method:{" "}
+                    {interestMethods.find(
+                      (im: any) => im.id === loan?.interestMethodId
+                    )?.method || "N/A"}
+                  </p>
+
                   <div
                     style={{ display: "flex", gap: "10px", marginTop: "10px" }}
                   >
@@ -205,10 +225,7 @@ const LoanProducts: React.FC = () => {
                       fill="outline"
                       size="small"
                       color="success"
-                      onClick={() => {
-                        setTheSelectedLoanProduct(loan.id);
-                        handleEditClick(loan.id);
-                      }}
+                      onClick={() => handleEditClick(loan.id)}
                     >
                       <IonIcon icon={pencil} />
                     </IonButton>

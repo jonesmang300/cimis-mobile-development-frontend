@@ -528,7 +528,7 @@ const ViewMember: React.FC = () => {
               {loanApplications.length > 0 ? (
                 loanApplications.map((loan: any, index: number) => (
                   <IonItem
-                    key={loan.id}
+                    key={`${loan.id}-${index}`} // Ensures the key is unique even if loan.id is duplicated
                     lines="none"
                     style={{
                       border: "1px solid #e0e0e0",
