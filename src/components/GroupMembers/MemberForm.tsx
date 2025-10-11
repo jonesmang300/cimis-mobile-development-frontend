@@ -166,7 +166,12 @@ const MemberForm: React.FC = () => {
           "/api/membership",
           formattedFormData
         );
-        const memberCode = addResponse.memberCode;
+        const getMember = await viewDataById(
+          "/api/membership",
+          addResponse.insertId
+        );
+        const memberCode = getMember.memberCode;
+
         const clusterName = selectedCluster?.name;
 
         const newMemberData = {
@@ -174,6 +179,7 @@ const MemberForm: React.FC = () => {
           memberCode,
           clusterName,
         };
+        console.log("onesani", newMemberData);
 
         addMember(newMemberData);
         setMessage(
