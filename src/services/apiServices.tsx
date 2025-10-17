@@ -1,6 +1,10 @@
 import axios from "axios";
+import { Capacitor } from "@capacitor/core";
+import { isPlatform } from "@ionic/react";
 
-const BASE_URL = "http://localhost:3000"; // Replace with your API URL
+const BASE_URL = isPlatform("android")
+  ? "http://10.0.2.2:3000"
+  : "http://localhost:3000";
 
 export const postData = async (endpoint: any, data: any) => {
   try {

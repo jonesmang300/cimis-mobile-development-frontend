@@ -1,11 +1,10 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
-// Define the type for the context value
 interface LoanApplicationsContextType {
-  addLoanApplication: (newData: any) => void; // Function to add new data
-  editLoanApplication: (id: string, updatedData: any) => void; // Function to edit existing data
+  addLoanApplication: (newData: any) => void;
+  editLoanApplication: (id: string, updatedData: any) => void;
   loanApplications: any[];
-  returnLoanApplications: (rows: any) => void;
+  returnLoanApplications: (rows: any[]) => void;
   selectedRow: any;
   setSelectedRow: (selectedRow: any) => void;
   getSelectedRow: (selectedRow: any) => void;
@@ -21,14 +20,13 @@ interface LoanApplicationsContextType {
   token: any;
   setToken: (value: any) => void;
   setTheToken: (value: any) => void;
+  clearLoanData: () => void; // 👈 Added to clear all persisted data on logout
 }
 
-// Create the context with a default value (undefined means no context by default)
 const LoanApplicationsContext = createContext<
   LoanApplicationsContextType | undefined
 >(undefined);
 
-// Provider component that will provide the data and functions to child components
 interface LoanApplicationsProviderProps {
   children: React.ReactNode;
 }
@@ -36,39 +34,76 @@ interface LoanApplicationsProviderProps {
 export const LoanApplicationsProvider: React.FC<
   LoanApplicationsProviderProps
 > = ({ children }) => {
-  const [loanApplications, setLoanApplications] = useState<any[]>([]);
+  // ✅ Initialize state from localStorage if available
+  const [loanApplications, setLoanApplications] = useState<any[]>(() => {
+    const saved = localStorage.getItem("loanApplications");
+    return saved ? JSON.parse(saved) : [];
+  });
+
   const [selectedRow, setSelectedRow] = useState<any[]>([]);
   const [submitedButton, setSubmitButton] = useState(true);
-  const [loanApplication, setLoanApplication] = useState();
-  const [selectedLoanApplication, setSelectedLoanApplication] = useState();
-  const [loggedUser, setLoggedUser] = useState();
-  const [token, setToken] = useState();
+  const [selectedLoanApplication, setSelectedLoanApplication] = useState(() => {
+    const saved = localStorage.getItem("selectedLoanApplication");
+    return saved ? JSON.parse(saved) : null;
+  });
 
-  // Function to add new data
-  const addLoanApplication = (newData: any) => {
-    //console.log("new data>>>", newData); // This will show the current state of the data
-    setLoanApplications((loanApplications) => [...loanApplications, newData]); // Append the new data to the existing data
-  };
+  const [loggedUser, setLoggedUser] = useState(() => {
+    const saved = localStorage.getItem("loggedUser");
+    return saved ? JSON.parse(saved) : null;
+  });
 
-  // Function to edit existing data by ID
-  const editLoanApplication = (id: string, updatedData: any) => {
-    // Clone the current rows array
-    const newRows = [...loanApplications];
+  const [token, setToken] = useState(() => {
+    return localStorage.getItem("token") || null;
+  });
 
-    // Find the index of the row that matches the updatedData id
-    const index = newRows.findIndex((row) => row.id === updatedData.id);
+  // ✅ Persist loanApplications to localStorage
+  useEffect(() => {
+    localStorage.setItem("loanApplications", JSON.stringify(loanApplications));
+  }, [loanApplications]);
 
-    // If a matching row is found, update it
-    if (index !== -1) {
-      newRows[index] = { ...newRows[index], ...updatedData }; // Update the row with new data
-
-      setLoanApplications(newRows);
+  // ✅ Persist selectedLoanApplication
+  useEffect(() => {
+    if (selectedLoanApplication) {
+      localStorage.setItem(
+        "selectedLoanApplication",
+        JSON.stringify(selectedLoanApplication)
+      );
+    } else {
+      localStorage.removeItem("selectedLoanApplication");
     }
+  }, [selectedLoanApplication]);
+
+  // ✅ Persist loggedUser
+  useEffect(() => {
+    if (loggedUser) {
+      localStorage.setItem("loggedUser", JSON.stringify(loggedUser));
+    } else {
+      localStorage.removeItem("loggedUser");
+    }
+  }, [loggedUser]);
+
+  // ✅ Persist token
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("token", token);
+    } else {
+      localStorage.removeItem("token");
+    }
+  }, [token]);
+
+  // ✅ CRUD functions
+  const addLoanApplication = (newData: any) => {
+    setLoanApplications((prev) => [...prev, newData]);
   };
 
-  // Function to set rows
-  const returnLoanApplications = (loanApplications: any) => {
-    setLoanApplications(loanApplications);
+  const editLoanApplication = (id: string, updatedData: any) => {
+    setLoanApplications((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, ...updatedData } : item))
+    );
+  };
+
+  const returnLoanApplications = (rows: any[]) => {
+    setLoanApplications(rows);
   };
 
   const getSelectedRow = (selectedRow: any) => {
@@ -77,10 +112,6 @@ export const LoanApplicationsProvider: React.FC<
 
   const setTheSubmitButton = (submitedButton: any) => {
     setSubmitButton(submitedButton);
-  };
-
-  const setTheLoanApplication = (value: any) => {
-    setLoanApplication(value);
   };
 
   const setTheSelectedLoanApplication = (value: any) => {
@@ -93,6 +124,18 @@ export const LoanApplicationsProvider: React.FC<
 
   const setTheToken = (value: any) => {
     setToken(value);
+  };
+
+  // ✅ Clear persisted data (e.g., on logout)
+  const clearLoanData = () => {
+    setLoanApplications([]);
+    setSelectedLoanApplication(null);
+    setLoggedUser(null);
+    setToken(null);
+    localStorage.removeItem("loanApplications");
+    localStorage.removeItem("selectedLoanApplication");
+    localStorage.removeItem("loggedUser");
+    localStorage.removeItem("token");
   };
 
   return (
@@ -117,6 +160,7 @@ export const LoanApplicationsProvider: React.FC<
         token,
         setToken,
         setTheToken,
+        clearLoanData, // 👈 expose logout cleanup
       }}
     >
       {children}
@@ -124,12 +168,12 @@ export const LoanApplicationsProvider: React.FC<
   );
 };
 
-// Custom hook to access TableDataContext
+// ✅ Custom hook for easy access
 export const useLoanApplications = (): LoanApplicationsContextType => {
   const context = useContext(LoanApplicationsContext);
   if (!context) {
     throw new Error(
-      "LoanApplicationContext must be used within a LoanApplicationProvider"
+      "useLoanApplications must be used within a LoanApplicationsProvider"
     );
   }
   return context;

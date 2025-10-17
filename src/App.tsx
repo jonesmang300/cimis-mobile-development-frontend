@@ -80,6 +80,7 @@ import { AddLoanApplication } from "./components/Loans/LoanApplication/AddLoanAp
 import { AddLoanApproval } from "./components/Loans/LoanApproval/AddLoanApproval";
 import { AddLoanDisbursed } from "./components/Loans/LoanDisbursed/AddLoanDisbursed";
 import { AddLoanRepayment } from "./components/Loans/LoanRepayment/AddLoanRepayment";
+import LoanDetails from "./components/Loans/LoanDetails/LoanDetails";
 //import {LoanProducts} from "./components/LoanProducts/LoanProducts";
 
 setupIonicReact();
@@ -173,6 +174,7 @@ const App: React.FC = () => {
                 component={AddLoanRepayment}
                 exact
               />
+              <Route path="/loan-details" component={LoanDetails} exact />
 
               <Route exact path="/">
                 <Redirect to="/home" />

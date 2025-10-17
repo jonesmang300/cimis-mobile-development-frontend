@@ -32,7 +32,8 @@ const schema = Yup.object().shape({
 const LoanApprovalForm: React.FC = () => {
   const history = useHistory();
   const { messageState, setMessage } = useNotificationMessage();
-  const { selectedLoanApproval, addLoanApproval } = useLoanApprovals();
+  const { selectedLoanApproval, addLoanApproval, loanApprovals } =
+    useLoanApprovals();
   const { selectedLoanApplication } = useLoanApplications();
 
   const initialValues = {
@@ -42,6 +43,15 @@ const LoanApprovalForm: React.FC = () => {
   };
 
   const handleSubmit = async (formData: any, { resetForm }: any) => {
+    const existingApproval = loanApprovals.find(
+      (a: any) => a.loanApplicationId === selectedLoanApplication?.id
+    );
+
+    if (existingApproval) {
+      setMessage("This loan has already been approved.", "error");
+      return;
+    }
+
     const formattedFormData = {
       loanApplicationId: Number(selectedLoanApplication?.id),
       approvalAmount: Number(formData?.approvalAmount),
@@ -56,7 +66,7 @@ const LoanApprovalForm: React.FC = () => {
         formattedFormData
       );
       const formattedAddResponse = {
-        ...addResponse,
+        ...formattedFormData,
         id: addResponse.insertId,
       };
 

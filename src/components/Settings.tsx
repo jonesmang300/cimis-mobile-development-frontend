@@ -32,7 +32,10 @@ const SettingsPage: React.FC = () => {
   const history = useHistory();
 
   const handleLogout = () => {
-    history.push("/login");
+    //localStorage.clear();
+    setTimeout(() => {
+      window.location.href = "/login";
+    }, 500); // small delay for smooth UX
   };
 
   return (

@@ -37,7 +37,7 @@ const LoanDisbursedForm: React.FC = () => {
   const { messageState, setMessage } = useNotificationMessage();
   const { selectedLoanApproval, addLoanApproval, loanApprovals } =
     useLoanApprovals();
-  const { selectedLoanDisbursement, addLoanDisbursement } =
+  const { selectedLoanDisbursement, addLoanDisbursement, loanDisbursements } =
     useLoanDisbursements();
   const { selectedLoanApplication } = useLoanApplications();
 
@@ -49,6 +49,15 @@ const LoanDisbursedForm: React.FC = () => {
   };
 
   const handleSubmit = async (formData: any, { resetForm }: any) => {
+    const existingDisbursement = loanDisbursements.find(
+      (d: any) => d.loanApplicationId === selectedLoanApplication?.id
+    );
+
+    if (existingDisbursement) {
+      setMessage("This loan has already been disbursed.", "error");
+      return;
+    }
+
     const formattedFormData = {
       loanApplicationId: Number(selectedLoanApplication?.id),
       disbursementAmount: Number(formData?.disbursementAmount),
@@ -64,7 +73,7 @@ const LoanDisbursedForm: React.FC = () => {
         formattedFormData
       );
       const formattedAddResponse = {
-        ...addResponse,
+        ...formattedFormData,
         id: addResponse.insertId,
       };
 

@@ -120,7 +120,16 @@ const LoanApplicationForm: React.FC = () => {
           formattedFormData
         );
 
-        addLoanApplication(addResponse);
+        // The backend usually returns insertId (the new record's ID)
+        console.log("add response>>>>", addResponse);
+        const newLoan = {
+          ...formattedFormData,
+          id: addResponse.insertId, // handle both MySQL or API styles
+        };
+        console.log("new loan object", newLoan);
+
+        addLoanApplication(newLoan);
+        console.log("response", newLoan);
         setMessage("Loan Application added successfully!", "success");
       }
       resetForm();

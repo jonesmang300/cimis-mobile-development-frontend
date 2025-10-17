@@ -18,6 +18,7 @@ import { LoanApplicationsProvider } from "./components/context/loanApplicationCo
 import { LoanApprovalsProvider } from "./components/context/LoanApprovalContext";
 import { LoanDisbursementsProvider } from "./components/context/LoanDisbursementContext";
 import { LoanRepaymentsProvider } from "./components/context/LoanRepaymentsContext";
+import { LoanDetailsProvider } from "./components/context/LoanDetailsContext";
 const container = document.getElementById("root");
 const root = createRoot(container!);
 root.render(
@@ -38,7 +39,9 @@ root.render(
                               <LoanApprovalsProvider>
                                 <LoanDisbursementsProvider>
                                   <LoanRepaymentsProvider>
-                                    <App />
+                                    <LoanDetailsProvider>
+                                      <App />
+                                    </LoanDetailsProvider>
                                   </LoanRepaymentsProvider>
                                 </LoanDisbursementsProvider>
                               </LoanApprovalsProvider>

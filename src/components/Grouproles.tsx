@@ -22,9 +22,10 @@ import {
   arrowForwardOutline,
 } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
-import { useMeetings } from "../context/MeetingsContext";
-import { useClusters } from "../context/ClustersContext";
-import { getData } from "../../services/apiServices";
+import { useMeetings } from "./context/MeetingsContext";
+import { useMeetingAttendances } from "./context/MeetingAttendanceContext";
+import { useClusters } from "./context/ClustersContext";
+import { getData } from ".././services/apiServices";
 import { useNotificationMessage } from "./context/notificationMessageContext";
 import { NotificationMessage } from "./notificationMessage";
 
@@ -133,7 +134,7 @@ const MeetingsList: React.FC = () => {
   };
 
   const filteredMeetings = meetings.filter(
-    (meeting) =>
+    (meeting: any) =>
       meeting.purpose.toLowerCase().includes(searchQuery.toLowerCase()) ||
       meeting.meetingDate.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -197,7 +198,7 @@ const MeetingsList: React.FC = () => {
           placeholder="Search meetings..."
         />
 
-        {filteredMeetings.map((meeting) => (
+        {filteredMeetings.map((meeting: any) => (
           <div key={meeting.id}>
             <IonList>
               <IonItem button onClick={() => handleViewClick(meeting.id)}>

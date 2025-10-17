@@ -31,6 +31,7 @@ import { useLoanApplications } from "../context/loanApplicationContext"; // Impo
 import { useLoanApprovals } from "../context/LoanApprovalContext";
 import { useLoanDisbursements } from "../context/LoanDisbursementContext";
 import { useLoanRepayments } from "../context/LoanRepaymentsContext";
+import { useLoanDetails } from "../context/LoanDetailsContext";
 
 const ViewMember: React.FC = () => {
   const history = useHistory();
@@ -94,6 +95,12 @@ const ViewMember: React.FC = () => {
     purpose: string;
   }
   const [loanPurposes, setLoanPurposes] = useState<LoanPurpose[]>([]);
+  const {
+    loanDetails,
+    returnLoanDetails,
+    setTheSelectedLoanDetail,
+    selectedLoanDetail,
+  } = useLoanDetails();
 
   const fetchAllData = useCallback(async () => {
     setLoading(true);
@@ -216,17 +223,72 @@ const ViewMember: React.FC = () => {
     return <span>{formattedAmount}</span>;
   };
 
-  // Loan redirection handler
+  // ✅ Loan Status Logic (Auto-Approval after Disbursement)
   const handleLoanRedirections = (loan: any) => {
+    console.log("➡️ Loan clicked:", loan);
     setTheSelectedLoanApplication(loan);
 
-    if (loanApprovals.length === 0) {
-      history.push("add-loan-approval");
-    } else if (loanDisbursements.length === 0) {
-      history.push("add-loan-disbursement");
-    } else if (loanDisbursements.length > 0) {
-      history.push("add-loan-repayment");
+    const approval = loanApprovals.find(
+      (a: any) => Number(a.loanApplicationId) === Number(loan.id)
+    );
+    const disbursement = loanDisbursements.find(
+      (d: any) => String(d.loanApplicationId) === String(loan.id)
+    );
+    const repayments = loanRepayments.filter(
+      (r: any) => String(r.loanApplicationId) === String(loan.id)
+    );
+
+    console.log("🟩 Disbursement:", disbursement);
+    console.log("🟦 Approval:", loanApprovals);
+    console.log("🟦 loan app idl:", approval);
+    console.log("🟩 Disbursement:", disbursement);
+    console.log("💰 Repayments:", repayments);
+
+    if (!approval) {
+      console.log("➡️ Redirecting to Loan Approval Form");
+      history.push("/add-loan-approval");
+      return;
     }
+
+    if (approval.status === "Approved" && !disbursement) {
+      console.log("➡️ Redirecting to Loan Disbursement Form");
+      history.push("/add-loan-disbursement");
+      return;
+    }
+
+    if (disbursement && disbursement.status === "Disbursed") {
+      console.log("➡️ Redirecting to Loan Repayment Form");
+      // history.push("/add-loan-repayment");
+      history.push("/loan-details");
+      return;
+    }
+
+    console.log("⚪ Default fallback: loan already fully processed");
+    setMessage("Loan already disbursed or fully processed.", "error");
+  };
+
+  const getLoanStatus = (
+    loan: any,
+    loanApprovals: any[],
+    loanDisbursements: any[],
+    loanRepayments: any[]
+  ) => {
+    const approval = loanApprovals.find(
+      (a: any) => a.loanApplicationId === loan.id
+    );
+    const disbursement = loanDisbursements.find(
+      (d: any) => d.loanApplicationId === loan.id
+    );
+    const repayments = loanRepayments.filter(
+      (r: any) => r.loanApplicationId === loan.id
+    );
+
+    if (!approval && !disbursement) return "Applied";
+    if (approval && !disbursement) return "Approved";
+    if (disbursement && repayments.length === 0) return "Disbursed";
+    if (repayments.length > 0) return "In Repayment";
+
+    return "Pending";
   };
 
   if (loading) {
@@ -516,7 +578,10 @@ const ViewMember: React.FC = () => {
             <IonButton
               fill="solid"
               color="success"
-              onClick={() => history.push("/add-loan-application")}
+              onClick={() => {
+                setTheSelectedLoanApplication(null); // 👈 reset context
+                history.push("/add-loan-application");
+              }}
             >
               <IonIcon icon={add} slot="start" />
               Apply for Loan
@@ -564,7 +629,13 @@ const ViewMember: React.FC = () => {
                             margin: 0,
                           }}
                         >
-                          {loan.status || "Pending"}
+                          {/* {loan.status || "Pending"} */}
+                          {getLoanStatus(
+                            loan,
+                            loanApprovals,
+                            loanDisbursements,
+                            loanRepayments
+                          )}
                         </p>
                       </div>
 
@@ -587,7 +658,7 @@ const ViewMember: React.FC = () => {
                           {loanPurposes.length > 0 ? (
                             <strong>
                               {loanPurposes.find(
-                                (p: any) => p.id === loan.loanPurposeId
+                                (p: any) => p.id === Number(loan.loanPurposeId)
                               )?.purpose || "Unknown Purpose"}
                             </strong>
                           ) : (

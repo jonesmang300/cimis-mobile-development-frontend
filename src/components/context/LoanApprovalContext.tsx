@@ -1,9 +1,8 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
-// Define the type for the context value
 interface LoanApprovalsContextType {
-  addLoanApproval: (newData: any) => void; // Function to add new data
-  editLoanApproval: (id: string, updatedData: any) => void; // Function to edit existing data
+  addLoanApproval: (newData: any) => void;
+  editLoanApproval: (id: string, updatedData: any) => void;
   loanApprovals: any[];
   returnLoanApprovals: (rows: any) => void;
   selectedRow: any;
@@ -21,14 +20,13 @@ interface LoanApprovalsContextType {
   token: any;
   setToken: (value: any) => void;
   setTheToken: (value: any) => void;
+  clearLoanApprovalData: () => void; // 👈 new reset function
 }
 
-// Create the context with a default value (undefined means no context by default)
 const LoanApprovalsContext = createContext<
   LoanApprovalsContextType | undefined
 >(undefined);
 
-// Provider component that will provide the data and functions to child components
 interface LoanApprovalsProviderProps {
   children: React.ReactNode;
 }
@@ -36,37 +34,77 @@ interface LoanApprovalsProviderProps {
 export const LoanApprovalsProvider: React.FC<LoanApprovalsProviderProps> = ({
   children,
 }) => {
-  const [loanApprovals, setLoanApprovals] = useState<any[]>([]);
+  // ✅ Load data from localStorage
+  const [loanApprovals, setLoanApprovals] = useState<any[]>(() => {
+    const saved = localStorage.getItem("loanApprovals");
+    return saved ? JSON.parse(saved) : [];
+  });
+
   const [selectedRow, setSelectedRow] = useState<any[]>([]);
   const [submitedButton, setSubmitButton] = useState(true);
-  const [loanApproval, setLoanApproval] = useState();
-  const [selectedLoanApproval, setSelectedLoanApproval] = useState();
-  const [loggedUser, setLoggedUser] = useState();
-  const [token, setToken] = useState();
 
-  // Function to add new data
-  const addLoanApproval = (newData: any) => {
-    //console.log("new data>>>", newData); // This will show the current state of the data
-    setLoanApprovals((loanApprovals) => [...loanApprovals, newData]); // Append the new data to the existing data
-  };
+  const [selectedLoanApproval, setSelectedLoanApproval] = useState(() => {
+    const saved = localStorage.getItem("selectedLoanApproval");
+    return saved ? JSON.parse(saved) : null;
+  });
 
-  // Function to edit existing data by ID
-  const editLoanApproval = (id: string, updatedData: any) => {
-    // Clone the current rows array
-    const newRows = [...loanApprovals];
+  const [loggedUser, setLoggedUser] = useState(() => {
+    const saved = localStorage.getItem("loggedUser");
+    return saved ? JSON.parse(saved) : null;
+  });
 
-    // Find the index of the row that matches the updatedData id
-    const index = newRows.findIndex((row) => row.id === updatedData.id);
+  const [token, setToken] = useState(() => {
+    return localStorage.getItem("token") || null;
+  });
 
-    // If a matching row is found, update it
-    if (index !== -1) {
-      newRows[index] = { ...newRows[index], ...updatedData }; // Update the row with new data
+  // ✅ Persist loan approvals
+  useEffect(() => {
+    localStorage.setItem("loanApprovals", JSON.stringify(loanApprovals));
+  }, [loanApprovals]);
 
-      setLoanApprovals(newRows);
+  // ✅ Persist selected loan approval
+  useEffect(() => {
+    if (selectedLoanApproval) {
+      localStorage.setItem(
+        "selectedLoanApproval",
+        JSON.stringify(selectedLoanApproval)
+      );
+    } else {
+      localStorage.removeItem("selectedLoanApproval");
     }
+  }, [selectedLoanApproval]);
+
+  // ✅ Persist logged user
+  useEffect(() => {
+    if (loggedUser) {
+      localStorage.setItem("loggedUser", JSON.stringify(loggedUser));
+    } else {
+      localStorage.removeItem("loggedUser");
+    }
+  }, [loggedUser]);
+
+  // ✅ Persist token
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("token", token);
+    } else {
+      localStorage.removeItem("token");
+    }
+  }, [token]);
+
+  // ✅ Add loan approval
+  const addLoanApproval = (newData: any) => {
+    setLoanApprovals((prev) => [...prev, newData]);
   };
 
-  // Function to set rows
+  // ✅ Edit loan approval
+  const editLoanApproval = (id: string, updatedData: any) => {
+    setLoanApprovals((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, ...updatedData } : item))
+    );
+  };
+
+  // ✅ Replace entire list
   const returnLoanApprovals = (loanApprovals: any) => {
     setLoanApprovals(loanApprovals);
   };
@@ -79,10 +117,6 @@ export const LoanApprovalsProvider: React.FC<LoanApprovalsProviderProps> = ({
     setSubmitButton(submitedButton);
   };
 
-  const setTheLoanApproval = (value: any) => {
-    setLoanApproval(value);
-  };
-
   const setTheSelectedLoanApproval = (value: any) => {
     setSelectedLoanApproval(value);
   };
@@ -93,6 +127,18 @@ export const LoanApprovalsProvider: React.FC<LoanApprovalsProviderProps> = ({
 
   const setTheToken = (value: any) => {
     setToken(value);
+  };
+
+  // ✅ Clear persisted data (for logout or reset)
+  const clearLoanApprovalData = () => {
+    setLoanApprovals([]);
+    setSelectedLoanApproval(null);
+    setLoggedUser(null);
+    setToken(null);
+    localStorage.removeItem("loanApprovals");
+    localStorage.removeItem("selectedLoanApproval");
+    localStorage.removeItem("loggedUser");
+    localStorage.removeItem("token");
   };
 
   return (
@@ -117,6 +163,7 @@ export const LoanApprovalsProvider: React.FC<LoanApprovalsProviderProps> = ({
         token,
         setToken,
         setTheToken,
+        clearLoanApprovalData, // 👈 new reset function exposed
       }}
     >
       {children}
@@ -124,12 +171,12 @@ export const LoanApprovalsProvider: React.FC<LoanApprovalsProviderProps> = ({
   );
 };
 
-// Custom hook to access TableDataContext
+// ✅ Custom Hook
 export const useLoanApprovals = (): LoanApprovalsContextType => {
   const context = useContext(LoanApprovalsContext);
   if (!context) {
     throw new Error(
-      "LoanApprovalContext must be used within a LoanApprovalProvider"
+      "useLoanApprovals must be used within a LoanApprovalsProvider"
     );
   }
   return context;

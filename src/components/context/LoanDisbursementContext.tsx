@@ -1,9 +1,9 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 // Define the type for the context value
 interface LoanDisbursementsContextType {
-  addLoanDisbursement: (newData: any) => void; // Function to add new data
-  editLoanDisbursement: (id: string, updatedData: any) => void; // Function to edit existing data
+  addLoanDisbursement: (newData: any) => void;
+  editLoanDisbursement: (id: string, updatedData: any) => void;
   loanDisbursements: any[];
   returnLoanDisbursements: (rows: any) => void;
   selectedRow: any;
@@ -21,14 +21,14 @@ interface LoanDisbursementsContextType {
   token: any;
   setToken: (value: any) => void;
   setTheToken: (value: any) => void;
+  clearLoanDisbursementData: () => void; // 👈 reset function
 }
 
-// Create the context with a default value (undefined means no context by default)
+// Create the context
 const LoanDisbursementsContext = createContext<
   LoanDisbursementsContextType | undefined
 >(undefined);
 
-// Provider component that will provide the data and functions to child components
 interface LoanDisbursementsProviderProps {
   children: React.ReactNode;
 }
@@ -36,40 +36,79 @@ interface LoanDisbursementsProviderProps {
 export const LoanDisbursementsProvider: React.FC<
   LoanDisbursementsProviderProps
 > = ({ children }) => {
-  const [loanDisbursements, setLoanDisbursements] = useState<any[]>([]);
+  // ✅ Load from localStorage
+  const [loanDisbursements, setLoanDisbursements] = useState<any[]>(() => {
+    const saved = localStorage.getItem("loanDisbursements");
+    return saved ? JSON.parse(saved) : [];
+  });
+
   const [selectedRow, setSelectedRow] = useState<any[]>([]);
   const [submitedButton, setSubmitButton] = useState(true);
-  const [loanDisbursement, setLoanDisbursement] = useState();
-  const [selectedLoanDisbursement, setSelectedLoanDisbursement] = useState();
-  const [loggedUser, setLoggedUser] = useState();
-  const [token, setToken] = useState();
 
-  // Function to add new data
-  const addLoanDisbursement = (newData: any) => {
-    //console.log("new data>>>", newData); // This will show the current state of the data
-    setLoanDisbursements((loanDisbursements) => [
-      ...loanDisbursements,
-      newData,
-    ]); // Append the new data to the existing data
-  };
-
-  // Function to edit existing data by ID
-  const editLoanDisbursement = (id: string, updatedData: any) => {
-    // Clone the current rows array
-    const newRows = [...loanDisbursements];
-
-    // Find the index of the row that matches the updatedData id
-    const index = newRows.findIndex((row) => row.id === updatedData.id);
-
-    // If a matching row is found, update it
-    if (index !== -1) {
-      newRows[index] = { ...newRows[index], ...updatedData }; // Update the row with new data
-
-      setLoanDisbursements(newRows);
+  const [selectedLoanDisbursement, setSelectedLoanDisbursement] = useState(
+    () => {
+      const saved = localStorage.getItem("selectedLoanDisbursement");
+      return saved ? JSON.parse(saved) : null;
     }
+  );
+
+  const [loggedUser, setLoggedUser] = useState(() => {
+    const saved = localStorage.getItem("loggedUser");
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  const [token, setToken] = useState(() => {
+    return localStorage.getItem("token") || null;
+  });
+
+  // ✅ Sync with localStorage
+  useEffect(() => {
+    localStorage.setItem(
+      "loanDisbursements",
+      JSON.stringify(loanDisbursements)
+    );
+  }, [loanDisbursements]);
+
+  useEffect(() => {
+    if (selectedLoanDisbursement) {
+      localStorage.setItem(
+        "selectedLoanDisbursement",
+        JSON.stringify(selectedLoanDisbursement)
+      );
+    } else {
+      localStorage.removeItem("selectedLoanDisbursement");
+    }
+  }, [selectedLoanDisbursement]);
+
+  useEffect(() => {
+    if (loggedUser) {
+      localStorage.setItem("loggedUser", JSON.stringify(loggedUser));
+    } else {
+      localStorage.removeItem("loggedUser");
+    }
+  }, [loggedUser]);
+
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("token", token);
+    } else {
+      localStorage.removeItem("token");
+    }
+  }, [token]);
+
+  // ✅ Add new disbursement
+  const addLoanDisbursement = (newData: any) => {
+    setLoanDisbursements((prev) => [...prev, newData]);
   };
 
-  // Function to set rows
+  // ✅ Edit disbursement
+  const editLoanDisbursement = (id: string, updatedData: any) => {
+    setLoanDisbursements((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, ...updatedData } : item))
+    );
+  };
+
+  // ✅ Replace all disbursements
   const returnLoanDisbursements = (loanDisbursements: any) => {
     setLoanDisbursements(loanDisbursements);
   };
@@ -82,10 +121,6 @@ export const LoanDisbursementsProvider: React.FC<
     setSubmitButton(submitedButton);
   };
 
-  const setTheLoanDisbursement = (value: any) => {
-    setLoanDisbursement(value);
-  };
-
   const setTheSelectedLoanDisbursement = (value: any) => {
     setSelectedLoanDisbursement(value);
   };
@@ -96,6 +131,18 @@ export const LoanDisbursementsProvider: React.FC<
 
   const setTheToken = (value: any) => {
     setToken(value);
+  };
+
+  // ✅ Clear persisted data (logout/reset)
+  const clearLoanDisbursementData = () => {
+    setLoanDisbursements([]);
+    setSelectedLoanDisbursement(null);
+    setLoggedUser(null);
+    setToken(null);
+    localStorage.removeItem("loanDisbursements");
+    localStorage.removeItem("selectedLoanDisbursement");
+    localStorage.removeItem("loggedUser");
+    localStorage.removeItem("token");
   };
 
   return (
@@ -120,6 +167,7 @@ export const LoanDisbursementsProvider: React.FC<
         token,
         setToken,
         setTheToken,
+        clearLoanDisbursementData, // 👈 added reset
       }}
     >
       {children}
@@ -127,12 +175,12 @@ export const LoanDisbursementsProvider: React.FC<
   );
 };
 
-// Custom hook to access TableDataContext
+// Custom hook
 export const useLoanDisbursements = (): LoanDisbursementsContextType => {
   const context = useContext(LoanDisbursementsContext);
   if (!context) {
     throw new Error(
-      "LoanDisbursementContext must be used within a LoanDisbursementProvider"
+      "useLoanDisbursements must be used within a LoanDisbursementsProvider"
     );
   }
   return context;
