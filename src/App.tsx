@@ -81,12 +81,14 @@ import { AddLoanApproval } from "./components/Loans/LoanApproval/AddLoanApproval
 import { AddLoanDisbursed } from "./components/Loans/LoanDisbursed/AddLoanDisbursed";
 import { AddLoanRepayment } from "./components/Loans/LoanRepayment/AddLoanRepayment";
 import LoanDetails from "./components/Loans/LoanDetails/LoanDetails";
+import { useAutoLogout } from "./hooks/useAutoLogout";
 //import {LoanProducts} from "./components/LoanProducts/LoanProducts";
 
 setupIonicReact();
 
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Track login status
+  useAutoLogout();
 
   return (
     <IonApp>

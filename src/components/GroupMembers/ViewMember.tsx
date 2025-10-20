@@ -17,7 +17,7 @@ import {
   IonText,
   IonSpinner,
 } from "@ionic/react";
-import { add, peopleOutline, search } from "ionicons/icons";
+import { add, arrowBackOutline, peopleOutline, search } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
 import { useMembers } from "../context/MembersContext";
 import { useClusters } from "../context/ClustersContext";
@@ -32,6 +32,9 @@ import { useLoanApprovals } from "../context/LoanApprovalContext";
 import { useLoanDisbursements } from "../context/LoanDisbursementContext";
 import { useLoanRepayments } from "../context/LoanRepaymentsContext";
 import { useLoanDetails } from "../context/LoanDetailsContext";
+import { usePagination } from "../../hooks/usePagination";
+import { chevronBackOutline, chevronForwardOutline } from "ionicons/icons";
+import { CurrencyFormatter } from "../../utils/currencyFormatter";
 
 const ViewMember: React.FC = () => {
   const history = useHistory();
@@ -102,6 +105,15 @@ const ViewMember: React.FC = () => {
     selectedLoanDetail,
   } = useLoanDetails();
 
+  const {
+    currentItems: currentLoans,
+    currentPage,
+    totalPages,
+    startIndex, // ✅ make sure you include this
+    handleNextPage,
+    handlePrevPage,
+  } = usePagination(loanApplications, 5, "id", "desc");
+
   const fetchAllData = useCallback(async () => {
     setLoading(true);
     try {
@@ -150,12 +162,18 @@ const ViewMember: React.FC = () => {
       returnLoanApplications(filteredLoanApplications);
 
       const filteredLoanApprovals = loanApprovalsResult.filter(
-        (loan: any) => loan.loanApplicationId === selectedLoanApplication?.id
+        (approval: any) =>
+          filteredLoanApplications.some(
+            (loan: any) => loan.id === approval.loanApplicationId
+          )
       );
       returnLoanApprovals(filteredLoanApprovals);
 
       const filteredLoanDisbursements = loanDisbursementsResult.filter(
-        (loan: any) => loan.loanApplicationId === selectedLoanApplication?.id
+        (disb: any) =>
+          filteredLoanApplications.some(
+            (loan: any) => loan.id === disb.loanApplicationId
+          )
       );
       returnLoanDisbursements(filteredLoanDisbursements);
 
@@ -165,7 +183,7 @@ const ViewMember: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [selectedCluster, selectedMember, selectedLoanApplication]);
+  }, [selectedCluster, selectedMember]);
 
   useEffect(() => {
     fetchAllData();
@@ -212,84 +230,111 @@ const ViewMember: React.FC = () => {
     }
   }, [deposits, savingsProducts, selectedMember]);
 
-  const CurrencyFormatter = (amount: any) => {
-    const formattedAmount =
-      amount != null && !isNaN(amount)
-        ? new Intl.NumberFormat("en-MW", {
-            style: "currency",
-            currency: "MWK",
-          }).format(amount)
-        : "Invalid amount";
-    return <span>{formattedAmount}</span>;
+  const getLoanLevelStatus = (loan: any) => {
+    const requestedAmount = Number(loan.requestedAmount ?? 0);
+    const approvalAmount = Number(loan.approvalAmount ?? 0);
+    const disbursementAmount = Number(loan.disbursementAmount ?? 0);
+    const outstandingBalance = Number(loan.outstandingBalance ?? 0);
+    const totalLoan = disbursementAmount + Number(loan.totalInterest);
+
+    let levelStatus = "Pending";
+    let levelAmount = 0;
+
+    // 1️⃣ Applied — no approval yet
+    if (!approvalAmount || approvalAmount === 0) {
+      levelStatus = "Applied";
+      levelAmount = requestedAmount;
+    }
+
+    // 2️⃣ Approved — approved but not disbursed
+    else if (
+      approvalAmount > 0 &&
+      (!disbursementAmount || disbursementAmount === 0)
+    ) {
+      levelStatus = "Approved";
+      levelAmount = approvalAmount;
+    }
+
+    // 3️⃣ Disbursed — disbursed but no repayment yet (balance == disbursed)
+    else if (disbursementAmount > 0 && outstandingBalance === totalLoan) {
+      levelStatus = "Disbursed";
+      levelAmount = disbursementAmount;
+    }
+
+    // 4️⃣ In Repayment — repayments started (balance < disbursed but > 0)
+    else if (
+      disbursementAmount > 0 &&
+      outstandingBalance > 0 &&
+      outstandingBalance < totalLoan
+    ) {
+      levelStatus = "In Repayment";
+      levelAmount = outstandingBalance; // amount paid so far
+    }
+
+    // 5️⃣ Cleared — fully repaid (balance = 0)
+    else if (disbursementAmount > 0 && outstandingBalance <= 0) {
+      levelStatus = "Cleared";
+      levelAmount = disbursementAmount;
+    }
+
+    return { levelStatus, levelAmount };
   };
 
-  // ✅ Loan Status Logic (Auto-Approval after Disbursement)
   const handleLoanRedirections = (loan: any) => {
-    console.log("➡️ Loan clicked:", loan);
     setTheSelectedLoanApplication(loan);
 
-    const approval = loanApprovals.find(
-      (a: any) => Number(a.loanApplicationId) === Number(loan.id)
-    );
-    const disbursement = loanDisbursements.find(
-      (d: any) => String(d.loanApplicationId) === String(loan.id)
-    );
-    const repayments = loanRepayments.filter(
-      (r: any) => String(r.loanApplicationId) === String(loan.id)
-    );
+    const requestedAmount = Number(loan.requestedAmount ?? 0);
+    const approvalAmount = Number(loan.approvalAmount ?? 0);
+    const disbursementAmount = Number(loan.disbursementAmount ?? 0);
+    const outstandingBalance = Number(loan.outstandingBalance ?? 0);
+    const totalLoan = disbursementAmount + Number(loan.totalInterest);
 
-    console.log("🟩 Disbursement:", disbursement);
-    console.log("🟦 Approval:", loanApprovals);
-    console.log("🟦 loan app idl:", approval);
-    console.log("🟩 Disbursement:", disbursement);
-    console.log("💰 Repayments:", repayments);
+    // 🧭 Redirect logic based on loan stage
 
-    if (!approval) {
-      console.log("➡️ Redirecting to Loan Approval Form");
+    // 1️⃣ Applied — no approval yet
+    if (!approvalAmount || approvalAmount === 0) {
       history.push("/add-loan-approval");
       return;
     }
 
-    if (approval.status === "Approved" && !disbursement) {
-      console.log("➡️ Redirecting to Loan Disbursement Form");
+    // 2️⃣ Approved — approved but not disbursed
+    if (
+      approvalAmount > 0 &&
+      (!disbursementAmount || disbursementAmount === 0)
+    ) {
       history.push("/add-loan-disbursement");
       return;
     }
 
-    if (disbursement && disbursement.status === "Disbursed") {
-      console.log("➡️ Redirecting to Loan Repayment Form");
-      // history.push("/add-loan-repayment");
-      history.push("/loan-details");
+    // 3️⃣ Disbursed — disbursed but no repayment yet
+    if (disbursementAmount > 0 && outstandingBalance === totalLoan) {
+      history.push("/loan-details"); // could show repayment initiation
       return;
     }
 
-    console.log("⚪ Default fallback: loan already fully processed");
-    setMessage("Loan already disbursed or fully processed.", "error");
+    // 4️⃣ In Repayment — repayments ongoing
+    if (
+      disbursementAmount > 0 &&
+      outstandingBalance > 0 &&
+      outstandingBalance < totalLoan
+    ) {
+      history.push("/loan-details"); // repayment details or history
+      return;
+    }
+
+    // 5️⃣ Cleared — fully paid
+    if (disbursementAmount > 0 && outstandingBalance <= 0) {
+      setMessage("Loan already fully cleared.", "success");
+      return;
+    }
+
+    // fallback
+    setMessage("Unable to determine loan stage.", "error");
   };
 
-  const getLoanStatus = (
-    loan: any,
-    loanApprovals: any[],
-    loanDisbursements: any[],
-    loanRepayments: any[]
-  ) => {
-    const approval = loanApprovals.find(
-      (a: any) => a.loanApplicationId === loan.id
-    );
-    const disbursement = loanDisbursements.find(
-      (d: any) => d.loanApplicationId === loan.id
-    );
-    const repayments = loanRepayments.filter(
-      (r: any) => r.loanApplicationId === loan.id
-    );
-
-    if (!approval && !disbursement) return "Applied";
-    if (approval && !disbursement) return "Approved";
-    if (disbursement && repayments.length === 0) return "Disbursed";
-    if (repayments.length > 0) return "In Repayment";
-
-    return "Pending";
-  };
+  const totalLoans = loanApplications.filter(
+    (a: any) => a.memberCode === selectedMember?.memberCode
+  ).length;
 
   if (loading) {
     return (
@@ -326,7 +371,14 @@ const ViewMember: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
+          <IonButtons slot="start">
+            <IonButton onClick={() => history.push("/group-members")}>
+              <IonIcon icon={arrowBackOutline} />
+            </IonButton>
+          </IonButtons>
+
           <IonTitle>View Member</IonTitle>
+
           <IonButtons slot="end">
             <IonButton onClick={() => history.push("/group-members")}>
               <IonIcon icon={peopleOutline} />
@@ -570,7 +622,7 @@ const ViewMember: React.FC = () => {
                     color: "#333",
                   }}
                 >
-                  20000
+                  {totalLoans}
                 </p>
               </IonLabel>
             </IonItem>
@@ -588,12 +640,11 @@ const ViewMember: React.FC = () => {
             </IonButton>
 
             {/* Loans List */}
-            {/* Loans List */}
             <IonList>
-              {loanApplications.length > 0 ? (
-                loanApplications.map((loan: any, index: number) => (
+              {currentLoans.length > 0 ? (
+                currentLoans.map((loan: any, index: number) => (
                   <IonItem
-                    key={`${loan.id}-${index}`} // Ensures the key is unique even if loan.id is duplicated
+                    key={`${loan.id}-${index}`}
                     lines="none"
                     style={{
                       border: "1px solid #e0e0e0",
@@ -613,13 +664,8 @@ const ViewMember: React.FC = () => {
                           alignItems: "center",
                         }}
                       >
-                        <h2
-                          style={{
-                            fontSize: "1.1rem",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          Loan {index + 1}
+                        <h2 style={{ fontSize: "1.1rem", fontWeight: "bold" }}>
+                          Loan {startIndex + index + 1}
                         </h2>
                         <p
                           style={{
@@ -629,13 +675,7 @@ const ViewMember: React.FC = () => {
                             margin: 0,
                           }}
                         >
-                          {/* {loan.status || "Pending"} */}
-                          {getLoanStatus(
-                            loan,
-                            loanApprovals,
-                            loanDisbursements,
-                            loanRepayments
-                          )}
+                          {getLoanLevelStatus(loan).levelStatus}
                         </p>
                       </div>
 
@@ -672,8 +712,11 @@ const ViewMember: React.FC = () => {
                             margin: 0,
                           }}
                         >
+                          {/* <strong>{CurrencyFormatter(loan.requestedAmount)}</strong> */}
                           <strong>
-                            {CurrencyFormatter(loan.requestedAmount)}
+                            {CurrencyFormatter(
+                              getLoanLevelStatus(loan).levelAmount
+                            )}
                           </strong>
                         </p>
                       </div>
@@ -686,6 +729,44 @@ const ViewMember: React.FC = () => {
                 </IonItem>
               )}
             </IonList>
+
+            {/* Pagination Controls */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "12px",
+                marginTop: "15px",
+              }}
+            >
+              {/* Previous Button */}
+              <IonButton
+                color="success"
+                onClick={handlePrevPage}
+                disabled={currentPage === 1}
+                style={{ display: "flex", alignItems: "center" }}
+              >
+                <IonIcon icon={chevronBackOutline} slot="start" />
+                Previous
+              </IonButton>
+
+              {/* Page Indicator */}
+              <span style={{ fontWeight: "bold", color: "#333" }}>
+                Page {currentPage} of {totalPages}
+              </span>
+
+              {/* Next Button */}
+              <IonButton
+                color="success"
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+                style={{ display: "flex", alignItems: "center" }}
+              >
+                Next
+                <IonIcon icon={chevronForwardOutline} slot="end" />
+              </IonButton>
+            </div>
           </IonCardContent>
         </IonCard>
       </IonContent>

@@ -7,6 +7,8 @@ import {
   IonToolbar,
   IonButton,
   IonToast,
+  IonButtons,
+  IonIcon,
 } from "@ionic/react";
 import { Formik, Form } from "formik"; // Import Formik components
 import { RadioGroupInput, SelectInputField, TextInputField } from "../form";
@@ -26,6 +28,7 @@ import { NotificationMessage } from "../notificationMessage";
 import { useHistory } from "react-router";
 import { useSavingsProducts } from "../context/SavingsProductsContext";
 import { useFeesFines } from "../context/FeesFinesContext";
+import { arrowBackOutline } from "ionicons/icons";
 
 // Validation schema for the form
 const schema = Yup.object().shape({
@@ -134,9 +137,16 @@ const FeesFinesForm: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar style={{ backgroundColor: "#4CAF50" }}>
+          <IonButtons slot="start">
+            <IonButton onClick={() => history.push("/view-member")}>
+              <IonIcon icon={arrowBackOutline} slot="start" />
+            </IonButton>
+          </IonButtons>
+
           <IonTitle>{pageTitle}</IonTitle>
         </IonToolbar>
       </IonHeader>
+
       <IonContent>
         {messageState.type === "error" && (
           <NotificationMessage

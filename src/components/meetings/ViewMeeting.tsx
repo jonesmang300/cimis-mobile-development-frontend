@@ -10,7 +10,6 @@ import {
   IonLabel,
   IonButton,
   IonIcon,
-  IonAvatar,
   IonButtons,
   IonCard,
   IonCardContent,
@@ -19,7 +18,7 @@ import {
   IonSearchbar,
   IonAlert,
 } from "@ionic/react";
-import { search, peopleOutline } from "ionicons/icons";
+import { search, peopleOutline, arrowBackOutline } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
 import { useMeetings } from "../context/MeetingsContext";
 import { useNotificationMessage } from "../context/notificationMessageContext";
@@ -40,10 +39,9 @@ const ViewMeeting: React.FC = () => {
 
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [attendees, setAttendees] = useState<any[]>([]);
-  const [searchQuery, setSearchQuery] = useState<string>(""); // New state for search query
-  const [showDeleteAlert, setShowDeleteAlert] = useState(false); // State to control the delete confirmation alert
-  const [attendeeToRemove, setAttendeeToRemove] = useState<any>(); // Store the attendee to remove
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+  const [attendeeToRemove, setAttendeeToRemove] = useState<any>();
 
   const { returnMeetingAttendances, meetingAttendances } =
     useMeetingAttendances();
@@ -63,27 +61,23 @@ const ViewMeeting: React.FC = () => {
   };
 
   const handleRemoveAttendanceClick = async () => {
-    console.log("attendeeToRemove", attendeeToRemove);
     if (!attendeeToRemove) return;
 
     try {
       setLoading(true);
       await deleteData(`/api/meetingattendance`, attendeeToRemove.id);
 
-      // Remove the deleted attendee from the local meetingAttendances state
       const updatedAttendances = meetingAttendances.filter(
         (attendance: any) => attendance.id !== attendeeToRemove.id
       );
 
-      // Update context with the updated list
       returnMeetingAttendances(updatedAttendances);
-
       setMessage("Member attendance removed successfully!", "success");
-    } catch (error) {
+    } catch {
       setMessage("Failed to remove member attendance.", "error");
     } finally {
       setLoading(false);
-      setShowDeleteAlert(false); // Close the alert after deletion
+      setShowDeleteAlert(false);
     }
   };
 
@@ -92,7 +86,7 @@ const ViewMeeting: React.FC = () => {
     try {
       const response = await getData(`/api/meetingattendance`);
       returnMeetingAttendances(response);
-    } catch (error) {
+    } catch {
       setError("Error fetching meeting attendances");
     } finally {
       setLoading(false);
@@ -104,7 +98,7 @@ const ViewMeeting: React.FC = () => {
     try {
       const response = await getData(`/api/membership`);
       returnMembers(response);
-    } catch (error) {
+    } catch {
       setError("Error fetching members");
     } finally {
       setLoading(false);
@@ -121,7 +115,6 @@ const ViewMeeting: React.FC = () => {
       (m: any) => m.meetingId === selectedMeeting?.id
     ) || [];
 
-  // Filter attendees based on search query
   const filteredAttendees = attendances.filter((attendee) => {
     const member = members.find(
       (member: any) => member.memberCode === attendee.memberCode
@@ -132,11 +125,10 @@ const ViewMeeting: React.FC = () => {
 
   const fullNameOnConfirmation = () => {
     const memberFound = members.find(
-      (m: any) => m.memberCode == attendeeToRemove?.memberCode
+      (m: any) => m.memberCode === attendeeToRemove?.memberCode
     );
     return (
-      "Are you sure you want to remove" +
-      " " +
+      "Are you sure you want to remove " +
       memberFound?.firstName +
       " " +
       memberFound?.lastName +
@@ -146,11 +138,17 @@ const ViewMeeting: React.FC = () => {
 
   return (
     <IonPage>
+      {/* Header with functional back button */}
       <IonHeader>
         <IonToolbar>
+          <IonButtons slot="start">
+            <IonButton onClick={() => history.push("/meetings")}>
+              <IonIcon icon={arrowBackOutline} slot="start" />
+            </IonButton>
+          </IonButtons>
           <IonTitle>View Meeting</IonTitle>
           <IonButtons slot="end">
-            <IonButton onClick={() => history.push("/meetings")}>
+            <IonButton>
               <IonIcon icon={peopleOutline} />
             </IonButton>
             <IonButton>
@@ -169,6 +167,7 @@ const ViewMeeting: React.FC = () => {
 
       {selectedMeeting && (
         <IonContent className="ion-padding">
+          {/* Meeting Details */}
           <IonCard>
             <IonCardContent>
               <IonCardTitle>Meeting Details</IonCardTitle>
@@ -182,11 +181,7 @@ const ViewMeeting: React.FC = () => {
                 <IonLabel>
                   {new Date(selectedMeeting.meetingDate).toLocaleDateString(
                     "en-GB",
-                    {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    }
+                    { day: "numeric", month: "long", year: "numeric" }
                   )}
                 </IonLabel>
               </IonItem>
@@ -198,14 +193,13 @@ const ViewMeeting: React.FC = () => {
             </IonCardContent>
           </IonCard>
 
-          {/* New Card for Attendees */}
+          {/* Attendees */}
           <IonCard>
             <IonCardContent>
               <IonCardTitle>Meeting Attendees</IonCardTitle>
               <IonItem>
                 <IonLabel>Total Attendees: {filteredAttendees.length}</IonLabel>
               </IonItem>
-              {/* Search Bar for filtering attendees */}
               <IonSearchbar
                 value={searchQuery}
                 onIonInput={(e) => setSearchQuery(e.detail.value!)}
@@ -224,13 +218,13 @@ const ViewMeeting: React.FC = () => {
                               members.find(
                                 (member: any) =>
                                   member.memberCode === attendee.memberCode
-                              ).firstName
+                              )?.firstName
                             }{" "}
                             {
                               members.find(
                                 (member: any) =>
                                   member.memberCode === attendee.memberCode
-                              ).lastName
+                              )?.lastName
                             }
                           </p>
                         </IonLabel>
@@ -238,12 +232,11 @@ const ViewMeeting: React.FC = () => {
                           <p style={{ fontWeight: "bold" }}>Cluster Code:</p>
                           <p>{attendee.memberCode}</p>
                         </IonLabel>
-                        {/* Remove button */}
                         <IonButton
                           color="danger"
                           onClick={() => {
-                            setAttendeeToRemove(attendee); // Store the attendee to remove
-                            setShowDeleteAlert(true); // Show the confirmation alert
+                            setAttendeeToRemove(attendee);
+                            setShowDeleteAlert(true);
                           }}
                         >
                           Remove
@@ -270,7 +263,6 @@ const ViewMeeting: React.FC = () => {
             Add Attendance
           </IonButton>
 
-          {/* Confirmation Alert for Deletion */}
           <IonAlert
             isOpen={showDeleteAlert}
             onDidDismiss={() => setShowDeleteAlert(false)}

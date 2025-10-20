@@ -18,12 +18,15 @@ import {
   IonSegmentButton,
   IonLabel,
   IonSpinner,
+  IonButtons,
+  IonIcon,
 } from "@ionic/react";
 import { useHistory } from "react-router";
 import { useMembers } from "../../context/MembersContext";
 import { getData } from "../../../services/apiServices";
 import { useLoanApplications } from "../../context/loanApplicationContext";
 import { useLoanDetails } from "../../context/LoanDetailsContext";
+import { arrowBackOutline } from "ionicons/icons";
 
 const LoanDetails: React.FC = () => {
   const history = useHistory();
@@ -50,7 +53,7 @@ const LoanDetails: React.FC = () => {
 
   /** ✅ Fetch loan details **/
   const fetchAllData = useCallback(async () => {
-    if (!selectedLoanApplication.id) return;
+    if (!selectedLoanApplication?.id) return;
     setLoading(true);
     setError(null);
 
@@ -66,7 +69,7 @@ const LoanDetails: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [selectedLoanApplication.id]);
+  }, [selectedLoanApplication?.id]);
 
   useEffect(() => {
     fetchAllData();
@@ -78,19 +81,11 @@ const LoanDetails: React.FC = () => {
     const numericBalance = Number(balance);
     console.log("balance", numericBalance);
 
-    // Convert balance to number safely
-    // const numericBalance =
-    //   typeof balance === "string"
-    //     ? parseFloat(balance.replace(/,/g, ""))
-    //     : Number(balance);
-
-    // if (numericBalance == 0) {
-    //   history.push("/view-member");
-    // } else {
-    //   history.push("/loan-details");
-    // }
-
-    history.push("/add-loan-repayment");
+    if (numericBalance <= 0) {
+      history.push("/view-member");
+    } else {
+      history.push("/add-loan-repayment");
+    }
   };
 
   const CurrencyFormatter = (amount: any) =>
@@ -105,6 +100,12 @@ const LoanDetails: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
+          {/* Back Button */}
+          <IonButtons slot="start">
+            <IonButton onClick={() => history.push("/view-member")}>
+              <IonIcon icon={arrowBackOutline} slot="start" />
+            </IonButton>
+          </IonButtons>
           <IonTitle>Loan Details</IonTitle>
         </IonToolbar>
 
@@ -233,7 +234,7 @@ const LoanDetails: React.FC = () => {
 
                 <IonButton
                   expand="block"
-                  style={{ marginTop: "20px" }}
+                  color="success"
                   onClick={handleLoanPaymentClick}
                 >
                   MAKE LOAN PAYMENT

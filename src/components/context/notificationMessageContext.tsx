@@ -1,17 +1,21 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 // Define the type for the context value
 interface NotificationMessageContextType {
-  messageState: { text: string; type: "success" | "error" | null }; // The notification message object
-  setMessage: (text: string, type: "success" | "error" | null) => void; // Function to update message and type
+  messageState: { text: string; type: "success" | "error" | null };
+  setMessage: (
+    text: string,
+    type: "success" | "error" | null,
+    duration?: number
+  ) => void;
 }
 
-// Create the context with a default value (undefined means no context by default)
+// Create the context
 const NotificationMessageContext = createContext<
   NotificationMessageContextType | undefined
 >(undefined);
 
-// Provider component that will provide the data and functions to child components
+// Provider component
 interface NotificationMessageProviderProps {
   children: React.ReactNode;
 }
@@ -28,9 +32,34 @@ export const NotificationMessageProvider: React.FC<
     type: null,
   });
 
-  // Function to update message and type
-  const setMessage = (text: string, type: "success" | "error" | null) => {
+  // Timer for auto-clearing the message
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (messageState.text) {
+      // Clear message after 3 seconds by default
+      timer = setTimeout(() => {
+        setMessageState({ text: "", type: null });
+      }, 3000);
+    }
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [messageState]);
+
+  // Update message and optionally customize duration
+  const setMessage = (
+    text: string,
+    type: "success" | "error" | null,
+    duration: number = 3000
+  ) => {
     setMessageState({ text, type });
+
+    // If a custom duration is provided, reset the timer
+    if (duration > 0) {
+      setTimeout(() => {
+        setMessageState({ text: "", type: null });
+      }, duration);
+    }
   };
 
   return (
@@ -40,7 +69,7 @@ export const NotificationMessageProvider: React.FC<
   );
 };
 
-// Custom hook to access NotificationMessageContext
+// Custom hook
 export const useNotificationMessage = (): NotificationMessageContextType => {
   const context = useContext(NotificationMessageContext);
   if (!context) {

@@ -20,6 +20,7 @@ import {
   peopleOutline,
   search,
   arrowForwardOutline,
+  arrowBackOutline,
 } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
 import { useMeetings } from "../context/MeetingsContext";
@@ -158,7 +159,15 @@ const MeetingsList: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
+          {/* Back Button */}
+          <IonButtons slot="start">
+            <IonButton onClick={() => history.push("/group-members")}>
+              <IonIcon icon={arrowBackOutline} slot="start" />
+            </IonButton>
+          </IonButtons>
+
           <IonTitle>Meetings</IonTitle>
+
           <IonButtons slot="end">
             <IonButton onClick={() => history.push("/meetings")}>
               <IonIcon icon={peopleOutline} />

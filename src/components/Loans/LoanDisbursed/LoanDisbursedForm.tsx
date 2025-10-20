@@ -10,6 +10,8 @@ import {
   IonCardHeader,
   IonCardTitle,
   IonCardContent,
+  IonButtons,
+  IonIcon,
 } from "@ionic/react";
 import { Formik, Form } from "formik";
 import { TextInputField } from "../../form"; // Adjust import paths
@@ -23,6 +25,8 @@ import { useHistory } from "react-router";
 import { postData, putData } from "../../../services/apiServices";
 import { useLoanApprovals } from "../../context/LoanApprovalContext";
 import { useLoanDisbursements } from "../../context/LoanDisbursementContext";
+import { arrowBackOutline } from "ionicons/icons";
+import { CurrencyFormatter } from "../../../utils/currencyFormatter";
 
 // Validation schema
 const schema = Yup.object().shape({
@@ -39,7 +43,8 @@ const LoanDisbursedForm: React.FC = () => {
     useLoanApprovals();
   const { selectedLoanDisbursement, addLoanDisbursement, loanDisbursements } =
     useLoanDisbursements();
-  const { selectedLoanApplication } = useLoanApplications();
+  const { selectedLoanApplication, fetchLoanApplications, loanApplications } =
+    useLoanApplications();
 
   const initialValues = {
     loanApplicationId: Number(selectedLoanApplication?.id) || "",
@@ -48,8 +53,12 @@ const LoanDisbursedForm: React.FC = () => {
     disbursementDate: selectedLoanDisbursement?.disbursementDate || "",
   };
 
+  const approvedAmount = loanApplications.find(
+    (a: any) => a.id === selectedLoanApplication?.id
+  )?.approvalAmount;
+
   const handleSubmit = async (formData: any, { resetForm }: any) => {
-    const existingDisbursement = loanDisbursements.find(
+    const existingDisbursement = loanApplications.find(
       (d: any) => d.loanApplicationId === selectedLoanApplication?.id
     );
 
@@ -65,7 +74,6 @@ const LoanDisbursedForm: React.FC = () => {
       status: "Disbursed",
       ...formData,
     };
-    console.log("formattedFormData", formattedFormData);
 
     try {
       const addResponse = await postData(
@@ -78,6 +86,9 @@ const LoanDisbursedForm: React.FC = () => {
       };
 
       addLoanDisbursement(formattedAddResponse);
+
+      await fetchLoanApplications();
+
       setMessage("Loan Disbursed successfully!", "success");
 
       resetForm();
@@ -87,24 +98,21 @@ const LoanDisbursedForm: React.FC = () => {
     }
   };
 
-  const CurrencyFormatter = (amount: any) => {
-    const formattedAmount =
-      amount != null && !isNaN(amount)
-        ? new Intl.NumberFormat("en-MW", {
-            style: "currency",
-            currency: "MWK",
-          }).format(amount)
-        : "Invalid amount";
-    return <span>{formattedAmount}</span>; // Properly close the return statement
-  };
-
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
+          {/* Back Button */}
+          <IonButtons slot="start">
+            <IonButton onClick={() => history.push("/view-member")}>
+              <IonIcon icon={arrowBackOutline} slot="start" />
+            </IonButton>
+          </IonButtons>
+
           <IonTitle>Loan Disbursement</IonTitle>
         </IonToolbar>
       </IonHeader>
+
       <IonContent>
         {messageState.type === "error" && (
           <NotificationMessage
@@ -118,9 +126,7 @@ const LoanDisbursedForm: React.FC = () => {
           <IonCardHeader>
             <IonCardTitle>Approved Amount</IonCardTitle>
           </IonCardHeader>
-          <IonCardContent>
-            {CurrencyFormatter(loanApprovals[0]?.approvalAmount)}
-          </IonCardContent>
+          <IonCardContent>{CurrencyFormatter(approvedAmount)}</IonCardContent>
         </IonCard>
 
         <Formik
@@ -145,11 +151,7 @@ const LoanDisbursedForm: React.FC = () => {
                 type="number"
                 id={""}
               />
-              <IonButton
-                type="submit"
-                expand="block"
-                style={{ marginTop: "20px" }}
-              >
+              <IonButton type="submit" expand="block" color="success">
                 Disburse Loan
               </IonButton>
             </Form>

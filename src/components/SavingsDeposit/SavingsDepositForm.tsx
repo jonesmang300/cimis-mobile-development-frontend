@@ -7,7 +7,10 @@ import {
   IonToolbar,
   IonButton,
   IonToast,
+  IonButtons,
+  IonIcon,
 } from "@ionic/react";
+import { arrowBackOutline } from "ionicons/icons"; // ✅ Import back icon
 import { Formik, Form } from "formik"; // Import Formik components
 import { RadioGroupInput, TextInputField } from "../form";
 import * as Yup from "yup";
@@ -109,9 +112,17 @@ const SavingsDepositForm: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar style={{ backgroundColor: "#4CAF50" }}>
+          {/* ✅ Back Button */}
+          <IonButtons slot="start">
+            <IonButton onClick={() => history.push("/view-member")}>
+              <IonIcon icon={arrowBackOutline} />
+            </IonButton>
+          </IonButtons>
+
           <IonTitle>{pageTitle}</IonTitle>
         </IonToolbar>
       </IonHeader>
+
       <IonContent>
         {messageState.type === "error" && (
           <NotificationMessage

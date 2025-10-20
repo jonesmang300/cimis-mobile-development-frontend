@@ -11,6 +11,8 @@ import {
   IonCardTitle,
   IonCardContent,
   IonSpinner,
+  IonButtons,
+  IonIcon,
 } from "@ionic/react";
 import { Formik, Form } from "formik";
 import { SelectInputField, TextInputField } from "../../form";
@@ -23,21 +25,27 @@ import { getData, postData } from "../../../services/apiServices";
 import { useLoanRepayments } from "../../context/LoanRepaymentsContext";
 import { useLoanDisbursements } from "../../context/LoanDisbursementContext";
 import { useLoanDetails } from "../../context/LoanDetailsContext";
+import { arrowBackOutline } from "ionicons/icons";
+import { CurrencyFormatter } from "../../../utils/currencyFormatter";
 
 // Validation schema
 const schema = Yup.object().shape({
   repaymentAmount: Yup.number().required("Loan repayment amount is required"),
   repaymentDate: Yup.date().required("Loan Repayment Date is required"),
-  loanRepaymentMethodId: Yup.number().required(
-    "Loan repayment method is required"
-  ),
+  // loanRepaymentMethodId: Yup.number().required(
+  //   "Loan repayment method is required"
+  // ),
 });
 
 const LoanRepaymentForm: React.FC = () => {
   const history = useHistory();
   const { messageState, setMessage } = useNotificationMessage();
-  const { selectedLoanApplication, setSelectedLoanApplication } =
-    useLoanApplications();
+  const {
+    selectedLoanApplication,
+    setSelectedLoanApplication,
+    fetchLoanApplications,
+    loanApplications,
+  } = useLoanApplications();
   const { addLoanRepayment } = useLoanRepayments();
   const [loanRepaymentMethods, setLoanRepaymentMethods] = useState<any[]>([]);
   const [savingsAccounts, setSavingsAccounts] = useState<any[]>([]);
@@ -52,8 +60,8 @@ const LoanRepaymentForm: React.FC = () => {
 
   const initialValues = {
     loanApplicationId: Number(selectedLoanApplication?.id) || "",
-    loanRepaymentMethodId: "",
-    savingsAccountId: "",
+    // loanRepaymentMethodId: "",
+    // savingsAccountId: "",
     repaymentAmount: "",
     repaymentDate: "",
   };
@@ -70,6 +78,8 @@ const LoanRepaymentForm: React.FC = () => {
       // 1️⃣ Add repayment
       const response = await postData("/api/loanrepayments", formattedFormData);
       addLoanRepayment({ ...response, id: response.insertId });
+
+      await fetchLoanApplications();
 
       // 2️⃣ Refresh loan details immediately
       const updatedLoanDetails = await getData(
@@ -116,18 +126,20 @@ const LoanRepaymentForm: React.FC = () => {
     fetchData();
   }, [fetchData]);
 
-  const CurrencyFormatter = (amount: any) =>
-    amount != null && !isNaN(amount)
-      ? new Intl.NumberFormat("en-MW", {
-          style: "currency",
-          currency: "MWK",
-        }).format(amount)
-      : "Invalid amount";
+  const disbursedAmount = loanApplications.find(
+    (a: any) => a.id === selectedLoanApplication?.id
+  )?.disbursementAmount;
 
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
+          {/* Back Button */}
+          <IonButtons slot="start">
+            <IonButton onClick={() => history.push("/view-member")}>
+              <IonIcon icon={arrowBackOutline} slot="start" />
+            </IonButton>
+          </IonButtons>
           <IonTitle>Loan Repayment</IonTitle>
         </IonToolbar>
       </IonHeader>
@@ -145,9 +157,7 @@ const LoanRepaymentForm: React.FC = () => {
           <IonCardHeader>
             <IonCardTitle>Amount Disbursed</IonCardTitle>
           </IonCardHeader>
-          <IonCardContent>
-            {CurrencyFormatter(loanDisbursements[0]?.disbursementAmount)}
-          </IonCardContent>
+          <IonCardContent>{CurrencyFormatter(disbursedAmount)}</IonCardContent>
         </IonCard>
 
         <Formik
@@ -173,36 +183,10 @@ const LoanRepaymentForm: React.FC = () => {
                 id=""
               />
 
-              <div style={{ padding: "15px" }}>
-                <SelectInputField
-                  name="loanRepaymentMethodId"
-                  selectItems={loanRepaymentMethods.map((l: any) => ({
-                    label: l.method,
-                    value: l.id,
-                    key: l.id,
-                  }))}
-                  label="Select Payment Method"
-                />
-              </div>
-
-              {Number(values.loanRepaymentMethodId) === 2 && (
-                <div style={{ padding: "15px" }}>
-                  <SelectInputField
-                    name="savingsAccountId"
-                    selectItems={savingsAccounts.map((s: any) => ({
-                      label: s.productName,
-                      value: s.id,
-                      key: s.id,
-                    }))}
-                    label="Select Savings Account"
-                  />
-                </div>
-              )}
-
               <IonButton
                 type="submit"
                 expand="block"
-                style={{ marginTop: "20px" }}
+                color="success"
                 disabled={loading}
               >
                 {loading ? <IonSpinner /> : "Make Payment"}

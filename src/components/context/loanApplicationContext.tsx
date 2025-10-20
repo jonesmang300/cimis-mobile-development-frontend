@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { getData } from "../../services/apiServices"; // ✅ import your API helper
 
 interface LoanApplicationsContextType {
   addLoanApplication: (newData: any) => void;
@@ -20,7 +21,8 @@ interface LoanApplicationsContextType {
   token: any;
   setToken: (value: any) => void;
   setTheToken: (value: any) => void;
-  clearLoanData: () => void; // 👈 Added to clear all persisted data on logout
+  clearLoanData: () => void;
+  fetchLoanApplications: () => Promise<void>; // ✅ added
 }
 
 const LoanApplicationsContext = createContext<
@@ -34,7 +36,6 @@ interface LoanApplicationsProviderProps {
 export const LoanApplicationsProvider: React.FC<
   LoanApplicationsProviderProps
 > = ({ children }) => {
-  // ✅ Initialize state from localStorage if available
   const [loanApplications, setLoanApplications] = useState<any[]>(() => {
     const saved = localStorage.getItem("loanApplications");
     return saved ? JSON.parse(saved) : [];
@@ -52,16 +53,15 @@ export const LoanApplicationsProvider: React.FC<
     return saved ? JSON.parse(saved) : null;
   });
 
-  const [token, setToken] = useState(() => {
-    return localStorage.getItem("token") || null;
-  });
+  const [token, setToken] = useState(
+    () => localStorage.getItem("token") || null
+  );
 
-  // ✅ Persist loanApplications to localStorage
+  // ✅ Persist changes to localStorage
   useEffect(() => {
     localStorage.setItem("loanApplications", JSON.stringify(loanApplications));
   }, [loanApplications]);
 
-  // ✅ Persist selectedLoanApplication
   useEffect(() => {
     if (selectedLoanApplication) {
       localStorage.setItem(
@@ -73,7 +73,6 @@ export const LoanApplicationsProvider: React.FC<
     }
   }, [selectedLoanApplication]);
 
-  // ✅ Persist loggedUser
   useEffect(() => {
     if (loggedUser) {
       localStorage.setItem("loggedUser", JSON.stringify(loggedUser));
@@ -82,19 +81,14 @@ export const LoanApplicationsProvider: React.FC<
     }
   }, [loggedUser]);
 
-  // ✅ Persist token
   useEffect(() => {
-    if (token) {
-      localStorage.setItem("token", token);
-    } else {
-      localStorage.removeItem("token");
-    }
+    if (token) localStorage.setItem("token", token);
+    else localStorage.removeItem("token");
   }, [token]);
 
   // ✅ CRUD functions
-  const addLoanApplication = (newData: any) => {
+  const addLoanApplication = (newData: any) =>
     setLoanApplications((prev) => [...prev, newData]);
-  };
 
   const editLoanApplication = (id: string, updatedData: any) => {
     setLoanApplications((prev) =>
@@ -102,31 +96,29 @@ export const LoanApplicationsProvider: React.FC<
     );
   };
 
-  const returnLoanApplications = (rows: any[]) => {
-    setLoanApplications(rows);
-  };
-
-  const getSelectedRow = (selectedRow: any) => {
-    setSelectedRow(selectedRow);
-  };
-
-  const setTheSubmitButton = (submitedButton: any) => {
+  const returnLoanApplications = (rows: any[]) => setLoanApplications(rows);
+  const getSelectedRow = (selectedRow: any) => setSelectedRow(selectedRow);
+  const setTheSubmitButton = (submitedButton: any) =>
     setSubmitButton(submitedButton);
-  };
-
-  const setTheSelectedLoanApplication = (value: any) => {
+  const setTheSelectedLoanApplication = (value: any) =>
     setSelectedLoanApplication(value);
+  const setTheLoggedUser = (value: any) => setLoggedUser(value);
+  const setTheToken = (value: any) => setToken(value);
+
+  // ✅ New: Fetch loan applications from backend API
+  const fetchLoanApplications = async () => {
+    try {
+      const data = await getData("/api/loanapplication");
+      if (Array.isArray(data)) {
+        setLoanApplications(data);
+        localStorage.setItem("loanApplications  ", JSON.stringify(data));
+      }
+    } catch (error) {
+      console.error("Failed to fetch loan applications:", error);
+    }
   };
 
-  const setTheLoggedUser = (value: any) => {
-    setLoggedUser(value);
-  };
-
-  const setTheToken = (value: any) => {
-    setToken(value);
-  };
-
-  // ✅ Clear persisted data (e.g., on logout)
+  // ✅ Clear persisted data
   const clearLoanData = () => {
     setLoanApplications([]);
     setSelectedLoanApplication(null);
@@ -160,7 +152,8 @@ export const LoanApplicationsProvider: React.FC<
         token,
         setToken,
         setTheToken,
-        clearLoanData, // 👈 expose logout cleanup
+        clearLoanData,
+        fetchLoanApplications, // ✅ expose API fetcher
       }}
     >
       {children}
@@ -168,7 +161,6 @@ export const LoanApplicationsProvider: React.FC<
   );
 };
 
-// ✅ Custom hook for easy access
 export const useLoanApplications = (): LoanApplicationsContextType => {
   const context = useContext(LoanApplicationsContext);
   if (!context) {

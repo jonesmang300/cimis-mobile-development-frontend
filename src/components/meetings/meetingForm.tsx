@@ -7,6 +7,8 @@ import {
   IonToolbar,
   IonButton,
   IonToast,
+  IonButtons,
+  IonIcon,
 } from "@ionic/react";
 import { Formik, Form } from "formik"; // Import Formik components
 import { RadioGroupInput, TextInputField } from "../form";
@@ -23,6 +25,7 @@ import {
 import { useNotificationMessage } from "../context/notificationMessageContext";
 import { NotificationMessage } from "../notificationMessage";
 import { useHistory } from "react-router";
+import { arrowBackOutline } from "ionicons/icons";
 
 // Validation schema for the form
 const schema = Yup.object().shape({
@@ -141,9 +144,17 @@ const MeetingForm: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar style={{ backgroundColor: "#4CAF50" }}>
+          {/* Back Button */}
+          <IonButtons slot="start">
+            <IonButton onClick={() => history.push("/meetings")}>
+              <IonIcon icon={arrowBackOutline} />
+            </IonButton>
+          </IonButtons>
+
           <IonTitle>{pageTitle}</IonTitle>
         </IonToolbar>
       </IonHeader>
+
       <IonContent>
         {messageState.type === "error" && (
           <NotificationMessage

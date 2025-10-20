@@ -10,20 +10,21 @@ import {
   IonCardHeader,
   IonCardTitle,
   IonCardContent,
+  IonButtons,
+  IonIcon,
 } from "@ionic/react";
 import { Formik, Form } from "formik";
-import { TextInputField } from "../../form"; // Adjust import paths
+import { TextInputField } from "../../form";
 import * as Yup from "yup";
-import { useMembers } from "../../context/MembersContext";
-import { useClusters } from "../../context/ClustersContext";
 import { useLoanApplications } from "../../context/loanApplicationContext";
 import { useNotificationMessage } from "../../context/notificationMessageContext";
 import { NotificationMessage } from "../../notificationMessage";
 import { useHistory } from "react-router";
-import { postData, putData } from "../../../services/apiServices";
+import { postData } from "../../../services/apiServices";
 import { useLoanApprovals } from "../../context/LoanApprovalContext";
+import { arrowBackOutline } from "ionicons/icons";
+import { CurrencyFormatter } from "../../../utils/currencyFormatter";
 
-// Validation schema
 const schema = Yup.object().shape({
   approvalAmount: Yup.number().required("Loan approval amount is required"),
   approvalDate: Yup.date().required("Date is required"),
@@ -34,7 +35,8 @@ const LoanApprovalForm: React.FC = () => {
   const { messageState, setMessage } = useNotificationMessage();
   const { selectedLoanApproval, addLoanApproval, loanApprovals } =
     useLoanApprovals();
-  const { selectedLoanApplication } = useLoanApplications();
+  const { selectedLoanApplication, fetchLoanApplications, loanApplications } =
+    useLoanApplications(); // ✅ get fetch function from context
 
   const initialValues = {
     loanApplicationId: Number(selectedLoanApplication?.id) || "",
@@ -43,7 +45,10 @@ const LoanApprovalForm: React.FC = () => {
   };
 
   const handleSubmit = async (formData: any, { resetForm }: any) => {
-    const existingApproval = loanApprovals.find(
+    // const existingApproval = loanApprovals.find(
+    //   (a: any) => a.loanApplicationId === selectedLoanApplication?.id
+    // );
+    const existingApproval = loanApplications.find(
       (a: any) => a.loanApplicationId === selectedLoanApplication?.id
     );
 
@@ -70,8 +75,15 @@ const LoanApprovalForm: React.FC = () => {
         id: addResponse.insertId,
       };
 
+      // ✅ update loan approval context
       addLoanApproval(formattedAddResponse);
-      setMessage("Loan Approved successfully!", "success");
+
+      await fetchLoanApplications();
+
+      // ✅ refresh loan applications from backend
+
+      // ✅ success message
+      setMessage("Loan approved successfully!", "success");
 
       resetForm();
       history.push("/view-member");
@@ -80,33 +92,27 @@ const LoanApprovalForm: React.FC = () => {
     }
   };
 
-  const CurrencyFormatter = (amount: any) => {
-    const formattedAmount =
-      amount != null && !isNaN(amount)
-        ? new Intl.NumberFormat("en-MW", {
-            style: "currency",
-            currency: "MWK",
-          }).format(amount)
-        : "Invalid amount";
-    return <span>{formattedAmount}</span>; // Properly close the return statement
-  };
-
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
+          <IonButtons slot="start">
+            <IonButton onClick={() => history.push("/view-member")}>
+              <IonIcon icon={arrowBackOutline} slot="start" />
+            </IonButton>
+          </IonButtons>
           <IonTitle>Loan Approval</IonTitle>
         </IonToolbar>
       </IonHeader>
+
       <IonContent>
-        {messageState.type === "error" && (
+        {messageState.type && (
           <NotificationMessage
             text={messageState.text}
             type={messageState.type}
           />
         )}
 
-        {/* Card displaying the approved amount */}
         <IonCard>
           <IonCardHeader>
             <IonCardTitle>Amount Applied For</IonCardTitle>
@@ -126,23 +132,19 @@ const LoanApprovalForm: React.FC = () => {
             <Form>
               <TextInputField
                 name="approvalDate"
-                label="Loan Approval Date?"
+                label="Loan Approval Date"
                 placeholder="YYYY-MM-DD"
                 type="date"
-                id={""}
+                id="approvalDate"
               />
               <TextInputField
                 name="approvalAmount"
                 label="How much is Approved?"
                 placeholder="Enter Amount Approved"
                 type="number"
-                id={""}
+                id="approvalAmount"
               />
-              <IonButton
-                type="submit"
-                expand="block"
-                style={{ marginTop: "20px" }}
-              >
+              <IonButton type="submit" expand="block" color="success">
                 Approve Loan
               </IonButton>
             </Form>
