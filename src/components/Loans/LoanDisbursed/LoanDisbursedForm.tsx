@@ -14,21 +14,18 @@ import {
   IonIcon,
 } from "@ionic/react";
 import { Formik, Form } from "formik";
-import { TextInputField } from "../../form"; // Adjust import paths
+import { TextInputField } from "../../form";
 import * as Yup from "yup";
-import { useMembers } from "../../context/MembersContext";
-import { useClusters } from "../../context/ClustersContext";
-import { useLoanApplications } from "../../context/loanApplicationContext";
 import { useNotificationMessage } from "../../context/notificationMessageContext";
 import { NotificationMessage } from "../../notificationMessage";
 import { useHistory } from "react-router";
-import { postData, putData } from "../../../services/apiServices";
-import { useLoanApprovals } from "../../context/LoanApprovalContext";
+import { postData, getData } from "../../../services/apiServices";
 import { useLoanDisbursements } from "../../context/LoanDisbursementContext";
+import { useLoanApplications } from "../../context/loanApplicationContext";
 import { arrowBackOutline } from "ionicons/icons";
+import ConfirmDialog from "../../../utils/ConfirmDialog";
 import { CurrencyFormatter } from "../../../utils/currencyFormatter";
 
-// Validation schema
 const schema = Yup.object().shape({
   disbursementAmount: Yup.number().required(
     "Loan disbursement amount is required"
@@ -39,40 +36,67 @@ const schema = Yup.object().shape({
 const LoanDisbursedForm: React.FC = () => {
   const history = useHistory();
   const { messageState, setMessage } = useNotificationMessage();
-  const { selectedLoanApproval, addLoanApproval, loanApprovals } =
-    useLoanApprovals();
-  const { selectedLoanDisbursement, addLoanDisbursement, loanDisbursements } =
-    useLoanDisbursements();
+  const { addLoanDisbursement } = useLoanDisbursements();
   const { selectedLoanApplication, fetchLoanApplications, loanApplications } =
     useLoanApplications();
 
+  const [loanPurposes, setLoanPurposes] = useState<any[]>([]);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [pendingFormData, setPendingFormData] = useState<any>(null);
+
   const initialValues = {
     loanApplicationId: Number(selectedLoanApplication?.id) || "",
-    disbursementAmount:
-      Number(selectedLoanDisbursement?.disbursementAmount) || "",
-    disbursementDate: selectedLoanDisbursement?.disbursementDate || "",
+    disbursementAmount: "",
+    disbursementDate: "",
   };
 
-  const approvedAmount = loanApplications.find(
-    (a: any) => a.id === selectedLoanApplication?.id
-  )?.approvalAmount;
+  const approvedAmount = Number(
+    loanApplications.find((a: any) => a.id === selectedLoanApplication?.id)
+      ?.approvalAmount || 0
+  );
 
-  const handleSubmit = async (formData: any, { resetForm }: any) => {
-    const existingDisbursement = loanApplications.find(
-      (d: any) => d.loanApplicationId === selectedLoanApplication?.id
-    );
+  // ✅ Fetch loan purposes from API
+  useEffect(() => {
+    const fetchLoanPurposes = async () => {
+      try {
+        const response = await getData("/api/loanpurposes");
+        setLoanPurposes(response);
+      } catch (error) {
+        console.error("Failed to fetch loan purposes:", error);
+      }
+    };
 
-    if (existingDisbursement) {
-      setMessage("This loan has already been disbursed.", "error");
-      return;
+    fetchLoanPurposes();
+  }, [selectedLoanApplication]);
+
+  // ✅ Show confirmation dialog before submitting
+  const openConfirmDialog = (formData: any) => {
+    // 🔥 Check if disbursement amount exceeds approved amount
+    const disbursementAmount = Number(formData.disbursementAmount || 0);
+    if (disbursementAmount > approvedAmount) {
+      setMessage(
+        `Disbursed amount cannot exceed approved amount of ${CurrencyFormatter(
+          approvedAmount
+        )}`,
+        "error"
+      );
+      return; // stop submission
     }
+
+    setPendingFormData(formData);
+    setShowConfirmDialog(true);
+  };
+
+  // ✅ Confirm disbursement
+  const handleConfirmDisbursement = async () => {
+    if (!pendingFormData) return;
 
     const formattedFormData = {
       loanApplicationId: Number(selectedLoanApplication?.id),
-      disbursementAmount: Number(formData?.disbursementAmount),
-      disbursementDate: formData?.disbursementDate,
+      disbursementAmount: Number(pendingFormData?.disbursementAmount),
+      disbursementDate: pendingFormData?.disbursementDate,
       status: "Disbursed",
-      ...formData,
+      ...pendingFormData,
     };
 
     try {
@@ -80,21 +104,21 @@ const LoanDisbursedForm: React.FC = () => {
         "/api/loandisbursement",
         formattedFormData
       );
+
       const formattedAddResponse = {
         ...formattedFormData,
         id: addResponse.insertId,
       };
 
       addLoanDisbursement(formattedAddResponse);
-
       await fetchLoanApplications();
 
       setMessage("Loan Disbursed successfully!", "success");
-
-      resetForm();
+      setShowConfirmDialog(false);
       history.push("/view-member");
     } catch (error) {
       setMessage("Failed to disburse Loan. Please try again.", "error");
+      setShowConfirmDialog(false);
     }
   };
 
@@ -108,7 +132,6 @@ const LoanDisbursedForm: React.FC = () => {
               <IonIcon icon={arrowBackOutline} slot="start" />
             </IonButton>
           </IonButtons>
-
           <IonTitle>Loan Disbursement</IonTitle>
         </IonToolbar>
       </IonHeader>
@@ -121,42 +144,84 @@ const LoanDisbursedForm: React.FC = () => {
           />
         )}
 
-        {/* Card displaying the approved amount */}
+        {/* === Loan Details Card === */}
         <IonCard>
           <IonCardHeader>
-            <IonCardTitle>Approved Amount</IonCardTitle>
+            <IonCardTitle>Loan Details</IonCardTitle>
           </IonCardHeader>
-          <IonCardContent>{CurrencyFormatter(approvedAmount)}</IonCardContent>
+          <IonCardContent>
+            <p>
+              <strong>Requested Amount:</strong>{" "}
+              {CurrencyFormatter(selectedLoanApplication?.requestedAmount)}
+            </p>
+            <p>
+              <strong>Approved Amount:</strong>{" "}
+              {CurrencyFormatter(selectedLoanApplication?.approvalAmount)}
+            </p>
+            <p>
+              <strong>Purpose:</strong>{" "}
+              {
+                loanPurposes.find(
+                  (p: any) => p.id === selectedLoanApplication?.loanPurposeId
+                )?.purpose
+              }
+            </p>
+            <p>
+              <strong>Number of Installments:</strong>{" "}
+              {selectedLoanApplication?.numberOfInstallments || "N/A"}
+            </p>
+          </IonCardContent>
         </IonCard>
 
-        <Formik
-          initialValues={initialValues}
-          validationSchema={schema}
-          onSubmit={handleSubmit}
-          enableReinitialize
-        >
-          {() => (
-            <Form>
-              <TextInputField
-                name="disbursementDate"
-                label="Loan Disbursement Date?"
-                placeholder="YYYY-MM-DD"
-                type="date"
-                id={""}
-              />
-              <TextInputField
-                name="disbursementAmount"
-                label="Amount to Disburse?"
-                placeholder="Enter Amount to Disburse"
-                type="number"
-                id={""}
-              />
-              <IonButton type="submit" expand="block" color="success">
-                Disburse Loan
-              </IonButton>
-            </Form>
-          )}
-        </Formik>
+        {/* === Disbursement Information === */}
+        <IonCard>
+          <IonCardHeader>
+            <IonCardTitle>Disbursement Information</IonCardTitle>
+          </IonCardHeader>
+          <IonCardContent>
+            <Formik
+              initialValues={initialValues}
+              validationSchema={schema}
+              onSubmit={openConfirmDialog}
+              enableReinitialize
+            >
+              {() => (
+                <Form>
+                  <TextInputField
+                    name="disbursementDate"
+                    label="Loan Disbursement Date?"
+                    placeholder="YYYY-MM-DD"
+                    type="date"
+                    id={""}
+                  />
+                  <TextInputField
+                    name="disbursementAmount"
+                    label="Amount to Disburse?"
+                    placeholder="Enter Amount to Disburse"
+                    type="number"
+                    id={""}
+                  />
+                  <IonButton type="submit" expand="block" color="success">
+                    Disburse Loan
+                  </IonButton>
+                </Form>
+              )}
+            </Formik>
+          </IonCardContent>
+        </IonCard>
+
+        {/* ✅ Confirmation Dialog */}
+        <ConfirmDialog
+          isOpen={showConfirmDialog}
+          header="Confirm Loan Disbursement"
+          message={`Are you sure you want to disburse this loan amount of ${CurrencyFormatter(
+            pendingFormData?.disbursementAmount
+          )}?`}
+          confirmText="Yes"
+          cancelText="Cancel"
+          onConfirm={handleConfirmDisbursement}
+          onCancel={() => setShowConfirmDialog(false)}
+        />
       </IonContent>
     </IonPage>
   );

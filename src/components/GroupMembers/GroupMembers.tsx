@@ -14,18 +14,15 @@ import {
   IonAvatar,
   IonButtons,
   IonSearchbar,
-  IonCard,
-  IonCardContent,
-  IonCardTitle,
-  IonCardSubtitle, // Import IonSearchbar component
 } from "@ionic/react";
-import { add, peopleOutline, search, pencil, people } from "ionicons/icons";
+import { add, peopleOutline, search, pencil } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
 import { useMembers } from "../context/MembersContext";
-import { useClusters } from "../context/ClustersContext";
-import { getData } from "../../services/apiServices";
+import { useGroups } from "../context/GroupsContext";
 import { useNotificationMessage } from "../context/notificationMessageContext";
+import { getData } from "../../services/apiServices";
 import { NotificationMessage } from "../notificationMessage";
+import { useClusters } from "../context/ClustersContext";
 
 const GroupMembers: React.FC = () => {
   const history = useHistory();
@@ -35,62 +32,41 @@ const GroupMembers: React.FC = () => {
     setTheSelectedMemberId,
     setTheSelectedMember,
   } = useMembers();
+  const { selectedGroup } = useGroups();
   const { selectedCluster } = useClusters();
   const { messageState, setMessage } = useNotificationMessage();
 
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState<number>(1);
-  const [hasMore, setHasMore] = useState<boolean>(true); // To track if more members are available
-  const [searchQuery, setSearchQuery] = useState<string>(""); // New state for search query
-
-  const itemsPerPage = 20; // Number of members to load per page
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const fetchMembers = useCallback(async () => {
-    if (loading || !hasMore) return; // Prevent multiple fetches
+    if (!selectedGroup?.groupID) return;
+
     setLoading(true);
-
     try {
-      const result = await getData(
-        `/api/membership?page=${page}&limit=${itemsPerPage}`
-      );
-      const filteredMembers = result.filter(
-        (m: any) => m.clusterCode === selectedCluster[0].clusterCode
-      );
+      const groupID = encodeURIComponent(selectedGroup.groupID);
+      const result = await getData(`/api/groupmembers/${groupID}`);
 
-      // If no members are returned, we’ve reached the end of the list
-      if (filteredMembers.length === 0) {
-        setHasMore(false);
-      }
-
-      returnMembers(filteredMembers);
+      // Expecting API returns an array of members
+      returnMembers(result);
     } catch (error) {
-      setError("Failed to fetch data");
+      setMessage("⚠️ Failed to fetch members.", "error");
     } finally {
       setLoading(false);
     }
-  }, [loading, hasMore, page, returnMembers, selectedCluster]);
+  }, [selectedGroup]);
 
   useEffect(() => {
     fetchMembers();
   }, []);
 
-  const handleScroll = (e: any) => {
-    const bottom =
-      e.currentTarget.scrollHeight ===
-      e.currentTarget.scrollTop + e.currentTarget.clientHeight;
-    if (bottom && hasMore && !loading) {
-      setPage((prevPage) => prevPage + 1); // Increment page to fetch next batch of members
-    }
-  };
-
   const handleAddMember = () => {
     setTheSelectedMemberId("");
-    history.push("add-member");
+    history.push("/add-member");
   };
 
-  const handleEditClick = (id: number) => {
-    const member = members.find((m: any) => m.id === id);
+  const handleEditClick = (id: string) => {
+    const member = members.find((m: any) => m.sppCode === id);
     if (member) {
       setTheSelectedMember(member);
       setTheSelectedMemberId(id);
@@ -98,39 +74,18 @@ const GroupMembers: React.FC = () => {
     }
   };
 
-  // Filter members based on the search query
+  // Filter members by search query
   const filteredMembers = members.filter(
-    (member) =>
-      member.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      member.lastName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      member.village?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      member.phoneNumber?.includes(searchQuery) // Include phone number if needed
+    (m) =>
+      m.hh_head_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      m.sppCode?.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
-  const handleMeetingClick = () => {
-    history.push("meetings");
-  };
-
-  if (!members.length) {
-    return (
-      <IonPage>
-        <IonHeader>
-          <IonToolbar>
-            <IonTitle>Members</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-        <IonContent className="ion-padding">
-          <p>Loading...</p>
-        </IonContent>
-      </IonPage>
-    );
-  }
 
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Members</IonTitle>
+          <IonTitle>Group Members</IonTitle>
           <IonButtons slot="end">
             <IonButton onClick={() => history.push("/meetings")}>
               <IonIcon icon={peopleOutline} />
@@ -149,89 +104,130 @@ const GroupMembers: React.FC = () => {
         />
       )}
 
-      <IonContent
-        className="ion-padding"
-        onIonScroll={handleScroll}
-        scrollEvents={true}
-      >
-        <IonCard>
-          <IonCardContent>
-            <div style={{ backgroundColor: "#4CAF50", color: "#fff" }}>
-              <IonButton expand="full" onClick={handleMeetingClick}>
-                <IonIcon icon={people} slot="start" />
-                Meetings and Attendance
-              </IonButton>
-            </div>
-          </IonCardContent>
-        </IonCard>
-
+      <IonContent className="ion-padding">
+        {/* Cluster Name */}
         <div
-          style={{ marginTop: "0px", marginBottom: "0px", marginLeft: "10px" }}
+          style={{
+            textAlign: "center",
+            fontSize: "1.1rem",
+            fontWeight: "bold",
+            color: "#2e7d32",
+            marginBottom: "12px",
+          }}
         >
+          {selectedCluster?.ClusterName
+            ? `Cluster: ${selectedCluster.ClusterName}`
+            : "Cluster: (Not selected)"}
+        </div>
+
+        {/* Group Name */}
+        <div
+          style={{
+            textAlign: "center",
+            fontSize: "1.1rem",
+            fontWeight: "bold",
+            color: "#2e7d32",
+            marginBottom: "12px",
+          }}
+        >
+          {selectedGroup?.groupname
+            ? `Group: ${selectedGroup.groupname}`
+            : "Group: (Not selected)"}
+        </div>
+
+        {/* Add Member Button */}
+        <div style={{ marginLeft: 10, marginBottom: 10 }}>
           <IonFabButton color="success" onClick={handleAddMember}>
             <IonIcon icon={add} />
           </IonFabButton>
         </div>
 
-        {/* Add IonSearchbar for search */}
+        {/* Search */}
         <IonSearchbar
           value={searchQuery}
           onIonInput={(e) => setSearchQuery(e.detail.value!)}
-          debounce={0} // This prevents delay in search input
+          debounce={0}
           showClearButton="focus"
           placeholder="Search members..."
         />
 
-        <IonList>
-          {filteredMembers.map((member, index) => (
-            <IonItem key={index} button>
-              <IonAvatar slot="start">
-                <div
-                  style={{
-                    backgroundColor: "#4CAF50",
-                    color: "#fff",
-                    width: "40px",
-                    height: "40px",
-                    borderRadius: "50%",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    fontWeight: "bold",
-                  }}
-                  onClick={() => {
-                    history.push("/view-member");
-                    setTheSelectedMember(member);
-                  }}
-                >
-                  {member.firstName[0]}
-                  {member.lastName[0]}
-                </div>
-              </IonAvatar>
-              <IonLabel
-                onClick={() => {
-                  history.push("/view-member");
-                  setTheSelectedMember(member);
-                }}
-              >
-                <h2>
-                  {member.firstName} {member.lastName}
-                </h2>
-                <p>{member.village} Village</p>
-                <p style={{ fontWeight: "bold" }}>{member.phoneNumber}</p>
-                <p>{member.memberCode}</p>
-              </IonLabel>
-              <IonButton
-                fill="clear"
-                slot="end"
-                onClick={() => handleEditClick(member.id)}
-              >
-                <IonIcon icon={pencil} />
-              </IonButton>
-            </IonItem>
-          ))}
-        </IonList>
+        {/* Display total count */}
+        <div
+          style={{
+            textAlign: "center",
+            fontWeight: "bold",
+            marginBottom: "10px",
+            color: "#333",
+          }}
+        >
+          {loading
+            ? "Loading members..."
+            : `Total Members: ${filteredMembers.length}`}
+        </div>
 
-        {loading && <p>Loading more members...</p>}
+        {/* Scrollable Members List */}
+        <div
+          style={{
+            maxHeight: "80vh",
+            overflowY: "auto",
+            paddingBottom: "1rem",
+          }}
+        >
+          <IonList>
+            {filteredMembers.length > 0
+              ? filteredMembers.map((member, index) => (
+                  <IonItem key={index} button>
+                    <IonAvatar slot="start">
+                      <div
+                        style={{
+                          backgroundColor: "#4CAF50",
+                          color: "#fff",
+                          width: "40px",
+                          height: "40px",
+                          borderRadius: "50%",
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          fontWeight: "bold",
+                          fontSize: "16px",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => {
+                          setTheSelectedMember(member);
+                          history.push("/view-member");
+                        }}
+                      >
+                        {member.hh_head_name?.[0]?.toUpperCase() || "?"}
+                      </div>
+                    </IonAvatar>
+
+                    <IonLabel
+                      onClick={() => {
+                        setTheSelectedMember(member);
+                        history.push("/view-member");
+                      }}
+                    >
+                      <h2>{member.hh_head_name}</h2>
+                      <p>{member.sppCode}</p>
+                    </IonLabel>
+
+                    <IonIcon
+                      icon={pencil}
+                      slot="end"
+                      color="success"
+                      size="large"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handleEditClick(member.sppCode)}
+                    />
+                  </IonItem>
+                ))
+              : !loading && (
+                  <p style={{ textAlign: "center", marginTop: "2rem" }}>
+                    No members found
+                  </p>
+                )}
+          </IonList>
+        </div>
       </IonContent>
     </IonPage>
   );

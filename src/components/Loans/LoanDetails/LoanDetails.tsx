@@ -27,6 +27,7 @@ import { getData } from "../../../services/apiServices";
 import { useLoanApplications } from "../../context/loanApplicationContext";
 import { useLoanDetails } from "../../context/LoanDetailsContext";
 import { arrowBackOutline } from "ionicons/icons";
+import { CurrencyFormatter } from "../../../utils/currencyFormatter";
 
 const LoanDetails: React.FC = () => {
   const history = useHistory();
@@ -61,10 +62,8 @@ const LoanDetails: React.FC = () => {
       const response = await getData(
         `/api/loandetails/${selectedLoanApplication?.id}`
       );
-      console.log("✅ Loan details fetched:", response);
       setTheSelectedLoanDetail(response);
     } catch (err) {
-      console.error("❌ Error fetching loan details:", err);
       setError("Failed to fetch loan details. Please try again.");
     } finally {
       setLoading(false);
@@ -87,14 +86,6 @@ const LoanDetails: React.FC = () => {
       history.push("/add-loan-repayment");
     }
   };
-
-  const CurrencyFormatter = (amount: any) =>
-    amount != null && !isNaN(amount)
-      ? new Intl.NumberFormat("en-MW", {
-          style: "currency",
-          currency: "MWK",
-        }).format(amount)
-      : "MK 0.00";
 
   return (
     <IonPage>

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import {
   IonContent,
   IonHeader,
@@ -8,9 +8,11 @@ import {
   IonButton,
   IonButtons,
   IonIcon,
+  IonCard,
+  IonCardContent,
 } from "@ionic/react";
-import { Formik, Form, Field } from "formik"; // Import Formik components
-import { SelectInputField, TextInputField } from "../../form"; // Adjust import paths
+import { Formik, Form } from "formik";
+import { SelectInputField, TextInputField } from "../../form";
 import * as Yup from "yup";
 import { useMembers } from "../../context/MembersContext";
 import { useClusters } from "../../context/ClustersContext";
@@ -20,8 +22,10 @@ import { NotificationMessage } from "../../notificationMessage";
 import { useHistory } from "react-router";
 import { getData, postData, putData } from "../../../services/apiServices";
 import { arrowBackOutline } from "ionicons/icons";
+import ConfirmDialog from "../../../utils/ConfirmDialog";
+import { CurrencyFormatter } from "../../../utils/currencyFormatter";
 
-// Validation schema
+// Validation schema (unchanged)
 const schema = Yup.object().shape({
   loanPurposeId: Yup.number().required("Loan purpose is required"),
   loanProductId: Yup.number().required("Loan product is required"),
@@ -45,8 +49,10 @@ const LoanApplicationForm: React.FC = () => {
 
   const [loanPurposes, setLoanPurposes] = useState<any[]>([]);
   const [loanProducts, setLoanProducts] = useState<any[]>([]);
+  const [showConfirmAlert, setShowConfirmAlert] = useState(false);
+  const [pendingFormData, setPendingFormData] = useState<any>(null);
+  const [pendingResetForm, setPendingResetForm] = useState<any>(null);
 
-  // ✅ Memoize initial form values
   const initialValues = useMemo(
     () => ({
       id: selectedLoanApplication?.id || "",
@@ -60,97 +66,92 @@ const LoanApplicationForm: React.FC = () => {
     [selectedLoanApplication]
   );
 
-  // ✅ Fetch loan purposes
-  const fetchLoanPurposes = async () => {
+  const fetchLoanPurposes = useCallback(async () => {
     try {
       const result = await getData("/api/loanpurposes");
       setLoanPurposes(result || []);
-    } catch (error) {
-      console.error(error);
+    } catch {
       setMessage("Failed to fetch loan purposes", "error");
     }
-  };
+  }, [setMessage]);
 
-  // ✅ Fetch loan products safely (after cluster is known)
-  const fetchLoanProducts = async () => {
+  const fetchLoanProducts = useCallback(async () => {
     try {
       const result = await getData("/api/loanproducts");
       if (!result) return;
-
-      if (!selectedCluster || selectedCluster.length === 0) {
-        setLoanProducts(result || []);
+      if (!selectedCluster?.length) {
+        setLoanProducts(result);
         return;
       }
-
-      const filteredLoanProducts = result.filter(
+      const filtered = result.filter(
         (p: any) => p.clusterCode === selectedCluster[0]?.clusterCode
       );
-
-      console.log(
-        "Filtered loan products for cluster:",
-        selectedCluster[0]?.clusterCode
-      );
-
-      setLoanProducts(filteredLoanProducts || []);
-    } catch (error) {
-      console.error(error);
+      setLoanProducts(filtered || []);
+    } catch {
       setMessage("Failed to fetch loan products", "error");
     }
-  };
+  }, [selectedCluster, setMessage]);
 
-  // ✅ Fetch purposes once
   useEffect(() => {
     fetchLoanPurposes();
-  }, []);
+  }, [fetchLoanPurposes]);
 
-  // ✅ Fetch products when cluster changes
   useEffect(() => {
     if (selectedCluster && selectedCluster.length > 0) {
       fetchLoanProducts();
     }
-  }, [selectedCluster]);
+  }, [selectedCluster, fetchLoanProducts]);
 
-  // ✅ Form submission handler
-  const handleSubmit = async (formData: any, { resetForm }: any) => {
+  // NEW: handle form submission with confirmation
+  const handleFormikSubmit = (formData: any, { resetForm }: any) => {
+    setPendingFormData(formData);
+    setPendingResetForm(() => resetForm);
+    setShowConfirmAlert(true);
+  };
+
+  const handleSubmitConfirmed = async () => {
+    if (!pendingFormData || !pendingResetForm) return;
+
     const formattedFormData = {
       memberCode: selectedMember?.memberCode,
-      loanPurposeId: Number(formData?.loanPurposeId),
-      loanProductId: Number(formData?.loanProductId),
+      loanPurposeId: Number(pendingFormData.loanPurposeId),
+      loanProductId: Number(pendingFormData.loanProductId),
       status: "Applied",
-      ...formData,
+      ...pendingFormData,
     };
 
-    console.log("formattedFormData", formattedFormData);
-
     try {
-      if (formData.id) {
-        // Update existing
-        await putData(`/api/loanapplication/${formData.id}`, formattedFormData);
-        editLoanApplication(formData.id, formattedFormData);
+      if (formattedFormData.id) {
+        await putData(
+          `/api/loanapplication/${formattedFormData.id}`,
+          formattedFormData
+        );
+        editLoanApplication(formattedFormData.id, formattedFormData);
         setMessage("Loan Application updated successfully!", "success");
       } else {
-        // Add new
         const addResponse = await postData(
           "/api/loanapplication",
           formattedFormData
         );
-
         const newLoan = {
           ...formattedFormData,
           id: addResponse.insertId || Date.now(),
         };
-
         addLoanApplication(newLoan);
         setMessage("Loan Application added successfully!", "success");
       }
 
-      resetForm();
+      pendingResetForm();
       history.push("/view-member");
-    } catch (error) {
-      console.error(error);
+    } catch {
       setMessage("Failed to save Loan Application. Please try again.", "error");
+    } finally {
+      setShowConfirmAlert(false);
+      setPendingFormData(null);
+      setPendingResetForm(null);
     }
   };
+
   return (
     <IonPage>
       <IonHeader>
@@ -160,7 +161,6 @@ const LoanApplicationForm: React.FC = () => {
               <IonIcon icon={arrowBackOutline} slot="icon-only" />
             </IonButton>
           </IonButtons>
-
           <IonTitle>
             {selectedLoanApplication
               ? "Edit Loan Application"
@@ -169,92 +169,97 @@ const LoanApplicationForm: React.FC = () => {
         </IonToolbar>
       </IonHeader>
 
-      <IonContent>
-        {messageState.type === "error" && (
+      <IonContent className="ion-padding">
+        {messageState.type && (
           <NotificationMessage
             text={messageState.text}
             type={messageState.type}
           />
         )}
-        <Formik
-          initialValues={initialValues}
-          validationSchema={schema}
-          onSubmit={handleSubmit}
-          enableReinitialize
-        >
-          {() => (
-            <Form>
-              <div
-                style={{
-                  paddingTop: "15px",
-                  paddingLeft: "15px",
-                  paddingRight: "15px",
-                }}
-              >
-                <SelectInputField
-                  name="loanProductId"
-                  selectItems={loanProducts.map((p: any) => ({
-                    label: p.loanProduct,
-                    value: p.id,
-                  }))}
-                  label="Select Loan Product"
-                />
-              </div>
-              <div
-                style={{
-                  paddingTop: "15px",
-                  paddingLeft: "15px",
-                  paddingRight: "15px",
-                }}
-              >
-                <SelectInputField
-                  name="loanPurposeId"
-                  selectItems={loanPurposes.map((p: any) => ({
-                    label: p.purpose,
-                    value: p.id,
-                  }))}
-                  label="Select Loan Purpose"
-                />
-              </div>
 
-              <TextInputField
-                name="loanNeededDate"
-                label="When this Loan is Needed?"
-                placeholder="YYYY-MM-DD"
-                type="date"
-                id={""}
-              />
-              <TextInputField
-                name="requestedAmount"
-                label="How much is Needed?"
-                placeholder="Enter Amount Needed"
-                type="number"
-                id={""}
-              />
-              <TextInputField
-                name="numberOfInstallments"
-                label="How many Installments"
-                placeholder="Enter number of Installments"
-                type="number"
-                id={""}
-              />
-              <TextInputField
-                name="justification"
-                label="Loan Justification"
-                placeholder="Enter Loan Justification"
-                id={""}
-              />
-              <IonButton type="submit" expand="block" color="success">
-                {selectedLoanApplication
-                  ? "Edit Loan Application"
-                  : "Add Loan Application"}
-              </IonButton>
-            </Form>
-          )}
-        </Formik>
+        <IonCard className="max-w-xl mx-auto mt-6 shadow-md rounded-2xl">
+          <IonCardContent>
+            <Formik
+              initialValues={initialValues}
+              validationSchema={schema}
+              onSubmit={handleFormikSubmit} // use new submit handler
+              enableReinitialize
+            >
+              {() => (
+                <Form>
+                  <div className="space-y-5">
+                    <SelectInputField
+                      name="loanProductId"
+                      selectItems={loanProducts.map((p: any) => ({
+                        label: p.loanProduct,
+                        value: p.id,
+                      }))}
+                      label="Select Loan Product"
+                    />
+
+                    <SelectInputField
+                      name="loanPurposeId"
+                      selectItems={loanPurposes.map((p: any) => ({
+                        label: p.purpose,
+                        value: p.id,
+                      }))}
+                      label="Select Loan Purpose"
+                    />
+
+                    <TextInputField
+                      name="loanNeededDate"
+                      label="When this Loan is Needed?"
+                      placeholder="YYYY-MM-DD"
+                      type="date"
+                      id=""
+                    />
+                    <TextInputField
+                      name="requestedAmount"
+                      label="How much is Needed?"
+                      placeholder="Enter Amount Needed"
+                      type="number"
+                      id=""
+                    />
+                    <TextInputField
+                      name="numberOfInstallments"
+                      label="How many Installments"
+                      placeholder="Enter number of Installments"
+                      type="number"
+                      id=""
+                    />
+                    <TextInputField
+                      name="justification"
+                      label="Loan Justification"
+                      placeholder="Enter Loan Justification"
+                      id=""
+                    />
+
+                    <IonButton type="submit" expand="block" color="success">
+                      {selectedLoanApplication
+                        ? "Edit Loan Application"
+                        : "Apply for Loan"}
+                    </IonButton>
+                  </div>
+                </Form>
+              )}
+            </Formik>
+          </IonCardContent>
+        </IonCard>
+
+        <ConfirmDialog
+          isOpen={showConfirmAlert}
+          header="Confirm Submission"
+          message={`Are you sure you want to submit this loan application of amount: ${CurrencyFormatter(
+            pendingFormData?.requestedAmount
+          )}?`}
+          confirmText="Yes"
+          cancelText="Cancel"
+          onConfirm={handleSubmitConfirmed}
+          onCancel={() => setShowConfirmAlert(false)}
+        />
       </IonContent>
     </IonPage>
   );
 };
 
-export default LoanApplicationForm;
+export default React.memo(LoanApplicationForm);

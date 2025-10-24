@@ -93,13 +93,11 @@ const Dashboard: React.FC = () => {
           <IonGrid>
             {/* Total Savings */}
             <IonCol size="12" sizeMd="6">
-              {selectedCluster?.map((c: any) => (
-                <IonItem key={c.id}>
-                  <p>{c.name}</p>
-                  <p style={{ marginLeft: "10px" }}></p>
-                  Cluster
-                </IonItem>
-              ))}
+              <IonItem>
+                <p>{selectedCluster.ClusterName}</p>
+                <p style={{ marginLeft: "10px" }}></p>
+                Cluster
+              </IonItem>
 
               <IonCard
                 className="custom-card green-card"

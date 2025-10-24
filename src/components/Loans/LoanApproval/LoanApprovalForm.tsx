@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   IonContent,
   IonHeader,
@@ -17,12 +17,13 @@ import { Formik, Form } from "formik";
 import { TextInputField } from "../../form";
 import * as Yup from "yup";
 import { useLoanApplications } from "../../context/loanApplicationContext";
+import { useLoanApprovals } from "../../context/LoanApprovalContext";
 import { useNotificationMessage } from "../../context/notificationMessageContext";
 import { NotificationMessage } from "../../notificationMessage";
 import { useHistory } from "react-router";
-import { postData } from "../../../services/apiServices";
-import { useLoanApprovals } from "../../context/LoanApprovalContext";
+import { postData, deleteData } from "../../../services/apiServices";
 import { arrowBackOutline } from "ionicons/icons";
+import ConfirmDialog from "../../../utils/ConfirmDialog";
 import { CurrencyFormatter } from "../../../utils/currencyFormatter";
 
 const schema = Yup.object().shape({
@@ -33,10 +34,19 @@ const schema = Yup.object().shape({
 const LoanApprovalForm: React.FC = () => {
   const history = useHistory();
   const { messageState, setMessage } = useNotificationMessage();
-  const { selectedLoanApproval, addLoanApproval, loanApprovals } =
-    useLoanApprovals();
-  const { selectedLoanApplication, fetchLoanApplications, loanApplications } =
-    useLoanApplications(); // ✅ get fetch function from context
+  const { selectedLoanApproval, addLoanApproval } = useLoanApprovals();
+  const {
+    selectedLoanApplication,
+    fetchLoanApplications,
+    loanApplications,
+    returnLoanApplications,
+  } = useLoanApplications();
+
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<
+    "approve" | "reject" | null
+  >(null);
+  const [pendingFormData, setPendingFormData] = useState<any>(null);
 
   const initialValues = {
     loanApplicationId: Number(selectedLoanApplication?.id) || "",
@@ -44,51 +54,69 @@ const LoanApprovalForm: React.FC = () => {
     approvalDate: selectedLoanApproval?.approvalDate || "",
   };
 
-  const handleSubmit = async (formData: any, { resetForm }: any) => {
-    // const existingApproval = loanApprovals.find(
-    //   (a: any) => a.loanApplicationId === selectedLoanApplication?.id
-    // );
-    const existingApproval = loanApplications.find(
-      (a: any) => a.loanApplicationId === selectedLoanApplication?.id
-    );
-
-    if (existingApproval) {
-      setMessage("This loan has already been approved.", "error");
-      return;
+  const openConfirmDialog = (action: "approve" | "reject", formData?: any) => {
+    // ✅ Check if approval amount exceeds requested amount
+    if (action === "approve" && formData) {
+      const approvalAmount = Number(formData.approvalAmount);
+      const requestedAmount = Number(
+        selectedLoanApplication?.requestedAmount || 0
+      );
+      if (approvalAmount > requestedAmount) {
+        setMessage(
+          `Approved amount cannot exceed requested amount of ${CurrencyFormatter(
+            requestedAmount
+          )}`,
+          "error"
+        );
+        return; // stop submission
+      }
     }
 
-    const formattedFormData = {
+    setConfirmAction(action);
+    if (formData) setPendingFormData(formData);
+    setShowConfirmDialog(true);
+  };
+
+  const handleSubmitConfirmed = async () => {
+    if (!pendingFormData) return;
+
+    const formattedData = {
       loanApplicationId: Number(selectedLoanApplication?.id),
-      approvalAmount: Number(formData?.approvalAmount),
-      approvalDate: formData?.approvalDate,
+      approvalAmount: Number(pendingFormData?.approvalAmount),
+      approvalDate: pendingFormData?.approvalDate,
       status: "Approved",
-      ...formData,
+      ...pendingFormData,
     };
 
     try {
-      const addResponse = await postData(
-        "/api/loanapproval",
-        formattedFormData
-      );
-      const formattedAddResponse = {
-        ...formattedFormData,
-        id: addResponse.insertId,
-      };
-
-      // ✅ update loan approval context
-      addLoanApproval(formattedAddResponse);
-
+      const response = await postData("/api/loanapproval", formattedData);
+      addLoanApproval({ ...formattedData, id: response.insertId });
       await fetchLoanApplications();
-
-      // ✅ refresh loan applications from backend
-
-      // ✅ success message
       setMessage("Loan approved successfully!", "success");
-
-      resetForm();
       history.push("/view-member");
-    } catch (error) {
+    } catch {
       setMessage("Failed to approve Loan. Please try again.", "error");
+    } finally {
+      setShowConfirmDialog(false);
+      setPendingFormData(null);
+      setConfirmAction(null);
+    }
+  };
+
+  const handleRejectConfirmed = async () => {
+    try {
+      await deleteData(`/api/loanapplication`, selectedLoanApplication?.id);
+      const filteredLoanApplications = loanApplications.filter(
+        (a: any) => a.id !== selectedLoanApplication?.id
+      );
+      returnLoanApplications(filteredLoanApplications);
+      setMessage("Loan rejected and deleted successfully!", "success");
+      history.push("/view-member");
+    } catch {
+      setMessage("Failed to reject Loan. Please try again.", "error");
+    } finally {
+      setShowConfirmDialog(false);
+      setConfirmAction(null);
     }
   };
 
@@ -125,7 +153,7 @@ const LoanApprovalForm: React.FC = () => {
         <Formik
           initialValues={initialValues}
           validationSchema={schema}
-          onSubmit={handleSubmit}
+          onSubmit={(formData) => openConfirmDialog("approve", formData)}
           enableReinitialize
         >
           {() => (
@@ -150,6 +178,39 @@ const LoanApprovalForm: React.FC = () => {
             </Form>
           )}
         </Formik>
+
+        <IonButton
+          expand="block"
+          color="danger"
+          onClick={() => openConfirmDialog("reject")}
+        >
+          Reject Loan
+        </IonButton>
+
+        <ConfirmDialog
+          isOpen={showConfirmDialog}
+          header={
+            confirmAction === "approve"
+              ? "Confirm Loan Approval"
+              : "Confirm Loan Rejection"
+          }
+          message={
+            confirmAction === "approve"
+              ? `Are you sure you want to approve this loan of amount: ${CurrencyFormatter(
+                  pendingFormData?.approvalAmount ||
+                    selectedLoanApplication?.requestedAmount
+                )}?`
+              : "Are you sure you want to reject and delete this loan application?"
+          }
+          confirmText="Yes"
+          cancelText="Cancel"
+          onConfirm={
+            confirmAction === "approve"
+              ? handleSubmitConfirmed
+              : handleRejectConfirmed
+          }
+          onCancel={() => setShowConfirmDialog(false)}
+        />
       </IonContent>
     </IonPage>
   );

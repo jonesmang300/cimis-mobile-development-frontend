@@ -82,6 +82,7 @@ import { AddLoanDisbursed } from "./components/Loans/LoanDisbursed/AddLoanDisbur
 import { AddLoanRepayment } from "./components/Loans/LoanRepayment/AddLoanRepayment";
 import LoanDetails from "./components/Loans/LoanDetails/LoanDetails";
 import { useAutoLogout } from "./hooks/useAutoLogout";
+import Groups from "./components/Groups/Groups";
 //import {LoanProducts} from "./components/LoanProducts/LoanProducts";
 
 setupIonicReact();
@@ -177,6 +178,7 @@ const App: React.FC = () => {
                 exact
               />
               <Route path="/loan-details" component={LoanDetails} exact />
+              <Route path="/groups" component={Groups} exact />
 
               <Route exact path="/">
                 <Redirect to="/home" />
@@ -193,9 +195,9 @@ const App: React.FC = () => {
                 <IonIcon icon={listOutline} />
                 <IonLabel>Transactions</IonLabel>
               </IonTabButton>
-              <IonTabButton tab="group-members" href="/group-members">
+              <IonTabButton tab="group-members" href="/groups">
                 <IonIcon icon={peopleOutline} />
-                <IonLabel>Members</IonLabel>
+                <IonLabel>Groups</IonLabel>
               </IonTabButton>
               <IonTabButton tab="wallet" href="/wallet">
                 <IonIcon icon={walletOutline} />
