@@ -74,6 +74,7 @@ const Groups: React.FC = () => {
 
   const handleViewGroup = (group: any) => {
     localStorage.setItem("selectedGroup", JSON.stringify(group));
+    setTheSelectedGroup(group);
     history.push("/view-group");
   };
 
@@ -126,11 +127,9 @@ const Groups: React.FC = () => {
         <IonCard>
           <IonCardContent>
             <IonCardTitle className="text-lg font-semibold text-gray-800">
-              Groups in Cluster
+              Groups in {selectedCluster?.ClusterName || "Cluster"} Cluster
             </IonCardTitle>
-            <IonCardSubtitle>
-              {selectedCluster?.ClusterName || "Cluster"}
-            </IonCardSubtitle>
+            <IonCardSubtitle></IonCardSubtitle>
           </IonCardContent>
         </IonCard>
 

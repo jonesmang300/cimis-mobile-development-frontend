@@ -83,6 +83,7 @@ import { AddLoanRepayment } from "./components/Loans/LoanRepayment/AddLoanRepaym
 import LoanDetails from "./components/Loans/LoanDetails/LoanDetails";
 import { useAutoLogout } from "./hooks/useAutoLogout";
 import Groups from "./components/Groups/Groups";
+import ViewGroup from "./components/Groups/ViewGroup";
 //import {LoanProducts} from "./components/LoanProducts/LoanProducts";
 
 setupIonicReact();
@@ -179,6 +180,7 @@ const App: React.FC = () => {
               />
               <Route path="/loan-details" component={LoanDetails} exact />
               <Route path="/groups" component={Groups} exact />
+              <Route path="/view-group" component={ViewGroup} exact />
 
               <Route exact path="/">
                 <Redirect to="/home" />

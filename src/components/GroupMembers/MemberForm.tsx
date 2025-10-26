@@ -6,300 +6,222 @@ import {
   IonTitle,
   IonToolbar,
   IonButton,
-  IonToast,
   IonButtons,
   IonIcon,
+  IonLoading,
 } from "@ionic/react";
-import { Formik, Form } from "formik"; // Import Formik components
+import { Formik, Form } from "formik";
 import { RadioGroupInput, TextInputField } from "../form";
 import * as Yup from "yup";
-import axios from "axios"; // Import Axios
-import { useMembers } from "../context/MembersContext"; // Import the custom hook
-import { useClusters } from "../context/ClustersContext"; // Import the custom hook
-import {
-  getData,
-  postData,
-  putData,
-  viewDataById,
-} from "../../services/apiServices";
+import { postData, putData, viewDataById } from "../../services/apiServices";
+import { useMembers } from "../context/MembersContext";
+import { useClusters } from "../context/ClustersContext";
+import { useGroups } from "../context/GroupsContext";
 import { useNotificationMessage } from "../context/notificationMessageContext";
 import { NotificationMessage } from "../notificationMessage";
-import { useHistory } from "react-router";
 import { arrowBackOutline } from "ionicons/icons";
+import { useIonRouter } from "@ionic/react";
 
-// Validation schema for the form
+// ✅ Validation schema
+// Calculate 18 years ago from today
+const eighteenYearsAgo = new Date();
+eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
+
 const schema = Yup.object().shape({
-  firstName: Yup.string().required("First name is required"),
-  lastName: Yup.string().required("Last name is required"),
-  dob: Yup.date().required("Date of birth is required"),
-  gender: Yup.string().required("Gender is required"),
-  nationalId: Yup.string(),
-  disability: Yup.string().required("Disability status is required"),
-  kinName: Yup.string(),
-  kinPhone: Yup.string()
-    .required("Phone number is required")
-    .matches(
-      /^[1-9]\d{8}$/,
-      "Phone number must be 9 digits and cannot start with 0"
-    )
-    .min(9, "Phone number must have 9 digits")
-    .max(9, "Phone number must have 9 digits"),
-  village: Yup.string().required("Village is required"),
-  phoneNumber: Yup.string()
-    .required("Phone number is required")
-    .matches(
-      /^[1-9]\d{8}$/,
-      "Phone number must be 9 digits and cannot start with 0"
-    )
-    .min(9, "Phone number must have 9 digits")
-    .max(9, "Phone number must have 9 digits"),
+  hh_head_name: Yup.string().required("Beneficiary name is required"),
+  dob: Yup.date()
+    .required("Date of birth is required")
+    .max(eighteenYearsAgo, "Member must be at least 18 years old"),
+  sex: Yup.string().required("Gender is required"),
+  nat_id: Yup.string().nullable(), // ✅ allows null values
+  hh_code: Yup.string().nullable(),
 });
 
 const MemberForm: React.FC = () => {
-  const history = useHistory();
+  const router = useIonRouter();
   const { messageState, setMessage } = useNotificationMessage();
-  const [showToast, setShowToast] = React.useState(false);
-  const [toastMessage, setToastMessage] = React.useState("");
-  const {
-    members,
-    returnMembers,
-    selectedMember,
-    addMember,
-    editMember,
-    selectedMemberId,
-  } = useMembers(); // Use the context
-  const { selectedCluster } = useClusters(); // Use the context
+  const { selectedMember, selectedMemberId, addMember, editMember } =
+    useMembers();
+  const { selectedGroup } = useGroups();
   const [initialValues, setInitialValues] = useState({
-    id: "",
-    firstName: "",
-    lastName: "",
+    sppCode: "",
+    hh_head_name: "",
     dob: "",
-    gender: "",
-    disability: "",
-    village: "",
-    phoneNumber: "",
-    nationalId: "",
-    kinName: "",
-    kinPhone: "",
-    clusterCode: "",
+    sex: "",
+    nat_id: "",
+    hh_code: "",
+    groupID: "",
   });
   const [loading, setLoading] = useState(true);
-  const [pageTitle, setPageTitle] = useState("");
-  const [buttonTitle, setButtonTitle] = useState("");
+  const [pageTitle, setPageTitle] = useState("Add Member");
+  const [buttonTitle, setButtonTitle] = useState("Add Member");
   const memberId = selectedMemberId;
 
+  // ✅ Load member for edit mode
   useEffect(() => {
-    if (selectedMemberId) {
-      const date = new Date(selectedMember.dob);
-      const formattedDate = date.toISOString().split("T")[0];
-      const mPhone = selectedMember.phoneNumber.replace("+265", "");
-      const kPhone = selectedMember.kinPhone.replace("+265", "");
-
+    if (memberId && selectedMember) {
+      const formattedDate = new Date(selectedMember.dob)
+        .toISOString()
+        .split("T")[0];
       setInitialValues({
-        id: selectedMember.id,
-        firstName: selectedMember.firstName,
-        lastName: selectedMember.lastName,
-        dob: formattedDate, // Ensure the date format matches Formik's expectations
-        gender: selectedMember.gender,
-        disability: selectedMember.disability,
-        village: selectedMember.village,
-        phoneNumber: mPhone,
-        nationalId: selectedMember.nationalId,
-        kinName: selectedMember.kinName,
-        kinPhone: kPhone,
-        clusterCode: selectedMember.clusterCode,
+        sppCode: selectedMember.sppCode,
+        hh_head_name: selectedMember.hh_head_name,
+        dob: formattedDate,
+        sex: selectedMember.sex,
+        nat_id: selectedMember.nat_id,
+        hh_code: selectedMember.hh_code,
+        groupID: selectedMember.groupID,
       });
       setPageTitle("Edit Member");
-      setButtonTitle("Edit Member");
-      setLoading(false);
+      setButtonTitle("Update Member");
     } else {
       setInitialValues({
-        id: "",
-        firstName: "",
-        lastName: "",
+        sppCode: "",
+        hh_head_name: "",
         dob: "",
-        gender: "",
-        disability: "",
-        village: "",
-        phoneNumber: "",
-        nationalId: "",
-        kinName: "",
-        kinPhone: "",
-        clusterCode: "",
+        sex: "",
+        nat_id: "",
+        hh_code: "",
+        groupID: "",
       });
       setPageTitle("Add Member");
       setButtonTitle("Add Member");
     }
-  }, [selectedMember, selectedMemberId]);
+    setLoading(false);
+  }, [memberId, selectedMember]);
 
+  // ✅ Unified submit handler
   const handleSubmit = async (formData: any, { resetForm }: any) => {
-    const memberPhone = "+265" + formData.phoneNumber;
-    const kinPhone = "+265" + formData.kinPhone;
-
     const formattedFormData = {
       ...formData,
-      clusterCode: selectedCluster[0].clusterCode,
-      phoneNumber: memberPhone,
-      kinPhone,
+      groupID: selectedGroup?.groupID || formData.groupID,
     };
 
     try {
+      setLoading(true);
+
       if (memberId) {
-        await putData(`/api/membership/${memberId}`, formattedFormData);
-
-        const getMember = await viewDataById("/api/membership", memberId);
-
-        const memberCode = getMember.memberCode;
-        const clusterName = selectedCluster?.name;
-
-        const newEditMemberData = {
-          ...formattedFormData,
-          memberCode,
-          clusterName,
-          phoneNumber: memberPhone,
-          kinPhone,
-        };
-        editMember(memberId, newEditMemberData);
+        // 🟢 Update Member
+        const mID = encodeURIComponent(memberId);
+        await putData(`/api/membership/${mID}`, formattedFormData);
+        editMember(memberId, formattedFormData);
         setMessage(
-          `${formattedFormData.firstName} ${formattedFormData.lastName} updated successfully!`,
+          `${formattedFormData.hh_head_name} updated successfully!`,
           "success"
         );
       } else {
+        // 🟢 Add Member
+        delete formattedFormData.sppCode;
         const addResponse = await postData(
           "/api/membership",
           formattedFormData
         );
-        const getMember = await viewDataById(
-          "/api/membership",
-          addResponse.insertId
-        );
-        const memberCode = getMember.memberCode;
-
-        const clusterName = selectedCluster?.name;
 
         const newMemberData = {
           ...formattedFormData,
-          memberCode,
-          clusterName,
+          sppCode: addResponse.sppCode,
         };
-        console.log("onesani", newMemberData);
 
         addMember(newMemberData);
         setMessage(
-          `${formattedFormData.firstName} ${formattedFormData.lastName} added successfully!`,
+          `${formattedFormData.hh_head_name} added successfully!`,
           "success"
         );
       }
 
-      // Reset the form after successful submission
+      // ✅ Reset and navigate
       resetForm();
-
-      // Navigate back to the group members page
-      history.push("group-members");
+      router.push("/group-members", "forward");
     } catch (error) {
+      console.error("Error saving member:", error);
       setMessage("Failed to save Member. Please try again.", "error");
+    } finally {
+      setLoading(false);
     }
   };
+
+  // if (loading) {
+  //   return (
+  //     <IonPage>
+  //       <IonLoading isOpen={true} message="Loading form..." />
+  //     </IonPage>
+  //   );
+  // }
 
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonButton onClick={() => history.push("/group-members")}>
+            <IonButton onClick={() => router.push("/group-members", "back")}>
               <IonIcon icon={arrowBackOutline} slot="start" />
             </IonButton>
           </IonButtons>
-          <IonTitle>Add Member</IonTitle>
+          <IonTitle>{pageTitle}</IonTitle>
         </IonToolbar>
       </IonHeader>
 
-      <IonContent>
-        {messageState.type === "error" && (
+      <IonContent className="ion-padding">
+        {messageState.text && (
           <NotificationMessage
             text={messageState.text}
             type={messageState.type}
           />
         )}
+
         <Formik
-          onSubmit={(values, { resetForm }) =>
-            handleSubmit(values, { resetForm })
-          }
           initialValues={initialValues}
           validationSchema={schema}
           enableReinitialize={true}
+          onSubmit={handleSubmit}
         >
-          {({ resetForm }) => (
+          {() => (
             <Form>
               <TextInputField
-                name="firstName"
-                id="firstName"
-                label="First Name"
-                placeholder="Enter first name"
-              />
-              <TextInputField
-                name="lastName"
-                id="lastName"
-                label="Last Name"
-                placeholder="Enter last name"
+                name="hh_head_name"
+                id="hh_head_name"
+                label="Beneficiary Name"
+                placeholder="Enter Beneficiary Name"
               />
               <TextInputField
                 name="dob"
                 id="dob"
-                label="Date Of Birth"
+                label="Date of Birth"
                 placeholder="YYYY-MM-DD"
                 type="date"
               />
               <RadioGroupInput
-                name="gender"
+                name="sex"
                 label="Gender"
                 options={[
-                  { label: "Male", value: "M" },
-                  { label: "Female", value: "F" },
+                  { label: "Male", value: "01" },
+                  { label: "Female", value: "02" },
                 ]}
               />
               <TextInputField
-                name="nationalId"
-                id="nationalId"
+                name="hh_code"
+                id="hh_code"
+                label="Household Code"
+                placeholder="Enter Household Code"
+              />
+              <TextInputField
+                name="nat_id"
+                id="nat_id"
                 label="National ID"
                 placeholder="Enter National ID"
               />
-              <TextInputField
-                name="phoneNumber"
-                id="phoneNumber"
-                label="Phone Number"
-                placeholder="Enter phone number"
-              />
-              <RadioGroupInput
-                name="disability"
-                label="Disability"
-                options={[
-                  { label: "Yes", value: "1" },
-                  { label: "No", value: "0" },
-                ]}
-              />
-              <TextInputField
-                name="kinName"
-                id="kinName"
-                label="Next Of Kin"
-                placeholder="Enter next of kin name"
-              />
-              <TextInputField
-                name="kinPhone"
-                id="kinPhone"
-                label="Next Of Kin Phone"
-                placeholder="Enter next of kin phone"
-              />
-              <TextInputField
-                name="village"
-                id="village"
-                label="Village"
-                placeholder="Enter village"
-              />
+
               <IonButton
-                type="submit"
                 expand="block"
-                style={{ marginTop: "20px" }}
+                type="submit"
+                className="ion-margin-top"
+                style={{
+                  "--background": "#0b9e43",
+                  "--color": "#fff",
+                  fontWeight: "bold",
+                  borderRadius: "8px",
+                  padding: "14px 0",
+                }}
               >
                 {buttonTitle}
               </IonButton>

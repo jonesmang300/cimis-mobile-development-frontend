@@ -51,5 +51,4 @@ export const FormikInit: FC<Prop> = ({
       )}
     </Formik>
   );
-  
 };

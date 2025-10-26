@@ -27,7 +27,7 @@ import { useNotificationMessage } from "../context/notificationMessageContext";
 import { NotificationMessage } from "../notificationMessage";
 import { getData } from "../../services/apiServices";
 
-const ViewMember: React.FC = () => {
+const ViewGroup: React.FC = () => {
   const history = useHistory();
   const { returnMembers, selectedMember } = useMembers();
   const { selectedCluster } = useClusters();
@@ -39,6 +39,8 @@ const ViewMember: React.FC = () => {
   const [tas, setTAs] = useState<any[]>([]);
   const [districts, setDistricts] = useState<any[]>([]);
   const [regions, setRegions] = useState<any[]>([]);
+  const [projects, setProjects] = useState<any[]>([]);
+  const [programs, setPrograms] = useState<any[]>([]);
 
   const fetchTAs = useCallback(async () => {
     setLoading(true);
@@ -97,10 +99,50 @@ const ViewMember: React.FC = () => {
     }
   }, []);
 
+  const fetchProjects = useCallback(async () => {
+    setLoading(true);
+    try {
+      const projectResult = await getData("/api/project");
+      if (Array.isArray(projectResult)) {
+        setRegions(projectResult);
+      } else if (projectResult.data) {
+        setRegions(projectResult.data);
+      } else {
+        setProjects([]);
+      }
+    } catch (err) {
+      console.error("Failed to fetch projects:", err);
+      setError("Failed to fetch projects");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const fetchPrograms = useCallback(async () => {
+    setLoading(true);
+    try {
+      const programResult = await getData("/api/program");
+      if (Array.isArray(programResult)) {
+        setRegions(programResult);
+      } else if (programResult.data) {
+        setRegions(programResult.data);
+      } else {
+        setPrograms([]);
+      }
+    } catch (err) {
+      console.error("Failed to fetch programs:", err);
+      setError("Failed to fetch programs");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchTAs();
     fetchDistricts();
     fetchRegions();
+    fetchProjects();
+    fetchPrograms();
   }, []);
 
   const ta =
@@ -113,7 +155,14 @@ const ViewMember: React.FC = () => {
   const region =
     regions.find((r: any) => r.regionID === selectedCluster.regionID)?.name ||
     "-";
-  console.log("districts>>>>", selectedCluster?.districtID);
+
+  const project =
+    projects.find((p: any) => p.regionID === selectedCluster.projectID)
+      ?.projName || "-";
+
+  const program =
+    regions.find((pg: any) => pg.pID === selectedCluster.programID)?.pName ||
+    "-";
 
   // if (loading) {
   //   return (
@@ -136,7 +185,7 @@ const ViewMember: React.FC = () => {
       <IonPage>
         <IonHeader>
           <IonToolbar>
-            <IonTitle>View Member</IonTitle>
+            <IonTitle>View Group</IonTitle>
           </IonToolbar>
         </IonHeader>
         <IonContent className="ion-padding" style={{ textAlign: "center" }}>
@@ -151,13 +200,13 @@ const ViewMember: React.FC = () => {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonButton onClick={() => history.push("/group-members")}>
+            <IonButton onClick={() => history.push("/groups")}>
               <IonIcon icon={arrowBackOutline} />
             </IonButton>
           </IonButtons>
-          <IonTitle>View Member</IonTitle>
+          <IonTitle>View Group</IonTitle>
           <IonButtons slot="end">
-            <IonButton onClick={() => history.push("/group-members")}>
+            <IonButton onClick={() => history.push("/groups")}>
               <IonIcon icon={peopleOutline} />
             </IonButton>
             <IonButton>
@@ -212,6 +261,19 @@ const ViewMember: React.FC = () => {
                     <strong>Village:</strong> {selectedGroup?.village || "-"}
                   </IonLabel>
                 </IonCol>
+
+                <IonCol>
+                  <IonLabel>
+                    <strong>Village:</strong> {project || "-"}
+                  </IonLabel>
+                </IonCol>
+
+                <IonCol>
+                  <IonLabel>
+                    <strong>Village:</strong> {program || "-"}
+                  </IonLabel>
+                </IonCol>
+
                 <IonCol>
                   <IonLabel>
                     <strong>Cluster:</strong>{" "}
@@ -235,68 +297,9 @@ const ViewMember: React.FC = () => {
             </IonGrid>
           </IonCardContent>
         </IonCard>
-
-        {/* Beneficiary Details */}
-        <IonCard>
-          <IonCardHeader>
-            <IonCardTitle>Beneficiary Details</IonCardTitle>
-          </IonCardHeader>
-          <IonCardContent>
-            <IonGrid>
-              <IonRow>
-                <IonCol>
-                  <IonLabel>
-                    <strong>Beneficiary Name:</strong>{" "}
-                    {selectedMember?.hh_head_name || "-"}
-                  </IonLabel>
-                </IonCol>
-                <IonCol>
-                  <IonLabel>
-                    <strong>Gender:</strong>{" "}
-                    {selectedMember?.sex === "01"
-                      ? "Male"
-                      : selectedMember?.sex === "02"
-                      ? "Female"
-                      : "-"}
-                  </IonLabel>
-                </IonCol>
-              </IonRow>
-              <IonRow>
-                <IonCol>
-                  <IonLabel>
-                    <strong>Date of Birth:</strong>{" "}
-                    {selectedMember?.dob
-                      ? new Date(selectedMember.dob).toLocaleDateString(
-                          "en-GB",
-                          {
-                            day: "2-digit",
-                            month: "long",
-                            year: "numeric",
-                          }
-                        )
-                      : "-"}
-                  </IonLabel>
-                </IonCol>
-                <IonCol>
-                  <IonLabel>
-                    <strong>ML Code:</strong> {selectedMember?.hh_code || "-"}
-                  </IonLabel>
-                </IonCol>
-              </IonRow>
-              <IonRow>
-                <IonCol>
-                  <IonLabel>
-                    <strong>National ID:</strong>{" "}
-                    {selectedMember?.nat_id || "-"}
-                  </IonLabel>
-                </IonCol>
-              </IonRow>
-            </IonGrid>
-          </IonCardContent>
-        </IonCard>
       </IonContent>
     </IonPage>
   );
 };
 
-export default ViewMember;
+export default ViewGroup;

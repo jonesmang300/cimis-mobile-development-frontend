@@ -26,13 +26,15 @@ const LOCAL_PORT = "3000";
 let BASE_URL = "";
 
 // ✅ Smart local logic
-if (isAndroid) {
-  BASE_URL = `http://10.0.2.2:${LOCAL_PORT}`;
-} else if (isIOS) {
-  BASE_URL = `http://${LOCALHOST_IP}:${LOCAL_PORT}`;
-} else {
-  BASE_URL = `http://localhost:${LOCAL_PORT}`;
-}
+// if (isAndroid) {
+//   BASE_URL = `http://10.0.2.2:${LOCAL_PORT}`;
+// } else if (isIOS) {
+//   BASE_URL = `http://${LOCALHOST_IP}:${LOCAL_PORT}`;
+// } else {
+//   BASE_URL = `http://localhost:${LOCAL_PORT}`;
+// }
+
+BASE_URL = `http://localhost:${LOCAL_PORT}`;
 
 // Optional — log to verify
 console.log("📡 Using API Base URL:", BASE_URL);

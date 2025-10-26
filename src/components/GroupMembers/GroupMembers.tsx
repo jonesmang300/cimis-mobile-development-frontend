@@ -58,7 +58,7 @@ const GroupMembers: React.FC = () => {
 
   useEffect(() => {
     fetchMembers();
-  }, []);
+  }, [selectedGroup]);
 
   const handleAddMember = () => {
     setTheSelectedMemberId("");

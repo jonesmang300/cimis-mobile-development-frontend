@@ -43,7 +43,6 @@ const Login: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
     setLoading(true);
     try {
       const result = await getData("/api/cluster");
-      console.log("FULL RESPONSE >>>>>", result);
       returnClusters(result);
       setFetchError(false);
     } catch (error) {
