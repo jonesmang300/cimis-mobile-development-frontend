@@ -29,7 +29,6 @@ import { getData } from "../../services/apiServices";
 
 const ViewGroup: React.FC = () => {
   const history = useHistory();
-  const { returnMembers, selectedMember } = useMembers();
   const { selectedCluster } = useClusters();
   const { selectedGroup } = useGroups();
   const { messageState } = useNotificationMessage();
@@ -42,144 +41,139 @@ const ViewGroup: React.FC = () => {
   const [projects, setProjects] = useState<any[]>([]);
   const [programs, setPrograms] = useState<any[]>([]);
 
+  // ✅ Fetch Traditional Authorities
   const fetchTAs = useCallback(async () => {
-    setLoading(true);
     try {
       const taResult = await getData("/api/ta");
-      if (Array.isArray(taResult)) {
-        setTAs(taResult);
-      } else if (taResult.data) {
-        setTAs(taResult.data);
-      } else {
-        setTAs([]);
-      }
+      setTAs(Array.isArray(taResult) ? taResult : taResult.data || []);
     } catch (err) {
       console.error("Failed to fetch TAs:", err);
       setError("Failed to fetch TAs");
-    } finally {
-      setLoading(false);
     }
   }, []);
 
+  // ✅ Fetch Districts
   const fetchDistricts = useCallback(async () => {
-    setLoading(true);
     try {
       const districtResult = await getData("/api/district");
-      if (Array.isArray(districtResult)) {
-        setDistricts(districtResult);
-      } else if (districtResult.data) {
-        setDistricts(districtResult.data);
-      } else {
-        setDistricts([]);
-      }
+      setDistricts(
+        Array.isArray(districtResult)
+          ? districtResult
+          : districtResult.data || []
+      );
     } catch (err) {
       console.error("Failed to fetch Districts:", err);
       setError("Failed to fetch Districts");
-    } finally {
-      setLoading(false);
     }
   }, []);
 
+  // ✅ Fetch Regions
   const fetchRegions = useCallback(async () => {
-    setLoading(true);
     try {
       const regionResult = await getData("/api/region");
-      if (Array.isArray(regionResult)) {
-        setRegions(regionResult);
-      } else if (regionResult.data) {
-        setRegions(regionResult.data);
-      } else {
-        setRegions([]);
-      }
+      setRegions(
+        Array.isArray(regionResult) ? regionResult : regionResult.data || []
+      );
     } catch (err) {
       console.error("Failed to fetch Regions:", err);
       setError("Failed to fetch Regions");
-    } finally {
-      setLoading(false);
     }
   }, []);
 
+  // ✅ Fetch Projects (corrected)
   const fetchProjects = useCallback(async () => {
-    setLoading(true);
     try {
       const projectResult = await getData("/api/project");
-      if (Array.isArray(projectResult)) {
-        setRegions(projectResult);
-      } else if (projectResult.data) {
-        setRegions(projectResult.data);
-      } else {
-        setProjects([]);
-      }
+      setProjects(
+        Array.isArray(projectResult) ? projectResult : projectResult.data || []
+      );
     } catch (err) {
       console.error("Failed to fetch projects:", err);
       setError("Failed to fetch projects");
-    } finally {
-      setLoading(false);
     }
   }, []);
 
+  // ✅ Fetch Programs (corrected)
   const fetchPrograms = useCallback(async () => {
-    setLoading(true);
     try {
       const programResult = await getData("/api/program");
-      if (Array.isArray(programResult)) {
-        setRegions(programResult);
-      } else if (programResult.data) {
-        setRegions(programResult.data);
-      } else {
-        setPrograms([]);
-      }
+      setPrograms(
+        Array.isArray(programResult) ? programResult : programResult.data || []
+      );
     } catch (err) {
       console.error("Failed to fetch programs:", err);
       setError("Failed to fetch programs");
-    } finally {
-      setLoading(false);
     }
   }, []);
 
+  // ✅ Run all fetches
   useEffect(() => {
-    fetchTAs();
-    fetchDistricts();
-    fetchRegions();
-    fetchProjects();
-    fetchPrograms();
-  }, []);
+    const loadData = async () => {
+      setLoading(true);
+      await Promise.all([
+        fetchTAs(),
+        fetchDistricts(),
+        fetchRegions(),
+        fetchProjects(),
+        fetchPrograms(),
+      ]);
+      setLoading(false);
+    };
+    loadData();
+  }, [fetchTAs, fetchDistricts, fetchRegions, fetchProjects, fetchPrograms]);
 
+  // ✅ Mappings (corrected)
   const ta =
-    tas.find((t: any) => t.TAID === selectedCluster.taID)?.TAName || "-";
+    tas.find((t: any) => t.TAID === selectedGroup?.TAID)?.TAName || "-";
 
   const district =
-    districts.find((d: any) => d.DistrictID === selectedCluster?.districtID)
+    districts.find((d: any) => d.DistrictID === selectedGroup?.DistrictID)
       ?.DistrictName || "-";
 
   const region =
-    regions.find((r: any) => r.regionID === selectedCluster.regionID)?.name ||
+    regions.find((r: any) => r.regionID === selectedGroup?.regionID)?.name ||
     "-";
 
   const project =
-    projects.find((p: any) => p.regionID === selectedCluster.projectID)
+    projects.find((p: any) => p.projID === selectedGroup?.projectID)
       ?.projName || "-";
 
   const program =
-    regions.find((pg: any) => pg.pID === selectedCluster.programID)?.pName ||
+    programs.find((pg: any) => pg.pID === selectedGroup?.programID)?.pName ||
     "-";
 
-  // if (loading) {
-  //   return (
-  //     <IonPage>
-  //       <IonHeader>
-  //         <IonToolbar>
-  //           <IonTitle>View Member</IonTitle>
-  //         </IonToolbar>
-  //       </IonHeader>
-  //       <IonContent className="ion-padding" style={{ textAlign: "center" }}>
-  //         <IonSpinner name="crescent" />
-  //         <p>Loading...</p>
-  //       </IonContent>
-  //     </IonPage>
-  //   );
-  // }
+  // ✅ Loading State
+  if (loading) {
+    return (
+      <IonPage>
+        <IonHeader>
+          <IonToolbar>
+            <IonTitle>View Group</IonTitle>
+          </IonToolbar>
+        </IonHeader>
+        <IonContent
+          className="ion-padding ion-text-center ion-align-items-center ion-justify-content-center"
+          fullscreen
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "100%",
+              gap: "12px",
+            }}
+          >
+            <IonSpinner name="crescent" color="primary" />
+            <p style={{ fontSize: "1.1rem", color: "#555" }}>Loading...</p>
+          </div>
+        </IonContent>
+      </IonPage>
+    );
+  }
 
+  // ✅ Error State
   if (error) {
     return (
       <IonPage>
@@ -188,13 +182,14 @@ const ViewGroup: React.FC = () => {
             <IonTitle>View Group</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <IonContent className="ion-padding" style={{ textAlign: "center" }}>
-          <p>{error}</p>
+        <IonContent className="ion-padding ion-text-center">
+          <p style={{ color: "red" }}>{error}</p>
         </IonContent>
       </IonPage>
     );
   }
 
+  // ✅ Main View
   return (
     <IonPage>
       <IonHeader>
@@ -243,6 +238,7 @@ const ViewGroup: React.FC = () => {
                   </IonLabel>
                 </IonCol>
               </IonRow>
+
               <IonRow>
                 <IonCol>
                   <IonLabel>
@@ -251,10 +247,11 @@ const ViewGroup: React.FC = () => {
                 </IonCol>
                 <IonCol>
                   <IonLabel>
-                    <strong>GVH:</strong> {selectedCluster?.gvhID || "-"}
+                    <strong>GVH:</strong> {selectedGroup?.gvhID || "-"}
                   </IonLabel>
                 </IonCol>
               </IonRow>
+
               <IonRow>
                 <IonCol>
                   <IonLabel>
@@ -264,13 +261,15 @@ const ViewGroup: React.FC = () => {
 
                 <IonCol>
                   <IonLabel>
-                    <strong>Village:</strong> {project || "-"}
+                    <strong>Project:</strong> {project}
                   </IonLabel>
                 </IonCol>
+              </IonRow>
 
+              <IonRow>
                 <IonCol>
                   <IonLabel>
-                    <strong>Village:</strong> {program || "-"}
+                    <strong>Program:</strong> {program || "-"}
                   </IonLabel>
                 </IonCol>
 
@@ -281,6 +280,7 @@ const ViewGroup: React.FC = () => {
                   </IonLabel>
                 </IonCol>
               </IonRow>
+
               <IonRow>
                 <IonCol>
                   <IonLabel>

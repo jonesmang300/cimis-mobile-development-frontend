@@ -84,7 +84,13 @@ import LoanDetails from "./components/Loans/LoanDetails/LoanDetails";
 import { useAutoLogout } from "./hooks/useAutoLogout";
 import Groups from "./components/Groups/Groups";
 import ViewGroup from "./components/Groups/ViewGroup";
-//import {LoanProducts} from "./components/LoanProducts/LoanProducts";
+import Savings from "./components/Savings/Savings";
+import { AddSavings } from "./components/Savings/AddSavings";
+import Trainings from "./components/Trainings/Trainings";
+import { AddTrainings } from "./components/Trainings/AddTraining";
+import ViewTraining from "./components/Trainings/ViewTraining";
+import { EditTrainings } from "./components/Trainings/EditTraining";
+import Attendance from "./components/Trainings/Attendance";
 
 setupIonicReact();
 
@@ -181,6 +187,14 @@ const App: React.FC = () => {
               <Route path="/loan-details" component={LoanDetails} exact />
               <Route path="/groups" component={Groups} exact />
               <Route path="/view-group" component={ViewGroup} exact />
+              <Route path="/savings" component={Savings} exact />
+              <Route path="/add-saving" component={AddSavings} exact />
+
+              <Route path="/trainings" component={Trainings} exact />
+              <Route path="/add-training" component={AddTrainings} exact />
+              <Route path="/edit-training" component={EditTrainings} exact />
+              <Route path="/view-training" component={ViewTraining} exact />
+              <Route path="/attendance" component={Attendance} exact />
 
               <Route exact path="/">
                 <Redirect to="/home" />

@@ -20,6 +20,9 @@ import { LoanDisbursementsProvider } from "./components/context/LoanDisbursement
 import { LoanRepaymentsProvider } from "./components/context/LoanRepaymentsContext";
 import { LoanDetailsProvider } from "./components/context/LoanDetailsContext";
 import { GroupsProvider } from "./components/context/GroupsContext";
+import { SavingsProvider } from "./components/context/SavingsContext";
+import { TrainingsProvider } from "./components/context/TrainingsContext";
+import { AttendanceProvider } from "./components/context/AttendanceContext";
 const container = document.getElementById("root");
 const root = createRoot(container!);
 root.render(
@@ -42,7 +45,13 @@ root.render(
                                   <LoanRepaymentsProvider>
                                     <LoanDetailsProvider>
                                       <GroupsProvider>
-                                        <App />
+                                        <SavingsProvider>
+                                          <TrainingsProvider>
+                                            <AttendanceProvider>
+                                              <App />
+                                            </AttendanceProvider>
+                                          </TrainingsProvider>
+                                        </SavingsProvider>
                                       </GroupsProvider>
                                     </LoanDetailsProvider>
                                   </LoanRepaymentsProvider>

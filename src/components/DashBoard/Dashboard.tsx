@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   IonContent,
   IonPage,
@@ -12,8 +12,8 @@ import {
   IonCardTitle,
   IonCardContent,
   IonGrid,
-  IonRow,
   IonCol,
+  IonRow,
   IonMenu,
   IonList,
   IonItem,
@@ -21,32 +21,99 @@ import {
   IonMenuButton,
   IonButtons,
   IonSplitPane,
-  IonText,
+  IonSpinner,
+  IonButton,
 } from "@ionic/react";
 import {
   cashOutline,
-  trendingUpOutline,
   homeOutline,
   settingsOutline,
+  peopleOutline,
+  schoolOutline,
 } from "ionicons/icons";
 
-import "./Dashboard.css"; // Include custom CSS for styling
+import "./Dashboard.css";
 import { useClusters } from "../context/ClustersContext";
+import { getData } from "../../services/apiServices";
+import { useHistory } from "react-router";
 
 const Dashboard: React.FC = () => {
-  // State for dynamic numbers
-  const [totalSavings, setTotalSavings] = useState<number>(233500);
-  const [totalLoans, setTotalLoans] = useState<number>(400200);
-  const [loanStatuses, setLoanStatuses] = useState({
-    pendingApprovals: 0,
-    pendingDisbursements: 0,
-    outstandingLoans: 0,
-    cleared: 0,
-    writtenOff: 0,
-    rejected: 0,
-  });
-  const { clusters, returnClusters, selectedCluster, setTheSelectedCluster } =
-    useClusters();
+  const [savings, setSavings] = useState<any[]>([]);
+  const [groups, setGroups] = useState<any[]>([]);
+  const [totalSavings, setTotalSavings] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const history = useHistory();
+
+  const { selectedCluster } = useClusters();
+
+  // Calculate total savings for the cluster
+  const calculateClusterSavings = useCallback(() => {
+    if (!selectedCluster?.ClusterID || !savings.length) {
+      setTotalSavings(0);
+      return;
+    }
+
+    const clusterCode = String(selectedCluster.ClusterID).trim();
+    const clusterSavings = savings.filter(
+      (s: any) =>
+        String(s.clusterCode || s.ClusterID || "").trim() === clusterCode
+    );
+
+    const total = clusterSavings.reduce(
+      (sum, s) => sum + (parseFloat(s.Amount) || 0),
+      0
+    );
+
+    setTotalSavings(total);
+  }, [selectedCluster, savings]);
+
+  // Fetch savings and groups
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!selectedCluster?.ClusterID) return;
+      try {
+        setLoading(true);
+        setError(null);
+
+        const encodedClusterID = encodeURIComponent(selectedCluster.ClusterID);
+
+        const [savingsResult, groupsResult] = await Promise.all([
+          getData("/api/savings"),
+          getData(`/api/groups-cluster/${encodedClusterID}`),
+        ]);
+
+        setSavings(
+          Array.isArray(savingsResult)
+            ? savingsResult
+            : savingsResult.data || []
+        );
+        setGroups(
+          Array.isArray(groupsResult) ? groupsResult : groupsResult.data || []
+        );
+      } catch (err) {
+        console.error("❌ Error fetching data:", err);
+        setError("Failed to load data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [selectedCluster]);
+
+  // Recalculate total savings whenever data changes
+  useEffect(() => {
+    calculateClusterSavings();
+  }, [savings, selectedCluster, calculateClusterSavings]);
+
+  const totalGroups = groups.length;
+  const totalTrainings = 5; // static value, change as needed
+
+  // ✅ handle click to navigate
+  const handleTrainingClick = () => {
+    history.push("/trainings");
+  };
 
   return (
     <IonSplitPane contentId="main">
@@ -59,12 +126,10 @@ const Dashboard: React.FC = () => {
         </IonHeader>
         <IonContent>
           <IonList>
-            {/* Dashboard */}
             <IonItem button routerLink="/dashboard">
               <IonIcon icon={homeOutline} slot="start" size="large" />
               <IonLabel style={{ fontSize: "1.2rem" }}>Home</IonLabel>
             </IonItem>
-            {/* Settings */}
             <IonItem button routerLink="/settings">
               <IonIcon icon={settingsOutline} slot="start" size="large" />
               <IonLabel style={{ fontSize: "1.2rem" }}>Settings</IonLabel>
@@ -73,9 +138,8 @@ const Dashboard: React.FC = () => {
         </IonContent>
       </IonMenu>
 
-      {/* Main Content */}
+      {/* Main Page */}
       <IonPage id="main">
-        {/* Header */}
         <IonHeader>
           <IonToolbar style={{ backgroundColor: "#4CAF50" }}>
             <IonButtons slot="start">
@@ -85,117 +149,128 @@ const Dashboard: React.FC = () => {
           </IonToolbar>
         </IonHeader>
 
-        {/* Content */}
         <IonContent
           className="ion-padding"
           style={{ backgroundColor: "#f4f7fa" }}
         >
-          <IonGrid>
-            {/* Total Savings */}
-            <IonCol size="12" sizeMd="6">
-              <IonItem>
-                <p>{selectedCluster.ClusterName}</p>
-                <p style={{ marginLeft: "10px" }}></p>
-                Cluster
+          {loading ? (
+            <div style={{ textAlign: "center", marginTop: "40px" }}>
+              <IonSpinner name="crescent" />
+              <p>Loading data...</p>
+            </div>
+          ) : error ? (
+            <IonCard color="danger">
+              <IonCardContent>{error}</IonCardContent>
+            </IonCard>
+          ) : (
+            <IonGrid>
+              {/* Cluster Name */}
+              <IonItem lines="none">
+                <IonLabel>
+                  <strong>Cluster:</strong>{" "}
+                  {selectedCluster?.ClusterName || "N/A"}
+                </IonLabel>
               </IonItem>
 
-              <IonCard
-                className="custom-card green-card"
-                button
-                routerLink="/savings" // Navigate to savings page
-              >
-                <IonCardHeader>
-                  <IonIcon
-                    icon={cashOutline}
-                    size="large"
-                    style={{ color: "#ffffff", marginBottom: "10px" }}
-                  />
-                  <IonCardSubtitle style={{ color: "#ffffff" }}>
-                    Total Savings
-                  </IonCardSubtitle>
-                  <IonCardTitle
-                    style={{
-                      fontSize: "1.8rem",
-                      fontWeight: "bold",
-                      color: "#ffffff",
-                    }}
-                  >
-                    K {totalSavings.toLocaleString()}
-                  </IonCardTitle>
-                </IonCardHeader>
-                <IonCardContent style={{ color: "#ffffff" }}>
-                  Contributions made by all group members.
-                </IonCardContent>
-              </IonCard>
-            </IonCol>
+              <IonRow>
+                {/* Total Trainings Card */}
+                <IonCol size="12" sizeMd="6">
+                  <IonCard className="custom-card green-card">
+                    <IonCardHeader>
+                      <IonIcon
+                        icon={schoolOutline}
+                        size="large"
+                        style={{ color: "#ffffff", marginBottom: "10px" }}
+                      />
+                      <IonCardSubtitle style={{ color: "#ffffff" }}>
+                        Total Trainings in Cluster
+                      </IonCardSubtitle>
+                      <IonCardTitle
+                        style={{
+                          fontSize: "1.8rem",
+                          fontWeight: "bold",
+                          color: "#ffffff",
+                        }}
+                      >
+                        {totalTrainings}
+                      </IonCardTitle>
+                    </IonCardHeader>
+                    <IonCardContent>
+                      <IonButton
+                        expand="block"
+                        color="success"
+                        onClick={handleTrainingClick}
+                      >
+                        Trainings
+                      </IonButton>
+                    </IonCardContent>
+                  </IonCard>
+                </IonCol>
 
-            {/* Total Loans */}
-            <IonCol size="12" sizeMd="6">
-              <IonCard
-                className="custom-card green-card"
-                button
-                routerLink="/loans" // Navigate to loans page
-              >
-                <IonCardHeader>
-                  <IonIcon
-                    icon={trendingUpOutline}
-                    size="large"
-                    style={{ color: "#ffffff", marginBottom: "10px" }}
-                  />
-                  <IonCardSubtitle style={{ color: "#ffffff" }}>
-                    Total Loans
-                  </IonCardSubtitle>
-                  <IonCardTitle
-                    style={{
-                      fontSize: "1.8rem",
-                      fontWeight: "bold",
-                      color: "#ffffff",
-                    }}
+                {/* Total Savings Card */}
+                <IonCol size="12" sizeMd="6">
+                  <IonCard
+                    className="custom-card green-card"
+                    button
+                    routerLink="/savings"
                   >
-                    K {totalLoans.toLocaleString()}
-                  </IonCardTitle>
-                </IonCardHeader>
-                <IonCardContent style={{ color: "#ffffff" }}>
-                  Amount loaned out to members.
-                </IonCardContent>
-              </IonCard>
-            </IonCol>
-            {/* Loan Status Card */}
-            <IonRow>
-              <IonCol size="12">
-                <IonCard className="group-loans-card">
-                  <IonCardHeader>
-                    <IonCardSubtitle style={{ color: "#4CAF50" }}>
-                      Group Loans
-                    </IonCardSubtitle>
-                  </IonCardHeader>
-                  <IonCardContent>
-                    <IonGrid>
-                      {Object.entries(loanStatuses).map(([status, count]) => (
-                        <IonRow className="loan-row" key={status}>
-                          <IonCol size="9">
-                            {status
-                              .replace(/([A-Z])/g, " $1")
-                              .replace(/^./, (str) => str.toUpperCase())}
-                          </IonCol>
-                          <IonCol
-                            size="3"
-                            style={{
-                              textAlign: "right",
-                              fontWeight: "bold",
-                              color: "#555",
-                            }}
-                          >
-                            {count}
-                          </IonCol>
-                        </IonRow>
-                      ))}
-                    </IonGrid>
-                  </IonCardContent>
-                </IonCard>
-              </IonCol>
-            </IonRow>
-          </IonGrid>
+                    <IonCardHeader>
+                      <IonIcon
+                        icon={cashOutline}
+                        size="large"
+                        style={{ color: "#ffffff", marginBottom: "10px" }}
+                      />
+                      <IonCardSubtitle style={{ color: "#ffffff" }}>
+                        Total Savings in Cluster
+                      </IonCardSubtitle>
+                      <IonCardTitle
+                        style={{
+                          fontSize: "1.8rem",
+                          fontWeight: "bold",
+                          color: "#ffffff",
+                        }}
+                      >
+                        K {totalSavings.toLocaleString()}
+                      </IonCardTitle>
+                    </IonCardHeader>
+                    <IonCardContent style={{ color: "#ffffff" }}>
+                      Combined savings for cluster{" "}
+                      {selectedCluster?.ClusterName}.
+                    </IonCardContent>
+                  </IonCard>
+                </IonCol>
+
+                {/* Total Groups Card */}
+                <IonCol size="12" sizeMd="6">
+                  <IonCard
+                    className="custom-card blue-card"
+                    button
+                    routerLink="/groups"
+                  >
+                    <IonCardHeader>
+                      <IonIcon
+                        icon={peopleOutline}
+                        size="large"
+                        style={{ color: "", marginBottom: "10px" }}
+                      />
+                      <IonCardSubtitle style={{ color: "" }}>
+                        Total Groups in {selectedCluster?.ClusterName} Cluster
+                      </IonCardSubtitle>
+                      <IonCardTitle
+                        style={{
+                          fontSize: "1.8rem",
+                          fontWeight: "bold",
+                          color: "",
+                        }}
+                      >
+                        {totalGroups}
+                      </IonCardTitle>
+                    </IonCardHeader>
+                  </IonCard>
+                </IonCol>
+              </IonRow>
+            </IonGrid>
+          )}
         </IonContent>
       </IonPage>
     </IonSplitPane>

@@ -26,6 +26,7 @@ import {
   eye,
   chevronBack,
   chevronForward,
+  cashOutline,
 } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
 import { getData } from "../../services/apiServices";
@@ -82,6 +83,12 @@ const Groups: React.FC = () => {
     localStorage.setItem("selectedGroup", JSON.stringify(group));
     setTheSelectedGroup(group);
     history.push("/group-members");
+  };
+
+  const handleSavings = (group: any) => {
+    console.log("gulupu>>>", group);
+    setTheSelectedGroup(group);
+    history.push("/savings");
   };
 
   // Filter and paginate
@@ -226,6 +233,13 @@ const Groups: React.FC = () => {
                       size="large"
                       color="primary"
                       onClick={() => handleViewGroup(group)}
+                      style={{ cursor: "pointer" }}
+                    />
+                    <IonIcon
+                      icon={cashOutline}
+                      size="large"
+                      color="success"
+                      onClick={() => handleSavings(group)}
                       style={{ cursor: "pointer" }}
                     />
                     <IonIcon
