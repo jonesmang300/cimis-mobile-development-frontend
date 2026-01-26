@@ -1,5 +1,0 @@
-import MemberForm from "./MemberForm";
-
-export const AddMember = () => {
-  return <MemberForm />;
-};

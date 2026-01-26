@@ -25,20 +25,18 @@ const Login: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState(false);
 
-  // ✅ Validation Schema
+  /* ===============================
+     VALIDATION SCHEMA
+     (Allows admin + cluster users)
+  =============================== */
   const schema = Yup.object().shape({
-    clusterID: Yup.string()
-      .matches(
-        /^\d{4}\/[A-Z]{3}\/\d{6}$/,
-        "Invalid format. Expected format like 2025/CLS/000001"
-      )
-      .required("Cluster Code is required"),
-    pin: Yup.string()
-      .length(4, "PIN must be exactly 4 digits")
-      .required("PIN is required"),
+    clusterID: Yup.string().required("Username is required"),
+    pin: Yup.string().required("Password is required"),
   });
 
-  // ✅ Fetch clusters once
+  /* ===============================
+     FETCH CLUSTERS
+  =============================== */
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -57,50 +55,59 @@ const Login: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
     fetchData();
   }, []);
 
-  // ✅ Handle Login Submit
+  /* ===============================
+     LOGIN HANDLER
+  =============================== */
   const handleLoginSubmit = async (formData: any) => {
     const { clusterID, pin } = formData;
 
-    // Handle empty data
+    /* ===============================
+       STATIC ADMIN LOGIN
+    =============================== */
+    if (clusterID === "admin" && pin === "admin") {
+      setMessage("Admin logged in successfully!", "success");
+
+      setTimeout(() => setMessage("", "success"), 2000);
+
+      onLogin();
+      history.push("/home");
+      return;
+    }
+
+    /* ===============================
+       CLUSTER LOGIN
+    =============================== */
     if (fetchError || clusters.length === 0) {
-      setMessage(
-        "Failed to fetch clusters. Please check your connection or refresh.",
-        "error"
-      );
+      setMessage("Failed to Login. Please check your credentials.", "error");
       return;
     }
 
     try {
-      // ✅ Match clusterID & pin from DB
       const cluster = clusters.find(
-        (m: any) => m.ClusterID === clusterID && m.pin === pin
+        (m: any) => m.ClusterID === clusterID && m.pin === pin,
       );
 
       if (cluster) {
         setTheSelectedCluster(cluster);
-        setMessage(
-          `${cluster.ClusterName} Cluster logged in successfully!`,
-          "success"
-        );
+        setMessage(`${cluster.ClusterName} Logged in successfully!`, "success");
 
-        // Clear success message after 2s
         setTimeout(() => setMessage("", "success"), 2000);
 
         onLogin();
         history.push("/home");
       } else {
-        setMessage("Invalid Cluster Code or PIN. Please try again.", "error");
+        setMessage("Invalid username or password.", "error");
       }
     } catch (error) {
       console.error("Login error:", error);
-      setMessage("Failed to login. Please try again.", "error");
+      setMessage("Login failed. Please try again.", "error");
     }
   };
 
   return (
     <IonPage>
       <IonContent className="ion-padding login-content">
-        {/* Notification messages */}
+        {/* Notification Messages */}
         {messageState.type && (
           <NotificationMessage
             text={messageState.text}
@@ -108,7 +115,7 @@ const Login: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
           />
         )}
 
-        {/* Loading spinner */}
+        {/* Loading */}
         {loading && (
           <div className="loading-container">
             <IonSpinner name="bubbles" />
@@ -116,9 +123,10 @@ const Login: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
           </div>
         )}
 
-        {/* Login Form */}
+        {/* Logo */}
         <IonImg src="/comsip.jpg" className="login-img" />
 
+        {/* Login Form */}
         <Formik
           initialValues={{ clusterID: "", pin: "" }}
           validationSchema={schema}
@@ -127,23 +135,24 @@ const Login: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
           {({ isSubmitting }) => (
             <Form>
               <div className="login-header">
-                <h2>Welcome Back!</h2>
-                <p>Please log in to continue.</p>
+                <h2>Welcome Back</h2>
+                <p>Please log in to continue</p>
               </div>
 
               <TextInputField
                 id="clusterID"
                 name="clusterID"
-                label="Cluster Code"
-                placeholder="Enter Cluster Code"
+                label="Username"
+                placeholder="Enter username"
                 type="text"
               />
+
               <TextInputField
                 id="pin"
                 name="pin"
-                label="PIN"
+                label="Password"
                 type="password"
-                placeholder="Enter PIN"
+                placeholder="Enter password"
               />
 
               <IonButton
@@ -154,16 +163,6 @@ const Login: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
                 disabled={isSubmitting}
               >
                 Log In
-              </IonButton>
-
-              <IonButton
-                expand="block"
-                fill="clear"
-                color="medium"
-                onClick={fetchData}
-                style={{ marginTop: "0.5em" }}
-              >
-                Refresh Clusters
               </IonButton>
             </Form>
           )}
