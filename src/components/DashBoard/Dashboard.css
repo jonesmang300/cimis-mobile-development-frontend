@@ -1,3 +1,43 @@
+/* Toolbar */
+.green-toolbar {
+  --background: #4caf50;
+  --color: #ffffff;
+}
+
+/* Page background */
+.dashboard-bg {
+  background-color: #f4f7fa;
+}
+
+/* Loading */
+.loading-container {
+  text-align: center;
+  margin-top: 40px;
+}
+
+/* Card Icon */
+.card-icon {
+  color: #ffffff;
+  margin-bottom: 10px;
+}
+
+/* Green Card */
+.green-card {
+  background-color: #4caf50;
+  color: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  padding: 10px;
+  text-align: center;
+}
+
+.green-card IonCardSubtitle,
+.green-card IonCardContent,
+.green-card IonCardTitle {
+  color: #ffffff !important;
+}
+
+/* Group Loans Card (kept from your CSS) */
 .group-loans-card {
   background-color: #ffffff;
   border-radius: 12px;

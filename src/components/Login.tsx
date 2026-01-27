@@ -1,106 +1,48 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   IonContent,
   IonPage,
   IonButton,
   IonImg,
-  IonSpinner,
 } from "@ionic/react";
 import { Formik, Form } from "formik";
 import { TextInputField } from "./form";
 import * as Yup from "yup";
 import { useHistory } from "react-router-dom";
-import { getData } from "../services/apiServices";
-import { useClusters } from "./context/ClustersContext";
 import { useNotificationMessage } from "./context/notificationMessageContext";
 import { NotificationMessage } from "./notificationMessage";
 import "./Login.css";
 
 const Login: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
   const history = useHistory();
-
   const { messageState, setMessage } = useNotificationMessage();
-  const { clusters, returnClusters, setTheSelectedCluster } = useClusters();
-
-  const [loading, setLoading] = useState(false);
-  const [fetchError, setFetchError] = useState(false);
 
   /* ===============================
      VALIDATION SCHEMA
-     (Allows admin + cluster users)
   =============================== */
   const schema = Yup.object().shape({
-    clusterID: Yup.string().required("Username is required"),
+    username: Yup.string().required("Username is required"),
     pin: Yup.string().required("Password is required"),
   });
-
-  /* ===============================
-     FETCH CLUSTERS
-  =============================== */
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const result = await getData("/api/cluster");
-      returnClusters(result);
-      setFetchError(false);
-    } catch (error) {
-      console.error("Cluster fetch failed:", error);
-      setFetchError(true);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   /* ===============================
      LOGIN HANDLER
   =============================== */
   const handleLoginSubmit = async (formData: any) => {
-    const { clusterID, pin } = formData;
+    const { username, pin } = formData;
 
     /* ===============================
        STATIC ADMIN LOGIN
     =============================== */
-    if (clusterID === "admin" && pin === "admin") {
+    if (username === "admin" && pin === "admin") {
       setMessage("Admin logged in successfully!", "success");
 
       setTimeout(() => setMessage("", "success"), 2000);
 
       onLogin();
       history.push("/home");
-      return;
-    }
-
-    /* ===============================
-       CLUSTER LOGIN
-    =============================== */
-    if (fetchError || clusters.length === 0) {
-      setMessage("Failed to Login. Please check your credentials.", "error");
-      return;
-    }
-
-    try {
-      const cluster = clusters.find(
-        (m: any) => m.ClusterID === clusterID && m.pin === pin,
-      );
-
-      if (cluster) {
-        setTheSelectedCluster(cluster);
-        setMessage(`${cluster.ClusterName} Logged in successfully!`, "success");
-
-        setTimeout(() => setMessage("", "success"), 2000);
-
-        onLogin();
-        history.push("/home");
-      } else {
-        setMessage("Invalid username or password.", "error");
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-      setMessage("Login failed. Please try again.", "error");
+    } else {
+      setMessage("Invalid username or password.", "error");
     }
   };
 
@@ -115,20 +57,12 @@ const Login: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
           />
         )}
 
-        {/* Loading */}
-        {loading && (
-          <div className="loading-container">
-            <IonSpinner name="bubbles" />
-            <p>Loading cluster data...</p>
-          </div>
-        )}
-
         {/* Logo */}
         <IonImg src="/comsip.jpg" className="login-img" />
 
         {/* Login Form */}
         <Formik
-          initialValues={{ clusterID: "", pin: "" }}
+          initialValues={{ username: "", pin: "" }}
           validationSchema={schema}
           onSubmit={handleLoginSubmit}
         >
@@ -140,8 +74,8 @@ const Login: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
               </div>
 
               <TextInputField
-                id="clusterID"
-                name="clusterID"
+                id="username"
+                name="username"
                 label="Username"
                 placeholder="Enter username"
                 type="text"
