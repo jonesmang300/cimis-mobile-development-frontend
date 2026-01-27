@@ -15,8 +15,6 @@ export const useFormikField = (name: string) => {
   //@ts-ignore
   const value = values[name];
 
-  console.log(errors);
-
   //@ts-ignore
   const hasError = touched[name] && Boolean(errors[name]);
 

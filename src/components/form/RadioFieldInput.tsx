@@ -29,7 +29,10 @@ export const RadioGroupInput: FC<Prop> = ({
 
   return (
     <div style={{ display: "flex", flexDirection: "column", margin: "8px 0" }}>
-      <label htmlFor={name} style={{ marginBottom: "8px", paddingLeft:'15px' }}>
+      <label
+        htmlFor={name}
+        style={{ marginBottom: "8px", paddingLeft: "15px", color: "#4CAF50" }}
+      >
         {label}
       </label>
       <IonRadioGroup
