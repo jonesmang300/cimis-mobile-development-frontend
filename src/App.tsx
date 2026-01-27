@@ -33,12 +33,12 @@ import "./theme/variables.css";
 
 /* Components */
 import { Home } from "./components/Home";
-import Transactions from "./components/Transaction/Transactions";
+import Transactions from "./components/Validation/Validation";
 import Settings from "./components/Settings";
 import Wallet from "./components/Wallet/Wallet";
 import CashBoxDetails from "./components/Wallet/CashBoxDetails";
 import Login from "./components/Login";
-import AddTransactionForm from "./components/Transaction/AddTransactionsForm";
+import AddTransactionForm from "./components/Validation/AddTransactionsForm";
 import SupportPage from "./components/SupportPage";
 
 /* Icons */
@@ -67,7 +67,7 @@ const App: React.FC = () => {
               <Route exact path="/home">
                 <Home />
               </Route>
-              <Route exact path="/transactions">
+              <Route exact path="/validation">
                 <Transactions />
               </Route>
               <Route exact path="/settings">
@@ -95,17 +95,17 @@ const App: React.FC = () => {
                 <IonIcon icon={homeOutline} />
                 <IonLabel>Home</IonLabel>
               </IonTabButton>
-              <IonTabButton tab="transactions" href="/transactions">
+              <IonTabButton tab="Validation" href="/Validation">
                 <IonIcon icon={listOutline} />
-                <IonLabel>Transactions</IonLabel>
+                <IonLabel>Validation</IonLabel>
               </IonTabButton>
               <IonTabButton tab="group-members" href="/groups">
                 <IonIcon icon={peopleOutline} />
                 <IonLabel>Groups</IonLabel>
               </IonTabButton>
-              <IonTabButton tab="wallet" href="/wallet">
+              <IonTabButton tab="transactions" href="/transactions">
                 <IonIcon icon={walletOutline} />
-                <IonLabel>Wallet</IonLabel>
+                <IonLabel>Transactions</IonLabel>
               </IonTabButton>
               <IonTabButton tab="settings" href="/settings">
                 <IonIcon icon={settingsOutline} />
