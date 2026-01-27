@@ -20,12 +20,23 @@ import {
   cashOutline,
   logOutOutline,
   helpOutline,
+  statsChartOutline,
+  trendingUpOutline,
 } from "ionicons/icons";
 import { useTranslation } from "react-i18next";
 import "./Settings.css";
+import { useHistory } from "react-router";
 
 const SettingsPage: React.FC = () => {
   const { t } = useTranslation();
+  const history = useHistory();
+
+  const handleLogout = () => {
+    //localStorage.clear();
+    setTimeout(() => {
+      window.location.href = "/login";
+    }, 500); // small delay for smooth UX
+  };
 
   return (
     <IonPage>
@@ -42,7 +53,10 @@ const SettingsPage: React.FC = () => {
         <IonGrid>
           <IonRow>
             <IonCol>
-              <IonItem lines="none" className="ion-padding-vertical custom-item">
+              <IonItem
+                lines="none"
+                className="ion-padding-vertical custom-item"
+              >
                 <IonLabel>
                   <h3>{t("userName")}</h3>
                   <p>{t("phoneNumber")}</p>
@@ -60,12 +74,20 @@ const SettingsPage: React.FC = () => {
         {/* Group Settings Section */}
         <IonList>
           <IonItem button routerLink="/group-roles">
-            <IonIcon icon={shieldOutline} slot="start" className="custom-icon" />
+            <IonIcon
+              icon={shieldOutline}
+              slot="start"
+              className="custom-icon"
+            />
             <IonLabel>{t("groupRoles")}</IonLabel>
           </IonItem>
 
           <IonItem button routerLink="/loan-products">
-            <IonIcon icon={walletOutline} slot="start" className="custom-icon" />
+            <IonIcon
+              icon={walletOutline}
+              slot="start"
+              className="custom-icon"
+            />
             <IonLabel>{t("loanProducts")}</IonLabel>
           </IonItem>
 
@@ -78,6 +100,24 @@ const SettingsPage: React.FC = () => {
             <IonIcon icon={helpOutline} slot="start" className="custom-icon" />
             <IonLabel>{t("support")}</IonLabel>
           </IonItem>
+
+          <IonItem button routerLink="/expenses">
+            <IonIcon
+              icon={statsChartOutline}
+              slot="start"
+              className="custom-icon"
+            />
+            <IonLabel>{t("Cluster Expenses")}</IonLabel>
+          </IonItem>
+
+          <IonItem button routerLink="/income">
+            <IonIcon
+              icon={trendingUpOutline}
+              slot="start"
+              className="custom-icon"
+            />
+            <IonLabel>{t("Cluster Income")}</IonLabel>
+          </IonItem>
         </IonList>
 
         {/* Logout Button */}
@@ -85,12 +125,16 @@ const SettingsPage: React.FC = () => {
           <IonRow>
             <IonCol>
               <IonButton
-                routerLink="/"
                 expand="block"
                 color="success"
                 className="logout-button ion-margin-top"
+                onClick={handleLogout}
               >
-                <IonIcon icon={logOutOutline} slot="start" className="custom-icon" />
+                <IonIcon
+                  icon={logOutOutline}
+                  slot="start"
+                  className="custom-icon"
+                />
                 {t("logout")}
               </IonButton>
             </IonCol>

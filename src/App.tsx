@@ -33,13 +33,18 @@ import "./theme/variables.css";
 
 /* Components */
 import { Home } from "./components/Home";
-import Transactions from "./components/Transaction/Transactions";
+import Transactions from "./components/Validation/Validation";
 import Settings from "./components/Settings";
 import Wallet from "./components/Wallet/Wallet";
 import CashBoxDetails from "./components/Wallet/CashBoxDetails";
 import Login from "./components/Login";
 import AddTransactionForm from "./components/Transaction/AddTransactionsForm";
+import RequestLoanPage from "./components/Loans/RequestLoanPage";
+import Grouproles from "./components/Grouproles";
+import Meetings from "./components/Meetings";
+import LoanProducts from "./components/LoanProducts";
 import SupportPage from "./components/SupportPage";
+import SavingsProducts from "./components/SavingsProducts";
 import { MembersProvider } from "./components/context/MembersContext"; // Import MembersProvider
 
 /* Icons */
@@ -50,11 +55,13 @@ import {
   peopleOutline,
   walletOutline,
 } from "ionicons/icons";
+import { useAutoLogout } from "./hooks/useAutoLogout";
 
 setupIonicReact();
 
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Track login status
+  useAutoLogout();
 
   return (
     <IonApp>
@@ -73,16 +80,31 @@ const App: React.FC = () => {
                 <Route exact path="/settings">
                   <Settings />
                 </Route>
+                <Route exact path="/group-members">
+                  <GroupMembers />
+                </Route>
                 <Route exact path="/wallet">
                   <Wallet />
                 </Route>
-
+                <Route exact path="/add-member">
+                  <AddMember />
+                </Route>
                 <Route exact path="/add-transaction">
                   <AddTransactionForm />
                 </Route>
-
+                <Route path="/savings" component={SavingsPage} exact />
+                <Route path="/loans" component={LoansPage} exact />
+                <Route path="/request-loan" component={RequestLoanPage} exact />
                 <Route path="/cashbox-details" component={CashBoxDetails} />
+                <Route path="/group-roles" component={Grouproles} exact />
+                <Route path="/meetings" component={Meetings} />
+                <Route path="/loan-products" component={LoanProducts} exact />
                 <Route path="/support" component={SupportPage} exact />
+                <Route
+                  path="/savings-products"
+                  component={SavingsProducts}
+                  exact
+                />
 
                 <Route exact path="/">
                   <Redirect to="/home" />
@@ -95,17 +117,17 @@ const App: React.FC = () => {
                   <IonIcon icon={homeOutline} />
                   <IonLabel>Home</IonLabel>
                 </IonTabButton>
-                <IonTabButton tab="transactions" href="/validation">
+                <IonTabButton tab="transactions" href="/transactions">
                   <IonIcon icon={listOutline} />
-                  <IonLabel>Validation</IonLabel>
+                  <IonLabel>Transactions</IonLabel>
                 </IonTabButton>
                 <IonTabButton tab="group-members" href="/group-members">
                   <IonIcon icon={peopleOutline} />
-                  <IonLabel>Groups</IonLabel>
+                  <IonLabel>Members</IonLabel>
                 </IonTabButton>
                 <IonTabButton tab="wallet" href="/wallet">
                   <IonIcon icon={walletOutline} />
-                  <IonLabel>Transactions</IonLabel>
+                  <IonLabel>Wallet</IonLabel>
                 </IonTabButton>
                 <IonTabButton tab="settings" href="/settings">
                   <IonIcon icon={settingsOutline} />
