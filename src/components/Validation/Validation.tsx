@@ -19,6 +19,10 @@ import {
   IonToast,
   IonButtons,
   IonIcon,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardContent,
 } from "@ionic/react";
 import { arrowBack } from "ionicons/icons";
 import { useIonRouter } from "@ionic/react";
@@ -32,42 +36,40 @@ const beneficiaries = [
     hh_code: "HH001",
     sex: "M",
     dob: "1990-05-12",
-    nat_id: "MW90123456",
+    region: "Central",
+    district: "Lilongwe",
+    ta: "Kalolo",
+    vc: "VC-01",
   },
   {
     hh_head_name: "Mary Phiri",
     hh_code: "HH002",
     sex: "",
     dob: "",
-    nat_id: "",
+    region: "Central",
+    district: "Lilongwe",
+    ta: "Kalolo",
+    vc: "VC-02",
   },
   {
     hh_head_name: "Peter Chirwa",
     hh_code: "HH003",
     sex: "M",
     dob: "",
-    nat_id: "MW88112233",
+    region: "Southern",
+    district: "Blantyre",
+    ta: "Kapeni",
+    vc: "VC-01",
   },
   {
     hh_head_name: "Agnes Mbewe",
     hh_code: "HH004",
     sex: "",
     dob: "",
-    nat_id: "",
-  },
-  {
-    hh_head_name: "James Zulu",
-    hh_code: "HH005",
-    sex: "M",
-    dob: "1985-09-21",
-    nat_id: "",
-  },
-  {
-    hh_head_name: "Esther Kamanga",
-    hh_code: "HH006",
-    sex: "F",
-    dob: "1994-02-08",
-    nat_id: "MW94007891",
+    region: "Northern",
+    district: "Mzimba",
+    ta: "Mpherembe",
+    vc: "VC-03",
   },
 ];
 
@@ -84,12 +86,61 @@ const GroupAssignment: React.FC = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
-  /* ===============================
-     LOAD MEMBERS
-  =============================== */
+  /* FILTER STATE */
+  const [region, setRegion] = useState("");
+  const [district, setDistrict] = useState("");
+  const [ta, setTa] = useState("");
+  const [vc, setVc] = useState("");
+
   useEffect(() => {
     setMembers(beneficiaries);
   }, []);
+
+  /* ===============================
+     FILTER OPTIONS
+  =============================== */
+  const regions = [...new Set(beneficiaries.map((b) => b.region))];
+
+  const districts = [
+    ...new Set(
+      beneficiaries
+        .filter((b) => !region || b.region === region)
+        .map((b) => b.district),
+    ),
+  ];
+
+  const tas = [
+    ...new Set(
+      beneficiaries
+        .filter(
+          (b) =>
+            (!region || b.region === region) &&
+            (!district || b.district === district),
+        )
+        .map((b) => b.ta),
+    ),
+  ];
+
+  const vcs = [
+    ...new Set(
+      beneficiaries
+        .filter(
+          (b) =>
+            (!region || b.region === region) &&
+            (!district || b.district === district) &&
+            (!ta || b.ta === ta),
+        )
+        .map((b) => b.vc),
+    ),
+  ];
+
+  const filteredMembers = members.filter(
+    (m) =>
+      (!region || m.region === region) &&
+      (!district || m.district === district) &&
+      (!ta || m.ta === ta) &&
+      (!vc || m.vc === vc),
+  );
 
   /* ===============================
      SELECT / UNSELECT
@@ -125,7 +176,7 @@ const GroupAssignment: React.FC = () => {
   };
 
   /* ===============================
-     SUBMIT GROUP
+     SUBMIT
   =============================== */
   const submitGroup = () => {
     if (!groupName.trim()) {
@@ -139,7 +190,6 @@ const GroupAssignment: React.FC = () => {
     }
 
     const incomplete = selectedMembers.find((m) => !m.sex || !m.dob);
-
     if (incomplete) {
       setToastMessage("Some selected beneficiaries require Sex and DOB");
       return;
@@ -167,66 +217,149 @@ const GroupAssignment: React.FC = () => {
       </IonHeader>
 
       <IonContent className="ion-padding">
-        {/* GROUP NAME */}
-        <IonItem>
-          <IonLabel position="stacked">Group Name *</IonLabel>
-          <IonInput
-            value={groupName}
-            placeholder="Enter group name"
-            onIonInput={(e) => setGroupName(e.detail.value!)}
-          />
-        </IonItem>
+        {/* FILTER CARD */}
+        <IonCard>
+          <IonCardHeader>
+            <IonCardTitle>Filter Beneficiaries</IonCardTitle>
+          </IonCardHeader>
+          <IonCardContent>
+            <IonItem>
+              <IonLabel position="stacked">Region</IonLabel>
+              <IonSelect
+                value={region}
+                onIonChange={(e) => {
+                  setRegion(e.detail.value);
+                  setDistrict("");
+                  setTa("");
+                  setVc("");
+                }}
+              >
+                {regions.map((r) => (
+                  <IonSelectOption key={r} value={r}>
+                    {r}
+                  </IonSelectOption>
+                ))}
+              </IonSelect>
+            </IonItem>
 
-        <IonLabel style={{ margin: "12px 0", display: "block" }}>
-          Selected Beneficiaries{" "}
-          <IonBadge color="success">{selectedMembers.length}</IonBadge>
-        </IonLabel>
+            <IonItem>
+              <IonLabel position="stacked">District</IonLabel>
+              <IonSelect
+                value={district}
+                disabled={!region}
+                onIonChange={(e) => {
+                  setDistrict(e.detail.value);
+                  setTa("");
+                  setVc("");
+                }}
+              >
+                {districts.map((d) => (
+                  <IonSelectOption key={d} value={d}>
+                    {d}
+                  </IonSelectOption>
+                ))}
+              </IonSelect>
+            </IonItem>
 
-        {/* MEMBERS LIST */}
-        <IonList inset>
-          {members.map((member) => {
-            const isSelected = selectedMembers.some(
-              (m) => m.hh_code === member.hh_code,
-            );
+            <IonItem>
+              <IonLabel position="stacked">Traditional Authority</IonLabel>
+              <IonSelect
+                value={ta}
+                disabled={!district}
+                onIonChange={(e) => {
+                  setTa(e.detail.value);
+                  setVc("");
+                }}
+              >
+                {tas.map((t) => (
+                  <IonSelectOption key={t} value={t}>
+                    {t}
+                  </IonSelectOption>
+                ))}
+              </IonSelect>
+            </IonItem>
 
-            const requiresEdit = !member.sex || !member.dob;
+            <IonItem>
+              <IonLabel position="stacked">Village Cluster</IonLabel>
+              <IonSelect
+                value={vc}
+                disabled={!ta}
+                onIonChange={(e) => setVc(e.detail.value)}
+              >
+                {vcs.map((v) => (
+                  <IonSelectOption key={v} value={v}>
+                    {v}
+                  </IonSelectOption>
+                ))}
+              </IonSelect>
+            </IonItem>
+          </IonCardContent>
+        </IonCard>
 
-            return (
-              <IonItem key={member.hh_code}>
-                <IonCheckbox
-                  slot="start"
-                  checked={isSelected}
-                  onIonChange={() => toggleMember(member)}
-                />
+        {/* GROUP DETAILS CARD (GROUP NAME + COUNT + MEMBERS LIST) */}
+        <IonCard>
+          <IonCardHeader>
+            <IonCardTitle>Group Details</IonCardTitle>
+          </IonCardHeader>
 
-                <IonLabel>
-                  <h2>{member.hh_head_name}</h2>
-                  <p>
-                    <strong>Code:</strong> {member.hh_code}
-                  </p>
+          <IonCardContent>
+            {/* GROUP NAME */}
+            <IonItem>
+              <IonLabel position="stacked">Group Name *</IonLabel>
+              <IonInput
+                value={groupName}
+                onIonInput={(e) => setGroupName(e.detail.value!)}
+              />
+            </IonItem>
 
-                  {requiresEdit ? (
-                    <IonBadge color="danger">REQUIRES EDIT</IonBadge>
-                  ) : (
-                    <IonBadge color="success">COMPLETE</IonBadge>
-                  )}
-                </IonLabel>
+            {/* SELECTED COUNT */}
+            <IonItem lines="none">
+              <IonLabel>Selected Beneficiaries</IonLabel>
+              <IonBadge slot="end" color="success">
+                {selectedMembers.length}
+              </IonBadge>
+            </IonItem>
 
-                <IonButton
-                  fill="clear"
-                  size="small"
-                  color={requiresEdit ? "danger" : "primary"}
-                  onClick={() => {
-                    setEditingMember(member);
-                    setShowEditModal(true);
-                  }}
-                >
-                  Edit
-                </IonButton>
-              </IonItem>
-            );
-          })}
-        </IonList>
+            {/* MEMBERS LIST (INSIDE CARD) */}
+            <IonList>
+              {filteredMembers.map((member) => {
+                const isSelected = selectedMembers.some(
+                  (m) => m.hh_code === member.hh_code,
+                );
+                const requiresEdit = !member.sex || !member.dob;
+
+                return (
+                  <IonItem key={member.hh_code}>
+                    <IonCheckbox
+                      slot="start"
+                      checked={isSelected}
+                      onIonChange={() => toggleMember(member)}
+                    />
+                    <IonLabel>
+                      <h2>{member.hh_head_name}</h2>
+                      <p>
+                        <strong>Code:</strong> {member.hh_code}
+                      </p>
+                      <IonBadge color={requiresEdit ? "danger" : "success"}>
+                        {requiresEdit ? "REQUIRES EDIT" : "COMPLETE"}
+                      </IonBadge>
+                    </IonLabel>
+                    <IonButton
+                      fill="clear"
+                      size="small"
+                      onClick={() => {
+                        setEditingMember(member);
+                        setShowEditModal(true);
+                      }}
+                    >
+                      Edit
+                    </IonButton>
+                  </IonItem>
+                );
+              })}
+            </IonList>
+          </IonCardContent>
+        </IonCard>
 
         <IonButton
           expand="block"
@@ -256,7 +389,6 @@ const GroupAssignment: React.FC = () => {
           <IonContent className="ion-padding">
             {editingMember && (
               <>
-                {/* SEX */}
                 <IonItem>
                   <IonLabel position="stacked">Sex *</IonLabel>
                   <IonSelect
@@ -273,7 +405,6 @@ const GroupAssignment: React.FC = () => {
                   </IonSelect>
                 </IonItem>
 
-                {/* DOB */}
                 <IonItem>
                   <IonLabel position="stacked">Date of Birth *</IonLabel>
                   <IonDatetime
@@ -283,21 +414,6 @@ const GroupAssignment: React.FC = () => {
                       setEditingMember({
                         ...editingMember,
                         dob: e.detail.value,
-                      })
-                    }
-                  />
-                </IonItem>
-
-                {/* NATIONAL ID (OPTIONAL) */}
-                <IonItem>
-                  <IonLabel position="stacked">National ID (Optional)</IonLabel>
-                  <IonInput
-                    value={editingMember.nat_id}
-                    placeholder="Enter National ID"
-                    onIonInput={(e) =>
-                      setEditingMember({
-                        ...editingMember,
-                        nat_id: e.detail.value!,
                       })
                     }
                   />
