@@ -43,6 +43,7 @@ const Dashboard: React.FC = () => {
   const [totalSavings, setTotalSavings] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+
   const history = useHistory();
 
   const { selectedCluster } = useClusters();
@@ -55,14 +56,15 @@ const Dashboard: React.FC = () => {
     }
 
     const clusterCode = String(selectedCluster.ClusterID).trim();
+
     const clusterSavings = savings.filter(
       (s: any) =>
-        String(s.clusterCode || s.ClusterID || "").trim() === clusterCode,
+        String(s.clusterCode || s.ClusterID || "").trim() === clusterCode
     );
 
     const total = clusterSavings.reduce(
       (sum, s) => sum + (parseFloat(s.Amount) || 0),
-      0,
+      0
     );
 
     setTotalSavings(total);
@@ -72,6 +74,7 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       if (!selectedCluster?.ClusterID) return;
+
       try {
         setLoading(true);
         setError(null);
@@ -86,13 +89,16 @@ const Dashboard: React.FC = () => {
         setSavings(
           Array.isArray(savingsResult)
             ? savingsResult
-            : savingsResult.data || [],
+            : savingsResult.data || []
         );
+
         setGroups(
-          Array.isArray(groupsResult) ? groupsResult : groupsResult.data || [],
+          Array.isArray(groupsResult)
+            ? groupsResult
+            : groupsResult.data || []
         );
       } catch (err) {
-        console.error("❌ Error fetching data:", err);
+        console.error("Error fetching data:", err);
         setError("Failed to load data");
       } finally {
         setLoading(false);
@@ -117,31 +123,33 @@ const Dashboard: React.FC = () => {
 
   return (
     <IonSplitPane contentId="main">
-      {/* Sidebar */}
+      {/* SIDE MENU */}
       <IonMenu contentId="main">
         <IonHeader>
-          <IonToolbar color="primary">
+          <IonToolbar className="green-toolbar">
             <IonTitle>Menu</IonTitle>
           </IonToolbar>
         </IonHeader>
+
         <IonContent>
           <IonList>
             <IonItem button routerLink="/dashboard">
-              <IonIcon icon={homeOutline} slot="start" size="large" />
-              <IonLabel style={{ fontSize: "1.2rem" }}>Home</IonLabel>
+              <IonIcon icon={homeOutline} slot="start" />
+              <IonLabel>Home</IonLabel>
             </IonItem>
+
             <IonItem button routerLink="/settings">
-              <IonIcon icon={settingsOutline} slot="start" size="large" />
-              <IonLabel style={{ fontSize: "1.2rem" }}>Settings</IonLabel>
+              <IonIcon icon={settingsOutline} slot="start" />
+              <IonLabel>Settings</IonLabel>
             </IonItem>
           </IonList>
         </IonContent>
       </IonMenu>
 
-      {/* Main Page */}
+      {/* MAIN PAGE */}
       <IonPage id="main">
         <IonHeader>
-          <IonToolbar style={{ backgroundColor: "#4CAF50" }}>
+          <IonToolbar className="green-toolbar">
             <IonButtons slot="start">
               <IonMenuButton />
             </IonButtons>
@@ -149,12 +157,9 @@ const Dashboard: React.FC = () => {
           </IonToolbar>
         </IonHeader>
 
-        <IonContent
-          className="ion-padding"
-          style={{ backgroundColor: "#f4f7fa" }}
-        >
+        <IonContent className="dashboard-bg ion-padding">
           {loading ? (
-            <div style={{ textAlign: "center", marginTop: "40px" }}>
+            <div className="loading-container">
               <IonSpinner name="crescent" />
               <p>Loading data...</p>
             </div>
@@ -175,29 +180,15 @@ const Dashboard: React.FC = () => {
               <IonRow>
                 {/* Total Groups Card */}
                 <IonCol size="12" sizeMd="6">
-                  <IonCard
-                    className="custom-card blue-card"
-                    button
-                    routerLink="/groups"
-                  >
+                  <IonCard className="green-card" routerLink="/groups">
                     <IonCardHeader>
                       <IonIcon
                         icon={peopleOutline}
                         size="large"
-                        style={{ color: "", marginBottom: "10px" }}
+                        className="card-icon"
                       />
-                      <IonCardSubtitle style={{ color: "" }}>
-                        Total Groups in {selectedCluster?.ClusterName} Cluster
-                      </IonCardSubtitle>
-                      <IonCardTitle
-                        style={{
-                          fontSize: "1.8rem",
-                          fontWeight: "bold",
-                          color: "",
-                        }}
-                      >
-                        {totalGroups}
-                      </IonCardTitle>
+                      <IonCardSubtitle>Total Groups</IonCardSubtitle>
+                      <IonCardTitle>{totalGroups}</IonCardTitle>
                     </IonCardHeader>
                   </IonCard>
                 </IonCol>

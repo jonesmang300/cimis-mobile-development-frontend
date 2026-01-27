@@ -1,0 +1,83 @@
+/* Wallet Page Content */
+.ion-padding {
+  padding: 1rem;
+  background-color: #f4f7fa;
+  min-height: 100vh;
+}
+
+/* Main Header */
+.main-header {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 0.3rem;
+  color: #333;
+  text-align: center;
+}
+
+/* Subtitle */
+.sub-header {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* Custom Green Card */
+.custom-green-card {
+  background-color: #4caf50;
+  color: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  padding: 15px;
+  transition: transform 0.2s ease;
+}
+
+.custom-green-card:hover {
+  transform: translateY(-3px);
+}
+
+/* Card Subtitle */
+.ion-card-subtitle-custom {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.icon-subtitle {
+  margin-right: 8px;
+  font-size: 1.2rem;
+}
+
+/* Card Content */
+.custom-green-card IonCardContent {
+  color: #e0f2f1;
+  font-size: 0.95rem;
+  margin-bottom: 15px;
+}
+
+/* Balance Section */
+.balance-section {
+  background-color: rgba(255, 255, 255, 0.15);
+  padding: 12px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.balance-text {
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+  color: #f1f8e9;
+}
+
+.balance-amount {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+/* Responsive Centering */
+.text-center {
+  text-align: center;
+}
