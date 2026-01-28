@@ -23,55 +23,17 @@ import {
   IonCardHeader,
   IonCardTitle,
   IonCardContent,
+  IonFooter,
 } from "@ionic/react";
 import { arrowBack } from "ionicons/icons";
 import { useIonRouter } from "@ionic/react";
+import "./Validation.css";
 
 /* ===============================
-   LOCAL BENEFICIARIES
+   CONFIG
 ================================ */
-const beneficiaries = [
-  {
-    hh_head_name: "John Banda",
-    hh_code: "HH001",
-    sex: "M",
-    dob: "1990-05-12",
-    region: "Central",
-    district: "Lilongwe",
-    ta: "Kalolo",
-    vc: "VC-01",
-  },
-  {
-    hh_head_name: "Mary Phiri",
-    hh_code: "HH002",
-    sex: "",
-    dob: "",
-    region: "Central",
-    district: "Lilongwe",
-    ta: "Kalolo",
-    vc: "VC-02",
-  },
-  {
-    hh_head_name: "Peter Chirwa",
-    hh_code: "HH003",
-    sex: "M",
-    dob: "",
-    region: "Southern",
-    district: "Blantyre",
-    ta: "Kapeni",
-    vc: "VC-01",
-  },
-  {
-    hh_head_name: "Agnes Mbewe",
-    hh_code: "HH004",
-    sex: "",
-    dob: "",
-    region: "Northern",
-    district: "Mzimba",
-    ta: "Mpherembe",
-    vc: "VC-03",
-  },
-];
+const BASE_URL = "https://api-development-j6pl.onrender.com/api";
+const PAGE_SIZE = 20;
 
 /* ===============================
    COMPONENT
@@ -79,106 +41,181 @@ const beneficiaries = [
 const GroupAssignment: React.FC = () => {
   const router = useIonRouter();
 
-  const [groupName, setGroupName] = useState("");
-  const [members, setMembers] = useState<any[]>([]);
-  const [selectedMembers, setSelectedMembers] = useState<any[]>([]);
-  const [editingMember, setEditingMember] = useState<any | null>(null);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
-
   /* FILTER STATE */
+  const [regions, setRegions] = useState<any[]>([]);
+  const [districts, setDistricts] = useState<any[]>([]);
+  const [tas, setTas] = useState<any[]>([]);
+  const [vcs, setVcs] = useState<any[]>([]);
+
   const [region, setRegion] = useState("");
   const [district, setDistrict] = useState("");
   const [ta, setTa] = useState("");
   const [vc, setVc] = useState("");
 
+  /* BENEFICIARIES */
+  const [members, setMembers] = useState<any[]>([]);
+  const [visibleMembers, setVisibleMembers] = useState<any[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [selectedMembers, setSelectedMembers] = useState<any[]>([]);
+
+  /* GROUP */
+  const [groupName, setGroupName] = useState("");
+
+  /* EDIT MODAL */
+  const [editingMember, setEditingMember] = useState<any | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+
+  /* UI */
+  const [toastMessage, setToastMessage] = useState("");
+
+  /* ===============================
+     LOAD REGIONS
+  =============================== */
   useEffect(() => {
-    setMembers(beneficiaries);
+    fetch(`${BASE_URL}/regions`)
+      .then((res) => res.json())
+      .then(setRegions)
+      .catch(() => setToastMessage("Failed to load regions"));
   }, []);
 
   /* ===============================
-     FILTER OPTIONS
+     LOAD DISTRICTS
   =============================== */
-  const regions = [...new Set(beneficiaries.map((b) => b.region))];
+  useEffect(() => {
+    if (!region) return;
+    setDistrict("");
+    setTa("");
+    setVc("");
+    setMembers([]);
+    setVisibleMembers([]);
 
-  const districts = [
-    ...new Set(
-      beneficiaries
-        .filter((b) => !region || b.region === region)
-        .map((b) => b.district),
-    ),
-  ];
+    fetch(`${BASE_URL}/districts?regionID=${region}`)
+      .then((res) => res.json())
+      .then(setDistricts)
+      .catch(() => setToastMessage("Failed to load districts"));
+  }, [region]);
 
-  const tas = [
-    ...new Set(
-      beneficiaries
-        .filter(
-          (b) =>
-            (!region || b.region === region) &&
-            (!district || b.district === district),
-        )
-        .map((b) => b.ta),
-    ),
-  ];
+  /* ===============================
+     LOAD TAs
+  =============================== */
+  useEffect(() => {
+    if (!district) return;
+    setTa("");
+    setVc("");
+    setMembers([]);
+    setVisibleMembers([]);
 
-  const vcs = [
-    ...new Set(
-      beneficiaries
-        .filter(
-          (b) =>
-            (!region || b.region === region) &&
-            (!district || b.district === district) &&
-            (!ta || b.ta === ta),
-        )
-        .map((b) => b.vc),
-    ),
-  ];
+    fetch(`${BASE_URL}/tas?districtID=${district}`)
+      .then((res) => res.json())
+      .then(setTas)
+      .catch(() => setToastMessage("Failed to load TAs"));
+  }, [district]);
 
-  const filteredMembers = members.filter(
-    (m) =>
-      (!region || m.region === region) &&
-      (!district || m.district === district) &&
-      (!ta || m.ta === ta) &&
-      (!vc || m.vc === vc),
-  );
+  /* ===============================
+     LOAD VILLAGE CLUSTERS
+  =============================== */
+  useEffect(() => {
+    if (!ta) return;
+    setVc("");
+    setMembers([]);
+    setVisibleMembers([]);
+
+    fetch(`${BASE_URL}/village-clusters?taID=${ta}`)
+      .then((res) => res.json())
+      .then(setVcs)
+      .catch(() => setToastMessage("Failed to load village clusters"));
+  }, [ta]);
+
+  /* ===============================
+     LOAD BENEFICIARIES (RESET VIEW PAGINATION)
+  =============================== */
+  useEffect(() => {
+    if (!vc) return;
+
+    fetch(`${BASE_URL}/beneficiaries/filter?villageClusterID=${vc}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setMembers(data);
+        setVisibleMembers(data.slice(0, PAGE_SIZE));
+        setHasMore(data.length > PAGE_SIZE);
+      })
+      .catch(() => setToastMessage("Failed to load beneficiaries"));
+  }, [vc]);
+
+  /* ===============================
+     LOAD MORE ON SCROLL
+  =============================== */
+  const loadMoreMembers = (e: any) => {
+    const el = e.target;
+    if (hasMore && el.scrollTop + el.clientHeight >= el.scrollHeight - 10) {
+      const next = visibleMembers.length + PAGE_SIZE;
+      const nextItems = members.slice(0, next);
+      setVisibleMembers(nextItems);
+      setHasMore(nextItems.length < members.length);
+    }
+  };
 
   /* ===============================
      SELECT / UNSELECT
   =============================== */
   const toggleMember = (member: any) => {
     setSelectedMembers((prev) => {
-      const exists = prev.find((m) => m.hh_code === member.hh_code);
+      const exists = prev.find((m) => m.sppCode === member.sppCode);
       return exists
-        ? prev.filter((m) => m.hh_code !== member.hh_code)
+        ? prev.filter((m) => m.sppCode !== member.sppCode)
         : [...prev, member];
     });
   };
 
   /* ===============================
-     SAVE EDIT
+     SAVE EDIT (PATCH)
   =============================== */
-  const saveEditedMember = () => {
+  const saveEditedMember = async () => {
     if (!editingMember) return;
 
-    setMembers((prev) =>
-      prev.map((m) =>
-        m.hh_code === editingMember.hh_code ? editingMember : m,
-      ),
-    );
+    try {
+      await fetch(
+        `${BASE_URL}/beneficiaries/${encodeURIComponent(
+          editingMember.sppCode,
+        )}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sex: editingMember.sex,
+            dob: editingMember.dob,
+          }),
+        },
+      );
 
-    setSelectedMembers((prev) =>
-      prev.map((m) =>
-        m.hh_code === editingMember.hh_code ? editingMember : m,
-      ),
-    );
+      setMembers((prev) =>
+        prev.map((m) =>
+          m.sppCode === editingMember.sppCode ? editingMember : m,
+        ),
+      );
 
-    setShowEditModal(false);
+      setVisibleMembers((prev) =>
+        prev.map((m) =>
+          m.sppCode === editingMember.sppCode ? editingMember : m,
+        ),
+      );
+
+      setSelectedMembers((prev) =>
+        prev.map((m) =>
+          m.sppCode === editingMember.sppCode ? editingMember : m,
+        ),
+      );
+
+      setShowEditModal(false);
+    } catch {
+      setToastMessage("Failed to update beneficiary");
+    }
   };
 
   /* ===============================
-     SUBMIT
+     SUBMIT GROUP
   =============================== */
-  const submitGroup = () => {
+  const submitGroup = async () => {
     if (!groupName.trim()) {
       setToastMessage("Group name is required");
       return;
@@ -191,13 +228,31 @@ const GroupAssignment: React.FC = () => {
 
     const incomplete = selectedMembers.find((m) => !m.sex || !m.dob);
     if (incomplete) {
-      setToastMessage("Some selected beneficiaries require Sex and DOB");
+      setToastMessage("Some selected beneficiaries need Sex and DOB");
       return;
     }
 
-    setToastMessage("Group created successfully");
-    setGroupName("");
-    setSelectedMembers([]);
+    try {
+      await fetch(`${BASE_URL}/beneficiaries/bulk-sync`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(
+          selectedMembers.map((m) => ({
+            sppCode: m.sppCode,
+            sex: m.sex,
+            dob: m.dob,
+            groupname: groupName,
+            selected: 1,
+          })),
+        ),
+      });
+
+      setToastMessage("Group created & synced");
+      setSelectedMembers([]);
+      setGroupName("");
+    } catch {
+      setToastMessage("Sync failed");
+    }
   };
 
   /* ===============================
@@ -227,16 +282,11 @@ const GroupAssignment: React.FC = () => {
               <IonLabel position="stacked">Region</IonLabel>
               <IonSelect
                 value={region}
-                onIonChange={(e) => {
-                  setRegion(e.detail.value);
-                  setDistrict("");
-                  setTa("");
-                  setVc("");
-                }}
+                onIonChange={(e) => setRegion(e.detail.value)}
               >
                 {regions.map((r) => (
-                  <IonSelectOption key={r} value={r}>
-                    {r}
+                  <IonSelectOption key={r.regionID} value={r.regionID}>
+                    {r.name}
                   </IonSelectOption>
                 ))}
               </IonSelect>
@@ -247,33 +297,26 @@ const GroupAssignment: React.FC = () => {
               <IonSelect
                 value={district}
                 disabled={!region}
-                onIonChange={(e) => {
-                  setDistrict(e.detail.value);
-                  setTa("");
-                  setVc("");
-                }}
+                onIonChange={(e) => setDistrict(e.detail.value)}
               >
                 {districts.map((d) => (
-                  <IonSelectOption key={d} value={d}>
-                    {d}
+                  <IonSelectOption key={d.DistrictID} value={d.DistrictID}>
+                    {d.DistrictName}
                   </IonSelectOption>
                 ))}
               </IonSelect>
             </IonItem>
 
             <IonItem>
-              <IonLabel position="stacked">Traditional Authority</IonLabel>
+              <IonLabel position="stacked">TA</IonLabel>
               <IonSelect
                 value={ta}
                 disabled={!district}
-                onIonChange={(e) => {
-                  setTa(e.detail.value);
-                  setVc("");
-                }}
+                onIonChange={(e) => setTa(e.detail.value)}
               >
                 {tas.map((t) => (
-                  <IonSelectOption key={t} value={t}>
-                    {t}
+                  <IonSelectOption key={t.TAID} value={t.TAID}>
+                    {t.TAName}
                   </IonSelectOption>
                 ))}
               </IonSelect>
@@ -287,8 +330,11 @@ const GroupAssignment: React.FC = () => {
                 onIonChange={(e) => setVc(e.detail.value)}
               >
                 {vcs.map((v) => (
-                  <IonSelectOption key={v} value={v}>
-                    {v}
+                  <IonSelectOption
+                    key={v.villageClusterID}
+                    value={v.villageClusterID}
+                  >
+                    {v.villageClusterName}
                   </IonSelectOption>
                 ))}
               </IonSelect>
@@ -296,13 +342,13 @@ const GroupAssignment: React.FC = () => {
           </IonCardContent>
         </IonCard>
 
-        {/* GROUP DETAILS CARD (GROUP NAME + COUNT + MEMBERS LIST) */}
-        <IonCard>
+        {/* GROUP CARD */}
+        <IonCard className="group-details-card">
           <IonCardHeader>
             <IonCardTitle>Group Details</IonCardTitle>
           </IonCardHeader>
 
-          <IonCardContent>
+          <IonCardContent className="group-details-scroll">
             {/* GROUP NAME */}
             <IonItem>
               <IonLabel position="stacked">Group Name *</IonLabel>
@@ -320,55 +366,66 @@ const GroupAssignment: React.FC = () => {
               </IonBadge>
             </IonItem>
 
-            {/* MEMBERS LIST (INSIDE CARD) */}
-            <IonList>
-              {filteredMembers.map((member) => {
-                const isSelected = selectedMembers.some(
-                  (m) => m.hh_code === member.hh_code,
-                );
-                const requiresEdit = !member.sex || !member.dob;
+            {/* 🔥 VIEW-PAGINATED LIST */}
+            <div
+              style={{
+                maxHeight: "55vh",
+                overflowY: "auto",
+                border: "1px solid var(--ion-color-light)",
+                borderRadius: 8,
+              }}
+              onScroll={loadMoreMembers}
+            >
+              <IonList>
+                {visibleMembers.map((m) => {
+                  const selected = selectedMembers.some(
+                    (x) => x.sppCode === m.sppCode,
+                  );
+                  const incomplete = !m.sex || !m.dob;
 
-                return (
-                  <IonItem key={member.hh_code}>
-                    <IonCheckbox
-                      slot="start"
-                      checked={isSelected}
-                      onIonChange={() => toggleMember(member)}
-                    />
-                    <IonLabel>
-                      <h2>{member.hh_head_name}</h2>
-                      <p>
-                        <strong>Code:</strong> {member.hh_code}
-                      </p>
-                      <IonBadge color={requiresEdit ? "danger" : "success"}>
-                        {requiresEdit ? "REQUIRES EDIT" : "COMPLETE"}
-                      </IonBadge>
-                    </IonLabel>
-                    <IonButton
-                      fill="clear"
-                      size="small"
-                      onClick={() => {
-                        setEditingMember(member);
-                        setShowEditModal(true);
-                      }}
-                    >
-                      Edit
-                    </IonButton>
+                  return (
+                    <IonItem key={m.sppCode}>
+                      <IonCheckbox
+                        slot="start"
+                        checked={selected}
+                        onIonChange={() => toggleMember(m)}
+                      />
+                      <IonLabel>
+                        <h2>{m.hh_head_name}</h2>
+                        <p>{m.sppCode}</p>
+                        <IonBadge color={incomplete ? "danger" : "success"}>
+                          {incomplete ? "REQUIRES EDIT" : "COMPLETE"}
+                        </IonBadge>
+                      </IonLabel>
+                      <IonButton
+                        fill="clear"
+                        size="small"
+                        onClick={() => {
+                          setEditingMember(m);
+                          setShowEditModal(true);
+                        }}
+                      >
+                        Edit
+                      </IonButton>
+                    </IonItem>
+                  );
+                })}
+
+                {hasMore && (
+                  <IonItem lines="none">
+                    <IonLabel color="medium">Waiting…</IonLabel>
                   </IonItem>
-                );
-              })}
-            </IonList>
+                )}
+              </IonList>
+            </div>
           </IonCardContent>
+          {/* ✅ FIXED ACTION AREA */}
+          <div className="group-details-footer">
+            <IonButton expand="block" color="success" onClick={submitGroup}>
+              Submit Group
+            </IonButton>
+          </div>
         </IonCard>
-
-        <IonButton
-          expand="block"
-          color="success"
-          onClick={submitGroup}
-          style={{ marginTop: 20 }}
-        >
-          Submit Group
-        </IonButton>
 
         {/* EDIT MODAL */}
         <IonModal
@@ -390,7 +447,7 @@ const GroupAssignment: React.FC = () => {
             {editingMember && (
               <>
                 <IonItem>
-                  <IonLabel position="stacked">Sex *</IonLabel>
+                  <IonLabel position="stacked">Sex</IonLabel>
                   <IonSelect
                     value={editingMember.sex}
                     onIonChange={(e) =>
@@ -406,7 +463,7 @@ const GroupAssignment: React.FC = () => {
                 </IonItem>
 
                 <IonItem>
-                  <IonLabel position="stacked">Date of Birth *</IonLabel>
+                  <IonLabel position="stacked">Date of Birth</IonLabel>
                   <IonDatetime
                     presentation="date"
                     value={editingMember.dob}

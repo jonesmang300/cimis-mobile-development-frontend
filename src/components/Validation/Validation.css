@@ -1,0 +1,21 @@
+/* GROUP DETAILS CARD */
+.group-details-card {
+  height: 75vh; /* card scroll area */
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 90px; /* 👈 space for Submit Group button */
+}
+
+/* SCROLLABLE CARD CONTENT */
+.group-details-scroll {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* FIXED SUBMIT BUTTON */
+.group-details-footer {
+  padding: 12px;
+  border-top: 1px solid var(--ion-color-light);
+  background: var(--ion-background-color);
+}
