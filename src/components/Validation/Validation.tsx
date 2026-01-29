@@ -24,6 +24,8 @@ import {
   IonCardTitle,
   IonCardContent,
   IonFooter,
+  IonSpinner,
+  IonLoading,
 } from "@ionic/react";
 import { arrowBack } from "ionicons/icons";
 import { useIonRouter } from "@ionic/react";
@@ -67,15 +69,27 @@ const GroupAssignment: React.FC = () => {
 
   /* UI */
   const [toastMessage, setToastMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false); // ✅ spinner state
+
+  const [loadingRegions, setLoadingRegions] = useState(false);
+  const [loadingDistricts, setLoadingDistricts] = useState(false);
+  const [loadingTas, setLoadingTas] = useState(false);
+  const [loadingVcs, setLoadingVcs] = useState(false);
+
+  /* DERIVED FILTER LOADING */
+  const isFilterLoading =
+    loadingRegions || loadingDistricts || loadingTas || loadingVcs;
 
   /* ===============================
      LOAD REGIONS
   =============================== */
   useEffect(() => {
+    setLoadingRegions(true);
     fetch(`${BASE_URL}/regions`)
       .then((res) => res.json())
       .then(setRegions)
-      .catch(() => setToastMessage("Failed to load regions"));
+      .catch(() => setToastMessage("Failed to load regions"))
+      .finally(() => setLoadingRegions(false));
   }, []);
 
   /* ===============================
@@ -83,16 +97,22 @@ const GroupAssignment: React.FC = () => {
   =============================== */
   useEffect(() => {
     if (!region) return;
+
     setDistrict("");
     setTa("");
     setVc("");
+    setDistricts([]);
+    setTas([]);
+    setVcs([]);
     setMembers([]);
     setVisibleMembers([]);
 
+    setLoadingDistricts(true);
     fetch(`${BASE_URL}/districts?regionID=${region}`)
       .then((res) => res.json())
       .then(setDistricts)
-      .catch(() => setToastMessage("Failed to load districts"));
+      .catch(() => setToastMessage("Failed to load districts"))
+      .finally(() => setLoadingDistricts(false));
   }, [region]);
 
   /* ===============================
@@ -100,15 +120,20 @@ const GroupAssignment: React.FC = () => {
   =============================== */
   useEffect(() => {
     if (!district) return;
+
     setTa("");
     setVc("");
+    setTas([]);
+    setVcs([]);
     setMembers([]);
     setVisibleMembers([]);
 
+    setLoadingTas(true);
     fetch(`${BASE_URL}/tas?districtID=${district}`)
       .then((res) => res.json())
       .then(setTas)
-      .catch(() => setToastMessage("Failed to load TAs"));
+      .catch(() => setToastMessage("Failed to load TAs"))
+      .finally(() => setLoadingTas(false));
   }, [district]);
 
   /* ===============================
@@ -116,14 +141,18 @@ const GroupAssignment: React.FC = () => {
   =============================== */
   useEffect(() => {
     if (!ta) return;
+
     setVc("");
+    setVcs([]);
     setMembers([]);
     setVisibleMembers([]);
 
+    setLoadingVcs(true);
     fetch(`${BASE_URL}/village-clusters?taID=${ta}`)
       .then((res) => res.json())
       .then(setVcs)
-      .catch(() => setToastMessage("Failed to load village clusters"));
+      .catch(() => setToastMessage("Failed to load village clusters"))
+      .finally(() => setLoadingVcs(false));
   }, [ta]);
 
   /* ===============================
@@ -163,7 +192,13 @@ const GroupAssignment: React.FC = () => {
       const exists = prev.find((m) => m.sppCode === member.sppCode);
       return exists
         ? prev.filter((m) => m.sppCode !== member.sppCode)
-        : [...prev, member];
+        : [
+            ...prev,
+            {
+              ...member,
+              groupname: groupName,
+            },
+          ];
     });
   };
 
@@ -174,6 +209,7 @@ const GroupAssignment: React.FC = () => {
     if (!editingMember) return;
 
     try {
+      setIsSubmitting(true); // 🔥 START SPINNER
       await fetch(
         `${BASE_URL}/beneficiaries/${encodeURIComponent(
           editingMember.sppCode,
@@ -183,7 +219,7 @@ const GroupAssignment: React.FC = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             sex: editingMember.sex,
-            dob: editingMember.dob,
+            dob: editingMember.dob ? editingMember.dob.split("T")[0] : null,
           }),
         },
       );
@@ -202,13 +238,17 @@ const GroupAssignment: React.FC = () => {
 
       setSelectedMembers((prev) =>
         prev.map((m) =>
-          m.sppCode === editingMember.sppCode ? editingMember : m,
+          m.sppCode === editingMember.sppCode
+            ? { ...editingMember, groupname: groupName }
+            : m,
         ),
       );
 
       setShowEditModal(false);
     } catch {
       setToastMessage("Failed to update beneficiary");
+    } finally {
+      setIsSubmitting(false); // 🔥 STOP SPINNER (always)
     }
   };
 
@@ -233,6 +273,7 @@ const GroupAssignment: React.FC = () => {
     }
 
     try {
+      setIsSubmitting(true); // 🔥 START SPINNER
       await fetch(`${BASE_URL}/beneficiaries/bulk-sync`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -240,8 +281,8 @@ const GroupAssignment: React.FC = () => {
           selectedMembers.map((m) => ({
             sppCode: m.sppCode,
             sex: m.sex,
-            dob: m.dob,
-            groupname: groupName,
+            dob: m.dob ? m.dob.split("T")[0] : null,
+            groupname: m.groupname,
             selected: 1,
           })),
         ),
@@ -252,6 +293,8 @@ const GroupAssignment: React.FC = () => {
       setGroupName("");
     } catch {
       setToastMessage("Sync failed");
+    } finally {
+      setIsSubmitting(false); // 🔥 STOP SPINNER (always)
     }
   };
 
@@ -282,6 +325,7 @@ const GroupAssignment: React.FC = () => {
               <IonLabel position="stacked">Region</IonLabel>
               <IonSelect
                 value={region}
+                disabled={loadingRegions}
                 onIonChange={(e) => setRegion(e.detail.value)}
               >
                 {regions.map((r) => (
@@ -296,7 +340,7 @@ const GroupAssignment: React.FC = () => {
               <IonLabel position="stacked">District</IonLabel>
               <IonSelect
                 value={district}
-                disabled={!region}
+                disabled={!region || loadingDistricts}
                 onIonChange={(e) => setDistrict(e.detail.value)}
               >
                 {districts.map((d) => (
@@ -308,10 +352,10 @@ const GroupAssignment: React.FC = () => {
             </IonItem>
 
             <IonItem>
-              <IonLabel position="stacked">TA</IonLabel>
+              <IonLabel position="stacked">Traditional Authority</IonLabel>
               <IonSelect
                 value={ta}
-                disabled={!district}
+                disabled={!district || loadingTas}
                 onIonChange={(e) => setTa(e.detail.value)}
               >
                 {tas.map((t) => (
@@ -326,7 +370,7 @@ const GroupAssignment: React.FC = () => {
               <IonLabel position="stacked">Village Cluster</IonLabel>
               <IonSelect
                 value={vc}
-                disabled={!ta}
+                disabled={!ta || loadingVcs}
                 onIonChange={(e) => setVc(e.detail.value)}
               >
                 {vcs.map((v) => (
@@ -342,6 +386,30 @@ const GroupAssignment: React.FC = () => {
           </IonCardContent>
         </IonCard>
 
+        {/* GLOBAL FILTER LOADER */}
+        <IonLoading
+          isOpen={isFilterLoading}
+          spinner="crescent"
+          message={
+            loadingRegions
+              ? "Loading regions..."
+              : loadingDistricts
+                ? "Loading districts..."
+                : loadingTas
+                  ? "Loading traditional authorities..."
+                  : loadingVcs
+                    ? "Loading village clusters..."
+                    : "Loading..."
+          }
+        />
+
+        <IonToast
+          isOpen={!!toastMessage}
+          message={toastMessage}
+          duration={3000}
+          onDidDismiss={() => setToastMessage("")}
+        />
+
         {/* GROUP CARD */}
         <IonCard className="group-details-card">
           <IonCardHeader>
@@ -354,7 +422,16 @@ const GroupAssignment: React.FC = () => {
               <IonLabel position="stacked">Group Name *</IonLabel>
               <IonInput
                 value={groupName}
-                onIonInput={(e) => setGroupName(e.detail.value!)}
+                onIonInput={(e) => {
+                  const value = e.detail.value!;
+                  setGroupName(value);
+                  setSelectedMembers((prev) =>
+                    prev.map((m) => ({
+                      ...m,
+                      groupname: value,
+                    })),
+                  );
+                }}
               />
             </IonItem>
 
@@ -392,7 +469,7 @@ const GroupAssignment: React.FC = () => {
                       />
                       <IonLabel>
                         <h2>{m.hh_head_name}</h2>
-                        <p>{m.sppCode}</p>
+                        <p>{m.hh_code}</p>
                         <IonBadge color={incomplete ? "danger" : "success"}>
                           {incomplete ? "REQUIRES EDIT" : "COMPLETE"}
                         </IonBadge>
@@ -421,8 +498,20 @@ const GroupAssignment: React.FC = () => {
           </IonCardContent>
           {/* ✅ FIXED ACTION AREA */}
           <div className="group-details-footer">
-            <IonButton expand="block" color="success" onClick={submitGroup}>
-              Submit Group
+            <IonButton
+              expand="block"
+              color="success"
+              onClick={submitGroup}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <IonSpinner name="crescent" style={{ marginRight: 8 }} />
+                  Submitting…
+                </>
+              ) : (
+                "Submit Details"
+              )}
             </IonButton>
           </div>
         </IonCard>
@@ -457,8 +546,8 @@ const GroupAssignment: React.FC = () => {
                       })
                     }
                   >
-                    <IonSelectOption value="M">Male</IonSelectOption>
-                    <IonSelectOption value="F">Female</IonSelectOption>
+                    <IonSelectOption value="01">Male</IonSelectOption>
+                    <IonSelectOption value="02">Female</IonSelectOption>
                   </IonSelect>
                 </IonItem>
 
@@ -481,8 +570,16 @@ const GroupAssignment: React.FC = () => {
                   color="success"
                   onClick={saveEditedMember}
                   style={{ marginTop: 20 }}
+                  disabled={isSubmitting}
                 >
-                  Save Changes
+                  {isSubmitting ? (
+                    <>
+                      <IonSpinner name="crescent" style={{ marginRight: 8 }} />
+                      Save Changes
+                    </>
+                  ) : (
+                    "Submit Details"
+                  )}
                 </IonButton>
               </>
             )}
