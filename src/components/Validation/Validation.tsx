@@ -23,7 +23,6 @@ import {
   IonCardHeader,
   IonCardTitle,
   IonCardContent,
-  IonFooter,
   IonSpinner,
   IonLoading,
 } from "@ionic/react";
@@ -69,26 +68,42 @@ const GroupAssignment: React.FC = () => {
 
   /* UI */
   const [toastMessage, setToastMessage] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false); // ✅ spinner state
+  const [isSubmitting, setIsSubmitting] = useState(false); // spinner state
 
   const [loadingRegions, setLoadingRegions] = useState(false);
   const [loadingDistricts, setLoadingDistricts] = useState(false);
   const [loadingTas, setLoadingTas] = useState(false);
   const [loadingVcs, setLoadingVcs] = useState(false);
 
-  /* DERIVED FILTER LOADING */
   const isFilterLoading =
     loadingRegions || loadingDistricts || loadingTas || loadingVcs;
+
+  /* ===============================
+     HELPER: FETCH DATA SAFELY
+  =============================== */
+  const safeFetch = async (url: string) => {
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      if (!data) return [];
+      if (!Array.isArray(data)) {
+        console.warn("API returned non-array:", data);
+        return [];
+      }
+      return data;
+    } catch (err) {
+      console.error("Fetch error:", err);
+      return [];
+    }
+  };
 
   /* ===============================
      LOAD REGIONS
   =============================== */
   useEffect(() => {
     setLoadingRegions(true);
-    fetch(`${BASE_URL}/regions`)
-      .then((res) => res.json())
+    safeFetch(`${BASE_URL}/regions`)
       .then(setRegions)
-      .catch(() => setToastMessage("Failed to load regions"))
       .finally(() => setLoadingRegions(false));
   }, []);
 
@@ -108,10 +123,8 @@ const GroupAssignment: React.FC = () => {
     setVisibleMembers([]);
 
     setLoadingDistricts(true);
-    fetch(`${BASE_URL}/districts?regionID=${region}`)
-      .then((res) => res.json())
+    safeFetch(`${BASE_URL}/districts?regionID=${region}`)
       .then(setDistricts)
-      .catch(() => setToastMessage("Failed to load districts"))
       .finally(() => setLoadingDistricts(false));
   }, [region]);
 
@@ -129,10 +142,8 @@ const GroupAssignment: React.FC = () => {
     setVisibleMembers([]);
 
     setLoadingTas(true);
-    fetch(`${BASE_URL}/tas?districtID=${district}`)
-      .then((res) => res.json())
+    safeFetch(`${BASE_URL}/tas?districtID=${district}`)
       .then(setTas)
-      .catch(() => setToastMessage("Failed to load TAs"))
       .finally(() => setLoadingTas(false));
   }, [district]);
 
@@ -148,27 +159,23 @@ const GroupAssignment: React.FC = () => {
     setVisibleMembers([]);
 
     setLoadingVcs(true);
-    fetch(`${BASE_URL}/village-clusters?taID=${ta}`)
-      .then((res) => res.json())
+    safeFetch(`${BASE_URL}/village-clusters?taID=${ta}`)
       .then(setVcs)
-      .catch(() => setToastMessage("Failed to load village clusters"))
       .finally(() => setLoadingVcs(false));
   }, [ta]);
 
   /* ===============================
-     LOAD BENEFICIARIES (RESET VIEW PAGINATION)
+     LOAD BENEFICIARIES
   =============================== */
   useEffect(() => {
     if (!vc) return;
 
-    fetch(`${BASE_URL}/beneficiaries/filter?villageClusterID=${vc}`)
-      .then((res) => res.json())
+    safeFetch(`${BASE_URL}/beneficiaries/filter?villageClusterID=${vc}`)
       .then((data) => {
         setMembers(data);
         setVisibleMembers(data.slice(0, PAGE_SIZE));
         setHasMore(data.length > PAGE_SIZE);
-      })
-      .catch(() => setToastMessage("Failed to load beneficiaries"));
+      });
   }, [vc]);
 
   /* ===============================
@@ -209,7 +216,7 @@ const GroupAssignment: React.FC = () => {
     if (!editingMember) return;
 
     try {
-      setIsSubmitting(true); // 🔥 START SPINNER
+      setIsSubmitting(true);
       await fetch(
         `${BASE_URL}/beneficiaries/${encodeURIComponent(
           editingMember.sppCode,
@@ -248,7 +255,7 @@ const GroupAssignment: React.FC = () => {
     } catch {
       setToastMessage("Failed to update beneficiary");
     } finally {
-      setIsSubmitting(false); // 🔥 STOP SPINNER (always)
+      setIsSubmitting(false);
     }
   };
 
@@ -273,7 +280,7 @@ const GroupAssignment: React.FC = () => {
     }
 
     try {
-      setIsSubmitting(true); // 🔥 START SPINNER
+      setIsSubmitting(true);
       await fetch(`${BASE_URL}/beneficiaries/bulk-sync`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -294,7 +301,7 @@ const GroupAssignment: React.FC = () => {
     } catch {
       setToastMessage("Sync failed");
     } finally {
-      setIsSubmitting(false); // 🔥 STOP SPINNER (always)
+      setIsSubmitting(false);
     }
   };
 
@@ -328,7 +335,7 @@ const GroupAssignment: React.FC = () => {
                 disabled={loadingRegions}
                 onIonChange={(e) => setRegion(e.detail.value)}
               >
-                {regions.map((r) => (
+                {regions?.map((r) => (
                   <IonSelectOption key={r.regionID} value={r.regionID}>
                     {r.name}
                   </IonSelectOption>
@@ -343,7 +350,7 @@ const GroupAssignment: React.FC = () => {
                 disabled={!region || loadingDistricts}
                 onIonChange={(e) => setDistrict(e.detail.value)}
               >
-                {districts.map((d) => (
+                {districts?.map((d) => (
                   <IonSelectOption key={d.DistrictID} value={d.DistrictID}>
                     {d.DistrictName}
                   </IonSelectOption>
@@ -358,7 +365,7 @@ const GroupAssignment: React.FC = () => {
                 disabled={!district || loadingTas}
                 onIonChange={(e) => setTa(e.detail.value)}
               >
-                {tas.map((t) => (
+                {tas?.map((t) => (
                   <IonSelectOption key={t.TAID} value={t.TAID}>
                     {t.TAName}
                   </IonSelectOption>
@@ -373,7 +380,7 @@ const GroupAssignment: React.FC = () => {
                 disabled={!ta || loadingVcs}
                 onIonChange={(e) => setVc(e.detail.value)}
               >
-                {vcs.map((v) => (
+                {vcs?.map((v) => (
                   <IonSelectOption
                     key={v.villageClusterID}
                     value={v.villageClusterID}
@@ -394,12 +401,12 @@ const GroupAssignment: React.FC = () => {
             loadingRegions
               ? "Loading regions..."
               : loadingDistricts
-                ? "Loading districts..."
-                : loadingTas
-                  ? "Loading traditional authorities..."
-                  : loadingVcs
-                    ? "Loading village clusters..."
-                    : "Loading..."
+              ? "Loading districts..."
+              : loadingTas
+              ? "Loading traditional authorities..."
+              : loadingVcs
+              ? "Loading village clusters..."
+              : "Loading..."
           }
         />
 
@@ -443,7 +450,7 @@ const GroupAssignment: React.FC = () => {
               </IonBadge>
             </IonItem>
 
-            {/* 🔥 VIEW-PAGINATED LIST */}
+            {/* VIEW-PAGINATED LIST */}
             <div
               style={{
                 maxHeight: "55vh",
@@ -454,39 +461,40 @@ const GroupAssignment: React.FC = () => {
               onScroll={loadMoreMembers}
             >
               <IonList>
-                {visibleMembers.map((m) => {
-                  const selected = selectedMembers.some(
-                    (x) => x.sppCode === m.sppCode,
-                  );
-                  const incomplete = !m.sex || !m.dob;
+                {Array.isArray(visibleMembers) &&
+                  visibleMembers.map((m) => {
+                    const selected = selectedMembers.some(
+                      (x) => x.sppCode === m.sppCode,
+                    );
+                    const incomplete = !m.sex || !m.dob;
 
-                  return (
-                    <IonItem key={m.sppCode}>
-                      <IonCheckbox
-                        slot="start"
-                        checked={selected}
-                        onIonChange={() => toggleMember(m)}
-                      />
-                      <IonLabel>
-                        <h2>{m.hh_head_name}</h2>
-                        <p>{m.hh_code}</p>
-                        <IonBadge color={incomplete ? "danger" : "success"}>
-                          {incomplete ? "REQUIRES EDIT" : "COMPLETE"}
-                        </IonBadge>
-                      </IonLabel>
-                      <IonButton
-                        fill="clear"
-                        size="small"
-                        onClick={() => {
-                          setEditingMember(m);
-                          setShowEditModal(true);
-                        }}
-                      >
-                        Edit
-                      </IonButton>
-                    </IonItem>
-                  );
-                })}
+                    return (
+                      <IonItem key={m.sppCode}>
+                        <IonCheckbox
+                          slot="start"
+                          checked={selected}
+                          onIonChange={() => toggleMember(m)}
+                        />
+                        <IonLabel>
+                          <h2>{m.hh_head_name}</h2>
+                          <p>{m.hh_code}</p>
+                          <IonBadge color={incomplete ? "danger" : "success"}>
+                            {incomplete ? "REQUIRES EDIT" : "COMPLETE"}
+                          </IonBadge>
+                        </IonLabel>
+                        <IonButton
+                          fill="clear"
+                          size="small"
+                          onClick={() => {
+                            setEditingMember(m);
+                            setShowEditModal(true);
+                          }}
+                        >
+                          Edit
+                        </IonButton>
+                      </IonItem>
+                    );
+                  })}
 
                 {hasMore && (
                   <IonItem lines="none">
@@ -496,7 +504,7 @@ const GroupAssignment: React.FC = () => {
               </IonList>
             </div>
           </IonCardContent>
-          {/* ✅ FIXED ACTION AREA */}
+
           <div className="group-details-footer">
             <IonButton
               expand="block"
@@ -525,9 +533,7 @@ const GroupAssignment: React.FC = () => {
             <IonToolbar>
               <IonTitle>Edit Beneficiary</IonTitle>
               <IonButtons slot="end">
-                <IonButton onClick={() => setShowEditModal(false)}>
-                  Close
-                </IonButton>
+                <IonButton onClick={() => setShowEditModal(false)}>Close</IonButton>
               </IonButtons>
             </IonToolbar>
           </IonHeader>
