@@ -1,0 +1,2117 @@
+[
+  {
+    "TAID": "0101",
+    "DistrictID": "01",
+    "TAName": "Mwabulambiya"
+  },
+  {
+    "TAID": "0102",
+    "DistrictID": "01",
+    "TAName": "Mwenemisuku"
+  },
+  {
+    "TAID": "0103",
+    "DistrictID": "01",
+    "TAName": "Mwenewenye"
+  },
+  {
+    "TAID": "0104",
+    "DistrictID": "01",
+    "TAName": "Nthalire"
+  },
+  {
+    "TAID": "0105",
+    "DistrictID": "01",
+    "TAName": "Kameme"
+  },
+  {
+    "TAID": "0107",
+    "DistrictID": "01",
+    "TAName": "Nthengatenga"
+  },
+  {
+    "TAID": "0108",
+    "DistrictID": "01",
+    "TAName": "Wenya"
+  },
+  {
+    "TAID": "0201",
+    "DistrictID": "02",
+    "TAName": "Kilipula"
+  },
+  {
+    "TAID": "0202",
+    "DistrictID": "02",
+    "TAName": "Mwakaboko"
+  },
+  {
+    "TAID": "0203",
+    "DistrictID": "02",
+    "TAName": "Kyungu"
+  },
+  {
+    "TAID": "0204",
+    "DistrictID": "02",
+    "TAName": "Wasambo"
+  },
+  {
+    "TAID": "0205",
+    "DistrictID": "02",
+    "TAName": "Mwirangombe"
+  },
+  {
+    "TAID": "0206",
+    "DistrictID": "02",
+    "TAName": "Mwakashungati"
+  },
+  {
+    "TAID": "0207",
+    "DistrictID": "02",
+    "TAName": "Mwenechilanga"
+  },
+  {
+    "TAID": "0210",
+    "DistrictID": "02",
+    "TAName": "Mlare"
+  },
+  {
+    "TAID": "0211",
+    "DistrictID": "02",
+    "TAName": "Kaporo"
+  },
+  {
+    "TAID": "0301",
+    "DistrictID": "03",
+    "TAName": "Chikulamayembe"
+  },
+  {
+    "TAID": "0302",
+    "DistrictID": "03",
+    "TAName": "Mwamlowe"
+  },
+  {
+    "TAID": "0303",
+    "DistrictID": "03",
+    "TAName": "Mwahenga"
+  },
+  {
+    "TAID": "0304",
+    "DistrictID": "03",
+    "TAName": "Mwalweni"
+  },
+  {
+    "TAID": "0306",
+    "DistrictID": "03",
+    "TAName": "Chapinduka"
+  },
+  {
+    "TAID": "0307",
+    "DistrictID": "03",
+    "TAName": "Mwankhunikira"
+  },
+  {
+    "TAID": "0308",
+    "DistrictID": "03",
+    "TAName": "Katumbi"
+  },
+  {
+    "TAID": "0309",
+    "DistrictID": "03",
+    "TAName": "Zolokere"
+  },
+  {
+    "TAID": "0310",
+    "DistrictID": "03",
+    "TAName": "Kachulu"
+  },
+  {
+    "TAID": "0311",
+    "DistrictID": "03",
+    "TAName": "Ntchenachena"
+  },
+  {
+    "TAID": "0312",
+    "DistrictID": "03",
+    "TAName": "Kawazamawe"
+  },
+  {
+    "TAID": "0313",
+    "DistrictID": "03",
+    "TAName": "Buwira"
+  },
+  {
+    "TAID": "0314",
+    "DistrictID": "03",
+    "TAName": "Njikula"
+  },
+  {
+    "TAID": "0315",
+    "DistrictID": "03",
+    "TAName": "Chisovya"
+  },
+  {
+    "TAID": "0316",
+    "DistrictID": "03",
+    "TAName": "Jalavikuwa"
+  },
+  {
+    "TAID": "0317",
+    "DistrictID": "03",
+    "TAName": "Chiwiliwili"
+  },
+  {
+    "TAID": "0318",
+    "DistrictID": "03",
+    "TAName": "Chindi"
+  },
+  {
+    "TAID": "0401",
+    "DistrictID": "04",
+    "TAName": "Mmbelwa"
+  },
+  {
+    "TAID": "0402",
+    "DistrictID": "04",
+    "TAName": "Mtwalo"
+  },
+  {
+    "TAID": "0403",
+    "DistrictID": "04",
+    "TAName": "Kampingo Sibande"
+  },
+  {
+    "TAID": "0404",
+    "DistrictID": "04",
+    "TAName": "Jaravikuba Munthali"
+  },
+  {
+    "TAID": "0405",
+    "DistrictID": "04",
+    "TAName": "Chindi"
+  },
+  {
+    "TAID": "0406",
+    "DistrictID": "04",
+    "TAName": "Mzikubola"
+  },
+  {
+    "TAID": "0407",
+    "DistrictID": "04",
+    "TAName": "Mabulabo"
+  },
+  {
+    "TAID": "0408",
+    "DistrictID": "04",
+    "TAName": "Khosolo Gwaza Jere"
+  },
+  {
+    "TAID": "0409",
+    "DistrictID": "04",
+    "TAName": "Mpherembe"
+  },
+  {
+    "TAID": "0410",
+    "DistrictID": "04",
+    "TAName": "Mzukuzuku"
+  },
+  {
+    "TAID": "0414",
+    "DistrictID": "04",
+    "TAName": "Mabilabo"
+  },
+  {
+    "TAID": "0501",
+    "DistrictID": "05",
+    "TAName": "Kabunduli"
+  },
+  {
+    "TAID": "0502",
+    "DistrictID": "05",
+    "TAName": "Fukamapiri"
+  },
+  {
+    "TAID": "0503",
+    "DistrictID": "05",
+    "TAName": "Malenga Mzoma"
+  },
+  {
+    "TAID": "0504",
+    "DistrictID": "05",
+    "TAName": "Malanda"
+  },
+  {
+    "TAID": "0505",
+    "DistrictID": "05",
+    "TAName": "Zilakoma"
+  },
+  {
+    "TAID": "0506",
+    "DistrictID": "05",
+    "TAName": "Mankhambira"
+  },
+  {
+    "TAID": "0507",
+    "DistrictID": "05",
+    "TAName": "Fukamalaza"
+  },
+  {
+    "TAID": "0508",
+    "DistrictID": "05",
+    "TAName": "Mkumbira"
+  },
+  {
+    "TAID": "0509",
+    "DistrictID": "05",
+    "TAName": "Musisya"
+  },
+  {
+    "TAID": "0510",
+    "DistrictID": "05",
+    "TAName": "Nyaluwanga"
+  },
+  {
+    "TAID": "0511",
+    "DistrictID": "05",
+    "TAName": "Mkondowe"
+  },
+  {
+    "TAID": "0512",
+    "DistrictID": "05",
+    "TAName": "Timbiri"
+  },
+  {
+    "TAID": "0513",
+    "DistrictID": "05",
+    "TAName": "Boghoyo"
+  },
+  {
+    "TAID": "0514",
+    "DistrictID": "05",
+    "TAName": "x"
+  },
+  {
+    "TAID": "0515",
+    "DistrictID": "05",
+    "TAName": "Mbwana"
+  },
+  {
+    "TAID": "0601",
+    "DistrictID": "06",
+    "TAName": "Kanyenda"
+  },
+  {
+    "TAID": "0602",
+    "DistrictID": "06",
+    "TAName": "Kafuzila"
+  },
+  {
+    "TAID": "0603",
+    "DistrictID": "06",
+    "TAName": "Malengachanzi"
+  },
+  {
+    "TAID": "0604",
+    "DistrictID": "06",
+    "TAName": "Mphonde"
+  },
+  {
+    "TAID": "0605",
+    "DistrictID": "06",
+    "TAName": "Mwadzama"
+  },
+  {
+    "TAID": "0606",
+    "DistrictID": "06",
+    "TAName": "Mwansambo"
+  },
+  {
+    "TAID": "0607",
+    "DistrictID": "06",
+    "TAName": "Nkhanga"
+  },
+  {
+    "TAID": "0614",
+    "DistrictID": "06",
+    "TAName": "Kafuzila"
+  },
+  {
+    "TAID": "0615",
+    "DistrictID": "06",
+    "TAName": "Malengachanzi"
+  },
+  {
+    "TAID": "0616",
+    "DistrictID": "06",
+    "TAName": "Malengachanzi"
+  },
+  {
+    "TAID": "0617",
+    "DistrictID": "06",
+    "TAName": "Kalimanjira"
+  },
+  {
+    "TAID": "0701",
+    "DistrictID": "07",
+    "TAName": "Kaluluma"
+  },
+  {
+    "TAID": "0702",
+    "DistrictID": "07",
+    "TAName": "Simlemba"
+  },
+  {
+    "TAID": "0703",
+    "DistrictID": "07",
+    "TAName": "Mnyanja"
+  },
+  {
+    "TAID": "0704",
+    "DistrictID": "07",
+    "TAName": "Chisikwa"
+  },
+  {
+    "TAID": "0705",
+    "DistrictID": "07",
+    "TAName": "Kaomba"
+  },
+  {
+    "TAID": "0706",
+    "DistrictID": "07",
+    "TAName": "Lukwa"
+  },
+  {
+    "TAID": "0707",
+    "DistrictID": "07",
+    "TAName": "Kawamba"
+  },
+  {
+    "TAID": "0708",
+    "DistrictID": "07",
+    "TAName": "Njombwa"
+  },
+  {
+    "TAID": "0709",
+    "DistrictID": "07",
+    "TAName": "Chilowamatambe"
+  },
+  {
+    "TAID": "0710",
+    "DistrictID": "07",
+    "TAName": "Chulu"
+  },
+  {
+    "TAID": "0711",
+    "DistrictID": "07",
+    "TAName": "Santhe"
+  },
+  {
+    "TAID": "0712",
+    "DistrictID": "07",
+    "TAName": "Wimbe"
+  },
+  {
+    "TAID": "0713",
+    "DistrictID": "07",
+    "TAName": "Kapelula"
+  },
+  {
+    "TAID": "0714",
+    "DistrictID": "07",
+    "TAName": "Mwase"
+  },
+  {
+    "TAID": "0715",
+    "DistrictID": "07",
+    "TAName": "Mphomwa"
+  },
+  {
+    "TAID": "0716",
+    "DistrictID": "07",
+    "TAName": "Chisemphere"
+  },
+  {
+    "TAID": "0717",
+    "DistrictID": "07",
+    "TAName": "STA Chaima"
+  },
+  {
+    "TAID": "0718",
+    "DistrictID": "07",
+    "TAName": "STA Mdunga"
+  },
+  {
+    "TAID": "0719",
+    "DistrictID": "07",
+    "TAName": "STA Mangwazu"
+  },
+  {
+    "TAID": "0720",
+    "DistrictID": "07",
+    "TAName": "Chidzuma"
+  },
+  {
+    "TAID": "0721",
+    "DistrictID": "07",
+    "TAName": "Nthunduwala"
+  },
+  {
+    "TAID": "0722",
+    "DistrictID": "07",
+    "TAName": "Kaphaizi"
+  },
+  {
+    "TAID": "0723",
+    "DistrictID": "07",
+    "TAName": "Chinyama"
+  },
+  {
+    "TAID": "0724",
+    "DistrictID": "07",
+    "TAName": "Mawawa"
+  },
+  {
+    "TAID": "0725",
+    "DistrictID": "07",
+    "TAName": "Mphonde"
+  },
+  {
+    "TAID": "0726",
+    "DistrictID": "07",
+    "TAName": "Nyaza"
+  },
+  {
+    "TAID": "0727",
+    "DistrictID": "07",
+    "TAName": "Chambwe"
+  },
+  {
+    "TAID": "0728",
+    "DistrictID": "07",
+    "TAName": "STA KAPICHIRA"
+  },
+  {
+    "TAID": "0729",
+    "DistrictID": "07",
+    "TAName": "Chitanthamapiri"
+  },
+  {
+    "TAID": "0801",
+    "DistrictID": "08",
+    "TAName": "Kasakula"
+  },
+  {
+    "TAID": "0802",
+    "DistrictID": "08",
+    "TAName": "Chikho"
+  },
+  {
+    "TAID": "0803",
+    "DistrictID": "08",
+    "TAName": "Nthondo"
+  },
+  {
+    "TAID": "0804",
+    "DistrictID": "08",
+    "TAName": "Kalumo"
+  },
+  {
+    "TAID": "0805",
+    "DistrictID": "08",
+    "TAName": "Chilooko"
+  },
+  {
+    "TAID": "0806",
+    "DistrictID": "08",
+    "TAName": "Malenga"
+  },
+  {
+    "TAID": "0808",
+    "DistrictID": "08",
+    "TAName": "Vuso Jere"
+  },
+  {
+    "TAID": "0809",
+    "DistrictID": "08",
+    "TAName": "Chawanda"
+  },
+  {
+    "TAID": "0901",
+    "DistrictID": "09",
+    "TAName": "Dzoole"
+  },
+  {
+    "TAID": "0902",
+    "DistrictID": "09",
+    "TAName": "Chakhadza"
+  },
+  {
+    "TAID": "0903",
+    "DistrictID": "09",
+    "TAName": "Kayembe"
+  },
+  {
+    "TAID": "0904",
+    "DistrictID": "09",
+    "TAName": "Chiwere"
+  },
+  {
+    "TAID": "0905",
+    "DistrictID": "09",
+    "TAName": "Mkukula"
+  },
+  {
+    "TAID": "0906",
+    "DistrictID": "09",
+    "TAName": "Msakambewa"
+  },
+  {
+    "TAID": "0907",
+    "DistrictID": "09",
+    "TAName": "Mponela"
+  },
+  {
+    "TAID": "0908",
+    "DistrictID": "09",
+    "TAName": "Mkukula A"
+  },
+  {
+    "TAID": "0909",
+    "DistrictID": "09",
+    "TAName": "Mkukula B"
+  },
+  {
+    "TAID": "0910",
+    "DistrictID": "09",
+    "TAName": "Dzoole A"
+  },
+  {
+    "TAID": "0911",
+    "DistrictID": "09",
+    "TAName": "Dzoole B"
+  },
+  {
+    "TAID": "0912",
+    "DistrictID": "09",
+    "TAName": "Kankhande"
+  },
+  {
+    "TAID": "1001",
+    "DistrictID": "10",
+    "TAName": "Maganga"
+  },
+  {
+    "TAID": "1002",
+    "DistrictID": "10",
+    "TAName": "Kalonga"
+  },
+  {
+    "TAID": "1003",
+    "DistrictID": "10",
+    "TAName": "Pemba"
+  },
+  {
+    "TAID": "1004",
+    "DistrictID": "10",
+    "TAName": "Kambwiri"
+  },
+  {
+    "TAID": "1005",
+    "DistrictID": "10",
+    "TAName": "Ndindi"
+  },
+  {
+    "TAID": "1006",
+    "DistrictID": "10",
+    "TAName": "Kambalame"
+  },
+  {
+    "TAID": "1007",
+    "DistrictID": "10",
+    "TAName": "Khombedza"
+  },
+  {
+    "TAID": "1008",
+    "DistrictID": "10",
+    "TAName": "Mwanza"
+  },
+  {
+    "TAID": "1009",
+    "DistrictID": "10",
+    "TAName": "Kuluunda"
+  },
+  {
+    "TAID": "1010",
+    "DistrictID": "10",
+    "TAName": "Msosa"
+  },
+  {
+    "TAID": "1012",
+    "DistrictID": "10",
+    "TAName": "Salima"
+  },
+  {
+    "TAID": "1013",
+    "DistrictID": "10",
+    "TAName": "Makanjira"
+  },
+  {
+    "TAID": "1014",
+    "DistrictID": "10",
+    "TAName": "Chitala"
+  },
+  {
+    "TAID": "1015",
+    "DistrictID": "10",
+    "TAName": "Chisamba"
+  },
+  {
+    "TAID": "1101",
+    "DistrictID": "11",
+    "TAName": "Chadza"
+  },
+  {
+    "TAID": "1102",
+    "DistrictID": "11",
+    "TAName": "Kalolo"
+  },
+  {
+    "TAID": "1103",
+    "DistrictID": "11",
+    "TAName": "Chiseka"
+  },
+  {
+    "TAID": "1104",
+    "DistrictID": "11",
+    "TAName": "Mazengera"
+  },
+  {
+    "TAID": "1105",
+    "DistrictID": "11",
+    "TAName": "Chitekwele"
+  },
+  {
+    "TAID": "1106",
+    "DistrictID": "11",
+    "TAName": "Khongoni"
+  },
+  {
+    "TAID": "1107",
+    "DistrictID": "11",
+    "TAName": "Chimutu"
+  },
+  {
+    "TAID": "1108",
+    "DistrictID": "11",
+    "TAName": "Chitukula"
+  },
+  {
+    "TAID": "1109",
+    "DistrictID": "11",
+    "TAName": "Mtema"
+  },
+  {
+    "TAID": "1110",
+    "DistrictID": "11",
+    "TAName": "Kalumbu"
+  },
+  {
+    "TAID": "1111",
+    "DistrictID": "11",
+    "TAName": "Tsabango"
+  },
+  {
+    "TAID": "1112",
+    "DistrictID": "11",
+    "TAName": "Kalumba"
+  },
+  {
+    "TAID": "1113",
+    "DistrictID": "11",
+    "TAName": "Njewa"
+  },
+  {
+    "TAID": "1114",
+    "DistrictID": "11",
+    "TAName": "Malili"
+  },
+  {
+    "TAID": "1115",
+    "DistrictID": "11",
+    "TAName": "Kabudula"
+  },
+  {
+    "TAID": "1116",
+    "DistrictID": "11",
+    "TAName": "Masumbankhunda"
+  },
+  {
+    "TAID": "1118",
+    "DistrictID": "11",
+    "TAName": "Masula"
+  },
+  {
+    "TAID": "1122",
+    "DistrictID": "11",
+    "TAName": "Masamba"
+  },
+  {
+    "TAID": "1123",
+    "DistrictID": "11",
+    "TAName": "Chilipa"
+  },
+  {
+    "TAID": "1124",
+    "DistrictID": "11",
+    "TAName": "Nkhunada"
+  },
+  {
+    "TAID": "1125",
+    "DistrictID": "11",
+    "TAName": "Mbang'ombe"
+  },
+  {
+    "TAID": "1126",
+    "DistrictID": "11",
+    "TAName": "Chiwamba"
+  },
+  {
+    "TAID": "1127",
+    "DistrictID": "11",
+    "TAName": "Chiwawula"
+  },
+  {
+    "TAID": "1128",
+    "DistrictID": "11",
+    "TAName": "M'bwatalika"
+  },
+  {
+    "TAID": "1129",
+    "DistrictID": "11",
+    "TAName": "Chingala"
+  },
+  {
+    "TAID": "1201",
+    "DistrictID": "12",
+    "TAName": "Mlonyeni"
+  },
+  {
+    "TAID": "1202",
+    "DistrictID": "12",
+    "TAName": "Mavwere"
+  },
+  {
+    "TAID": "1203",
+    "DistrictID": "12",
+    "TAName": "Zulu"
+  },
+  {
+    "TAID": "1204",
+    "DistrictID": "12",
+    "TAName": "Nduwa"
+  },
+  {
+    "TAID": "1205",
+    "DistrictID": "12",
+    "TAName": "Mkanda"
+  },
+  {
+    "TAID": "1206",
+    "DistrictID": "12",
+    "TAName": "Dambe"
+  },
+  {
+    "TAID": "1207",
+    "DistrictID": "12",
+    "TAName": "Nyoka"
+  },
+  {
+    "TAID": "1208",
+    "DistrictID": "12",
+    "TAName": "Kawere"
+  },
+  {
+    "TAID": "1209",
+    "DistrictID": "12",
+    "TAName": "Mchinji Boma"
+  },
+  {
+    "TAID": "1210",
+    "DistrictID": "12",
+    "TAName": "Simphasi"
+  },
+  {
+    "TAID": "1211",
+    "DistrictID": "12",
+    "TAName": "Kapondo"
+  },
+  {
+    "TAID": "1213",
+    "DistrictID": "12",
+    "TAName": "Pitala"
+  },
+  {
+    "TAID": "1214",
+    "DistrictID": "12",
+    "TAName": "Gumba"
+  },
+  {
+    "TAID": "1215",
+    "DistrictID": "12",
+    "TAName": "Kazyozyo"
+  },
+  {
+    "TAID": "1216",
+    "DistrictID": "12",
+    "TAName": "KAPINULA"
+  },
+  {
+    "TAID": "1217",
+    "DistrictID": "12",
+    "TAName": "Matuwamba"
+  },
+  {
+    "TAID": "1301",
+    "DistrictID": "13",
+    "TAName": "Pemba"
+  },
+  {
+    "TAID": "1302",
+    "DistrictID": "13",
+    "TAName": "Chilikumwendo"
+  },
+  {
+    "TAID": "1303",
+    "DistrictID": "13",
+    "TAName": "Kaphuka"
+  },
+  {
+    "TAID": "1304",
+    "DistrictID": "13",
+    "TAName": "Tambala"
+  },
+  {
+    "TAID": "1305",
+    "DistrictID": "13",
+    "TAName": "Chauma"
+  },
+  {
+    "TAID": "1306",
+    "DistrictID": "13",
+    "TAName": "Kasumbu"
+  },
+  {
+    "TAID": "1307",
+    "DistrictID": "13",
+    "TAName": "Kachindamoto"
+  },
+  {
+    "TAID": "1308",
+    "DistrictID": "13",
+    "TAName": "Kamenya Gwaza"
+  },
+  {
+    "TAID": "1311",
+    "DistrictID": "13",
+    "TAName": "Kachere"
+  },
+  {
+    "TAID": "1312",
+    "DistrictID": "13",
+    "TAName": "Mbozi"
+  },
+  {
+    "TAID": "1401",
+    "DistrictID": "14",
+    "TAName": "Phambala"
+  },
+  {
+    "TAID": "1402",
+    "DistrictID": "14",
+    "TAName": "Mpando"
+  },
+  {
+    "TAID": "1403",
+    "DistrictID": "14",
+    "TAName": "Kwataine"
+  },
+  {
+    "TAID": "1404",
+    "DistrictID": "14",
+    "TAName": "Makwangwala"
+  },
+  {
+    "TAID": "1405",
+    "DistrictID": "14",
+    "TAName": "Champiti"
+  },
+  {
+    "TAID": "1406",
+    "DistrictID": "14",
+    "TAName": "Njolomole"
+  },
+  {
+    "TAID": "1407",
+    "DistrictID": "14",
+    "TAName": "Chakhumbira"
+  },
+  {
+    "TAID": "1408",
+    "DistrictID": "14",
+    "TAName": "Ganya"
+  },
+  {
+    "TAID": "1409",
+    "DistrictID": "14",
+    "TAName": "Masasa"
+  },
+  {
+    "TAID": "1501",
+    "DistrictID": "15",
+    "TAName": "Msanama"
+  },
+  {
+    "TAID": "1502",
+    "DistrictID": "15",
+    "TAName": "Nsamala"
+  },
+  {
+    "TAID": "1503",
+    "DistrictID": "15",
+    "TAName": "Kalembo"
+  },
+  {
+    "TAID": "1504",
+    "DistrictID": "15",
+    "TAName": "Nkaya"
+  },
+  {
+    "TAID": "1505",
+    "DistrictID": "15",
+    "TAName": "Sawali"
+  },
+  {
+    "TAID": "1506",
+    "DistrictID": "15",
+    "TAName": "Chanthunya"
+  },
+  {
+    "TAID": "1507",
+    "DistrictID": "15",
+    "TAName": "Kachenga"
+  },
+  {
+    "TAID": "1508",
+    "DistrictID": "15",
+    "TAName": "Amidu"
+  },
+  {
+    "TAID": "1509",
+    "DistrictID": "15",
+    "TAName": "Phalula"
+  },
+  {
+    "TAID": "1510",
+    "DistrictID": "15",
+    "TAName": "Toleza"
+  },
+  {
+    "TAID": "1511",
+    "DistrictID": "15",
+    "TAName": "Kapalamula"
+  },
+  {
+    "TAID": "1512",
+    "DistrictID": "15",
+    "TAName": "Mbera"
+  },
+  {
+    "TAID": "1513",
+    "DistrictID": "15",
+    "TAName": "Chimpakati"
+  },
+  {
+    "TAID": "1514",
+    "DistrictID": "15",
+    "TAName": "Makwinja"
+  },
+  {
+    "TAID": "1515",
+    "DistrictID": "15",
+    "TAName": "Matola"
+  },
+  {
+    "TAID": "1601",
+    "DistrictID": "16",
+    "TAName": "Liwonde"
+  },
+  {
+    "TAID": "1602",
+    "DistrictID": "16",
+    "TAName": "Sitola"
+  },
+  {
+    "TAID": "1603",
+    "DistrictID": "16",
+    "TAName": "Kawinga"
+  },
+  {
+    "TAID": "1604",
+    "DistrictID": "16",
+    "TAName": "Chamba"
+  },
+  {
+    "TAID": "1605",
+    "DistrictID": "16",
+    "TAName": "Mposa"
+  },
+  {
+    "TAID": "1606",
+    "DistrictID": "16",
+    "TAName": "Mlomba"
+  },
+  {
+    "TAID": "1607",
+    "DistrictID": "16",
+    "TAName": "Chikweo"
+  },
+  {
+    "TAID": "1608",
+    "DistrictID": "16",
+    "TAName": "Ngokwe"
+  },
+  {
+    "TAID": "1609",
+    "DistrictID": "16",
+    "TAName": "Chiwalo"
+  },
+  {
+    "TAID": "1610",
+    "DistrictID": "16",
+    "TAName": "Nyambi"
+  },
+  {
+    "TAID": "1611",
+    "DistrictID": "16",
+    "TAName": "Kapoloma"
+  },
+  {
+    "TAID": "1612",
+    "DistrictID": "16",
+    "TAName": "Msamala"
+  },
+  {
+    "TAID": "1613",
+    "DistrictID": "16",
+    "TAName": "Nkoola"
+  },
+  {
+    "TAID": "1614",
+    "DistrictID": "16",
+    "TAName": "Nsanama"
+  },
+  {
+    "TAID": "1615",
+    "DistrictID": "16",
+    "TAName": "Sale"
+  },
+  {
+    "TAID": "1616",
+    "DistrictID": "16",
+    "TAName": "Nyumwanyumwa"
+  },
+  {
+    "TAID": "1617",
+    "DistrictID": "16",
+    "TAName": "Mchinguza"
+  },
+  {
+    "TAID": "1701",
+    "DistrictID": "17",
+    "TAName": "Kanduku"
+  },
+  {
+    "TAID": "1702",
+    "DistrictID": "17",
+    "TAName": "Nthache"
+  },
+  {
+    "TAID": "1703",
+    "DistrictID": "17",
+    "TAName": "STA Govati"
+  },
+  {
+    "TAID": "1801",
+    "DistrictID": "18",
+    "TAName": "Chikowi"
+  },
+  {
+    "TAID": "1802",
+    "DistrictID": "18",
+    "TAName": "Mwambo"
+  },
+  {
+    "TAID": "1803",
+    "DistrictID": "18",
+    "TAName": "Kumtumanji"
+  },
+  {
+    "TAID": "1807",
+    "DistrictID": "18",
+    "TAName": "Mkumbira"
+  },
+  {
+    "TAID": "1808",
+    "DistrictID": "18",
+    "TAName": "Mbiza"
+  },
+  {
+    "TAID": "1809",
+    "DistrictID": "18",
+    "TAName": "Mlumbe"
+  },
+  {
+    "TAID": "1810",
+    "DistrictID": "18",
+    "TAName": "Malemia"
+  },
+  {
+    "TAID": "1812",
+    "DistrictID": "18",
+    "TAName": "Mtholowa"
+  },
+  {
+    "TAID": "1813",
+    "DistrictID": "18",
+    "TAName": "STA Mkagula"
+  },
+  {
+    "TAID": "1814",
+    "DistrictID": "18",
+    "TAName": "Nkapita"
+  },
+  {
+    "TAID": "1815",
+    "DistrictID": "18",
+    "TAName": "Mwembere"
+  },
+  {
+    "TAID": "1816",
+    "DistrictID": "18",
+    "TAName": "Idana"
+  },
+  {
+    "TAID": "1817",
+    "DistrictID": "18",
+    "TAName": "Ngwelero"
+  },
+  {
+    "TAID": "1901",
+    "DistrictID": "19",
+    "TAName": "Mpama"
+  },
+  {
+    "TAID": "1902",
+    "DistrictID": "19",
+    "TAName": "Likoswe"
+  },
+  {
+    "TAID": "1903",
+    "DistrictID": "19",
+    "TAName": "Kadewere"
+  },
+  {
+    "TAID": "1904",
+    "DistrictID": "19",
+    "TAName": "Nkalo"
+  },
+  {
+    "TAID": "1905",
+    "DistrictID": "19",
+    "TAName": "Chitera"
+  },
+  {
+    "TAID": "1906",
+    "DistrictID": "19",
+    "TAName": "Ntchema"
+  },
+  {
+    "TAID": "1907",
+    "DistrictID": "19",
+    "TAName": "Sandrack"
+  },
+  {
+    "TAID": "1908",
+    "DistrictID": "19",
+    "TAName": "Onga"
+  },
+  {
+    "TAID": "1909",
+    "DistrictID": "19",
+    "TAName": "Mpama II"
+  },
+  {
+    "TAID": "1910",
+    "DistrictID": "19",
+    "TAName": "Mpama I"
+  },
+  {
+    "TAID": "1911",
+    "DistrictID": "19",
+    "TAName": "Mpunga"
+  },
+  {
+    "TAID": "1912",
+    "DistrictID": "19",
+    "TAName": "Staonga"
+  },
+  {
+    "TAID": "1913",
+    "DistrictID": "19",
+    "TAName": "Staonga"
+  },
+  {
+    "TAID": "1914",
+    "DistrictID": "19",
+    "TAName": "Maoni"
+  },
+  {
+    "TAID": "1915",
+    "DistrictID": "19",
+    "TAName": "Nkale"
+  },
+  {
+    "TAID": "2001",
+    "DistrictID": "20",
+    "TAName": "Machinjiri"
+  },
+  {
+    "TAID": "2002",
+    "DistrictID": "20",
+    "TAName": "Kapeni"
+  },
+  {
+    "TAID": "2003",
+    "DistrictID": "20",
+    "TAName": "Lundu"
+  },
+  {
+    "TAID": "2004",
+    "DistrictID": "20",
+    "TAName": "Chigaru"
+  },
+  {
+    "TAID": "2005",
+    "DistrictID": "20",
+    "TAName": "Kunthembwe"
+  },
+  {
+    "TAID": "2006",
+    "DistrictID": "20",
+    "TAName": "Makata"
+  },
+  {
+    "TAID": "2007",
+    "DistrictID": "20",
+    "TAName": "Kuntaja"
+  },
+  {
+    "TAID": "2009",
+    "DistrictID": "20",
+    "TAName": "Somba"
+  },
+  {
+    "TAID": "2010",
+    "DistrictID": "20",
+    "TAName": "Kantimbanya Somba"
+  },
+  {
+    "TAID": "2101",
+    "DistrictID": "21",
+    "TAName": "Nsabwe"
+  },
+  {
+    "TAID": "2102",
+    "DistrictID": "21",
+    "TAName": "Thukuta"
+  },
+  {
+    "TAID": "2103",
+    "DistrictID": "21",
+    "TAName": "Mbawela"
+  },
+  {
+    "TAID": "2104",
+    "DistrictID": "21",
+    "TAName": "Changata"
+  },
+  {
+    "TAID": "2105",
+    "DistrictID": "21",
+    "TAName": "Mphuka"
+  },
+  {
+    "TAID": "2106",
+    "DistrictID": "21",
+    "TAName": "Khwethemule"
+  },
+  {
+    "TAID": "2107",
+    "DistrictID": "21",
+    "TAName": "Kapichi"
+  },
+  {
+    "TAID": "2108",
+    "DistrictID": "21",
+    "TAName": "Nchilamwera"
+  },
+  {
+    "TAID": "2109",
+    "DistrictID": "21",
+    "TAName": "Chimaliro"
+  },
+  {
+    "TAID": "2110",
+    "DistrictID": "21",
+    "TAName": "Bvumbwe"
+  },
+  {
+    "TAID": "2111",
+    "DistrictID": "21",
+    "TAName": "Thomas"
+  },
+  {
+    "TAID": "2132",
+    "DistrictID": "21",
+    "TAName": "Nanseta"
+  },
+  {
+    "TAID": "2133",
+    "DistrictID": "21",
+    "TAName": "Boidi"
+  },
+  {
+    "TAID": "2134",
+    "DistrictID": "21",
+    "TAName": "Mpenda"
+  },
+  {
+    "TAID": "2135",
+    "DistrictID": "21",
+    "TAName": "Ngolongolowa"
+  },
+  {
+    "TAID": "2201",
+    "DistrictID": "22",
+    "TAName": "Mabuka"
+  },
+  {
+    "TAID": "2203",
+    "DistrictID": "22",
+    "TAName": "Chikumbu"
+  },
+  {
+    "TAID": "2204",
+    "DistrictID": "22",
+    "TAName": "Mthiramanja"
+  },
+  {
+    "TAID": "2205",
+    "DistrictID": "22",
+    "TAName": "Mkanda"
+  },
+  {
+    "TAID": "2206",
+    "DistrictID": "22",
+    "TAName": "Juma"
+  },
+  {
+    "TAID": "2213",
+    "DistrictID": "22",
+    "TAName": "Tongondiya"
+  },
+  {
+    "TAID": "2217",
+    "DistrictID": "22",
+    "TAName": "Njema"
+  },
+  {
+    "TAID": "2218",
+    "DistrictID": "22",
+    "TAName": "Milonde"
+  },
+  {
+    "TAID": "2219",
+    "DistrictID": "22",
+    "TAName": "Sunganzeru"
+  },
+  {
+    "TAID": "2220",
+    "DistrictID": "22",
+    "TAName": "Ndanga"
+  },
+  {
+    "TAID": "2301",
+    "DistrictID": "23",
+    "TAName": "Mnkhumba"
+  },
+  {
+    "TAID": "2302",
+    "DistrictID": "23",
+    "TAName": "Nazombe"
+  },
+  {
+    "TAID": "2303",
+    "DistrictID": "23",
+    "TAName": "Chiwalo"
+  },
+  {
+    "TAID": "2318",
+    "DistrictID": "23",
+    "TAName": "Nkhulambe"
+  },
+  {
+    "TAID": "2319",
+    "DistrictID": "23",
+    "TAName": "Kaduya"
+  },
+  {
+    "TAID": "2320",
+    "DistrictID": "23",
+    "TAName": "Jenala"
+  },
+  {
+    "TAID": "2321",
+    "DistrictID": "23",
+    "TAName": "Kaledzera"
+  },
+  {
+    "TAID": "2322",
+    "DistrictID": "23",
+    "TAName": "Nyezelera"
+  },
+  {
+    "TAID": "2401",
+    "DistrictID": "24",
+    "TAName": "Ngabu"
+  },
+  {
+    "TAID": "2402",
+    "DistrictID": "24",
+    "TAName": "Lundu"
+  },
+  {
+    "TAID": "2403",
+    "DistrictID": "24",
+    "TAName": "Chapananga"
+  },
+  {
+    "TAID": "2404",
+    "DistrictID": "24",
+    "TAName": "Maseya"
+  },
+  {
+    "TAID": "2405",
+    "DistrictID": "24",
+    "TAName": "Katunga"
+  },
+  {
+    "TAID": "2406",
+    "DistrictID": "24",
+    "TAName": "Kasisi"
+  },
+  {
+    "TAID": "2407",
+    "DistrictID": "24",
+    "TAName": "Makhuwira"
+  },
+  {
+    "TAID": "2408",
+    "DistrictID": "24",
+    "TAName": "Masache"
+  },
+  {
+    "TAID": "2409",
+    "DistrictID": "24",
+    "TAName": "Ngowe"
+  },
+  {
+    "TAID": "2410",
+    "DistrictID": "24",
+    "TAName": "Ndakwera"
+  },
+  {
+    "TAID": "2411",
+    "DistrictID": "24",
+    "TAName": "Mulilima"
+  },
+  {
+    "TAID": "2501",
+    "DistrictID": "25",
+    "TAName": "Ndamera"
+  },
+  {
+    "TAID": "2502",
+    "DistrictID": "25",
+    "TAName": "Chimombo"
+  },
+  {
+    "TAID": "2503",
+    "DistrictID": "25",
+    "TAName": "Nyachikadza"
+  },
+  {
+    "TAID": "2504",
+    "DistrictID": "25",
+    "TAName": "Mlolo"
+  },
+  {
+    "TAID": "2505",
+    "DistrictID": "25",
+    "TAName": "Tengani"
+  },
+  {
+    "TAID": "2506",
+    "DistrictID": "25",
+    "TAName": "Mbenje"
+  },
+  {
+    "TAID": "2507",
+    "DistrictID": "25",
+    "TAName": "Malemia"
+  },
+  {
+    "TAID": "2508",
+    "DistrictID": "25",
+    "TAName": "Makoko"
+  },
+  {
+    "TAID": "2509",
+    "DistrictID": "25",
+    "TAName": "Ngabu"
+  },
+  {
+    "TAID": "2601",
+    "DistrictID": "26",
+    "TAName": "Dambe"
+  },
+  {
+    "TAID": "2602",
+    "DistrictID": "26",
+    "TAName": "Mlauli"
+  },
+  {
+    "TAID": "2603",
+    "DistrictID": "26",
+    "TAName": "Symon"
+  },
+  {
+    "TAID": "2604",
+    "DistrictID": "26",
+    "TAName": "Chekucheku"
+  },
+  {
+    "TAID": "2701",
+    "DistrictID": "27",
+    "TAName": "Mponda"
+  },
+  {
+    "TAID": "2702",
+    "DistrictID": "27",
+    "TAName": "Chimwala"
+  },
+  {
+    "TAID": "2703",
+    "DistrictID": "27",
+    "TAName": "Nankumba"
+  },
+  {
+    "TAID": "2704",
+    "DistrictID": "27",
+    "TAName": "Jalasi"
+  },
+  {
+    "TAID": "2705",
+    "DistrictID": "27",
+    "TAName": "M'bwana Nyambi"
+  },
+  {
+    "TAID": "2706",
+    "DistrictID": "27",
+    "TAName": "Chowe"
+  },
+  {
+    "TAID": "2707",
+    "DistrictID": "27",
+    "TAName": "Katuli"
+  },
+  {
+    "TAID": "2708",
+    "DistrictID": "27",
+    "TAName": "Makanjila"
+  },
+  {
+    "TAID": "2709",
+    "DistrictID": "27",
+    "TAName": "Namabvi"
+  },
+  {
+    "TAID": "2711",
+    "DistrictID": "27",
+    "TAName": "Chilipa"
+  },
+  {
+    "TAID": "2712",
+    "DistrictID": "27",
+    "TAName": "Lulanga"
+  },
+  {
+    "TAID": "2801",
+    "DistrictID": "28",
+    "TAName": "Mkumpha"
+  },
+  {
+    "TAID": "2802",
+    "DistrictID": "28",
+    "TAName": "Mwase"
+  },
+  {
+    "TAID": "2803",
+    "DistrictID": "28",
+    "TAName": "Kabuthu"
+  },
+  {
+    "TAID": "3001",
+    "DistrictID": "30",
+    "TAName": "Chibavi-east"
+  },
+  {
+    "TAID": "3002",
+    "DistrictID": "30",
+    "TAName": "msongwe"
+  },
+  {
+    "TAID": "3003",
+    "DistrictID": "30",
+    "TAName": "Chibanja ward"
+  },
+  {
+    "TAID": "3004",
+    "DistrictID": "30",
+    "TAName": "katawa ward"
+  },
+  {
+    "TAID": "3005",
+    "DistrictID": "30",
+    "TAName": "zolozolo west"
+  },
+  {
+    "TAID": "3006",
+    "DistrictID": "30",
+    "TAName": "Mchengautuba East Ward"
+  },
+  {
+    "TAID": "3007",
+    "DistrictID": "30",
+    "TAName": "chiputura Ward"
+  },
+  {
+    "TAID": "3008",
+    "DistrictID": "30",
+    "TAName": "MCHENGAUTUBA WEST"
+  },
+  {
+    "TAID": "3009",
+    "DistrictID": "30",
+    "TAName": "Lubinga"
+  },
+  {
+    "TAID": "3010",
+    "DistrictID": "30",
+    "TAName": "Chibavi west"
+  },
+  {
+    "TAID": "3011",
+    "DistrictID": "30",
+    "TAName": "mzilawaingwe"
+  },
+  {
+    "TAID": "3012",
+    "DistrictID": "30",
+    "TAName": "Zolozolo East"
+  },
+  {
+    "TAID": "3013",
+    "DistrictID": "30",
+    "TAName": "Kaning'ina"
+  },
+  {
+    "TAID": "3014",
+    "DistrictID": "30",
+    "TAName": "Masasa"
+  },
+  {
+    "TAID": "3015",
+    "DistrictID": "30",
+    "TAName": "Nkhorongo/Lupaso"
+  },
+  {
+    "TAID": "3101",
+    "DistrictID": "31",
+    "TAName": "Chiputura Ward"
+  },
+  {
+    "TAID": "3102",
+    "DistrictID": "31",
+    "TAName": "Zolozolo West Ward"
+  },
+  {
+    "TAID": "3103",
+    "DistrictID": "31",
+    "TAName": "Katawa Ward"
+  },
+  {
+    "TAID": "3104",
+    "DistrictID": "31",
+    "TAName": "Chibanja Ward"
+  },
+  {
+    "TAID": "3105",
+    "DistrictID": "31",
+    "TAName": "Mchengautuba Ward"
+  },
+  {
+    "TAID": "3106",
+    "DistrictID": "31",
+    "TAName": "Chibavi-East Ward"
+  },
+  {
+    "TAID": "3107",
+    "DistrictID": "31",
+    "TAName": "MASASA Ward"
+  },
+  {
+    "TAID": "3108",
+    "DistrictID": "31",
+    "TAName": "MCHENGAUTUBA WEST Ward"
+  },
+  {
+    "TAID": "3109",
+    "DistrictID": "31",
+    "TAName": "MSONGWE Ward"
+  },
+  {
+    "TAID": "3110",
+    "DistrictID": "31",
+    "TAName": "KANINGINA Ward"
+  },
+  {
+    "TAID": "3111",
+    "DistrictID": "31",
+    "TAName": "MZIRAIWENGWE Ward"
+  },
+  {
+    "TAID": "3112",
+    "DistrictID": "31",
+    "TAName": "LUWINGA Ward"
+  },
+  {
+    "TAID": "3113",
+    "DistrictID": "31",
+    "TAName": "ZOLOZOLO EAST Ward"
+  },
+  {
+    "TAID": "3114",
+    "DistrictID": "31",
+    "TAName": "Nkhorongo Lupaso Ward"
+  },
+  {
+    "TAID": "3115",
+    "DistrictID": "31",
+    "TAName": "Chibavi West Ward"
+  },
+  {
+    "TAID": "3201",
+    "DistrictID": "32",
+    "TAName": "Phwetekere Ward"
+  },
+  {
+    "TAID": "3202",
+    "DistrictID": "32",
+    "TAName": "Sese Ward"
+  },
+  {
+    "TAID": "3203",
+    "DistrictID": "32",
+    "TAName": "Tsabango Ward"
+  },
+  {
+    "TAID": "3204",
+    "DistrictID": "32",
+    "TAName": "Kaliyeka Ward"
+  },
+  {
+    "TAID": "3205",
+    "DistrictID": "32",
+    "TAName": "Statehouse Ward"
+  },
+  {
+    "TAID": "3206",
+    "DistrictID": "32",
+    "TAName": "Mchesi Ward"
+  },
+  {
+    "TAID": "3207",
+    "DistrictID": "32",
+    "TAName": "Biwi Ward"
+  },
+  {
+    "TAID": "3208",
+    "DistrictID": "32",
+    "TAName": "Mbidzi Ward"
+  },
+  {
+    "TAID": "3209",
+    "DistrictID": "32",
+    "TAName": "Chilinde Ward"
+  },
+  {
+    "TAID": "3210",
+    "DistrictID": "32",
+    "TAName": "Ngwenya Ward"
+  },
+  {
+    "TAID": "3211",
+    "DistrictID": "32",
+    "TAName": "Kawale 1 Ward"
+  },
+  {
+    "TAID": "3212",
+    "DistrictID": "32",
+    "TAName": "Chatata Ward"
+  },
+  {
+    "TAID": "3213",
+    "DistrictID": "32",
+    "TAName": "Kabwabwa Ward"
+  },
+  {
+    "TAID": "3214",
+    "DistrictID": "32",
+    "TAName": "Nankhaka Ward"
+  },
+  {
+    "TAID": "3215",
+    "DistrictID": "32",
+    "TAName": "Mvunguti Ward"
+  },
+  {
+    "TAID": "3216",
+    "DistrictID": "32",
+    "TAName": "Mgona-Chatata Ward"
+  },
+  {
+    "TAID": "3217",
+    "DistrictID": "32",
+    "TAName": "Mtsiliza Ward"
+  },
+  {
+    "TAID": "3218",
+    "DistrictID": "32",
+    "TAName": "Chigoneka Ward"
+  },
+  {
+    "TAID": "3219",
+    "DistrictID": "32",
+    "TAName": "Mtandire Ward"
+  },
+  {
+    "TAID": "3220",
+    "DistrictID": "32",
+    "TAName": "Maria Ward"
+  },
+  {
+    "TAID": "3221",
+    "DistrictID": "32",
+    "TAName": "Chimutu Ward"
+  },
+  {
+    "TAID": "3222",
+    "DistrictID": "32",
+    "TAName": "Lumbadzi Ward"
+  },
+  {
+    "TAID": "3223",
+    "DistrictID": "32",
+    "TAName": "Nyama Ward"
+  },
+  {
+    "TAID": "3224",
+    "DistrictID": "32",
+    "TAName": "Chinsapo Ward"
+  },
+  {
+    "TAID": "3301",
+    "DistrictID": "33",
+    "TAName": "Mbayani Ward"
+  },
+  {
+    "TAID": "3302",
+    "DistrictID": "33",
+    "TAName": "Chigumula Ward"
+  },
+  {
+    "TAID": "3303",
+    "DistrictID": "33",
+    "TAName": "Mkolokoti Ward"
+  },
+  {
+    "TAID": "3304",
+    "DistrictID": "33",
+    "TAName": "Michiru Ward"
+  },
+  {
+    "TAID": "3305",
+    "DistrictID": "33",
+    "TAName": "Chilomoni Ward"
+  },
+  {
+    "TAID": "3306",
+    "DistrictID": "33",
+    "TAName": "NAMIYANGO Ward"
+  },
+  {
+    "TAID": "3307",
+    "DistrictID": "33",
+    "TAName": "BLANTYRE CENTRAL Ward"
+  },
+  {
+    "TAID": "3308",
+    "DistrictID": "33",
+    "TAName": "NYAMBADWE Ward"
+  },
+  {
+    "TAID": "3309",
+    "DistrictID": "33",
+    "TAName": "MAPANGA Ward"
+  },
+  {
+    "TAID": "3310",
+    "DistrictID": "33",
+    "TAName": "MTHANDIZI Ward"
+  },
+  {
+    "TAID": "3311",
+    "DistrictID": "33",
+    "TAName": "SOUTH LUNZU Ward"
+  },
+  {
+    "TAID": "3312",
+    "DistrictID": "33",
+    "TAName": "MZEDI Ward"
+  },
+  {
+    "TAID": "3313",
+    "DistrictID": "33",
+    "TAName": "BANGWE MVULA Ward"
+  },
+  {
+    "TAID": "3314",
+    "DistrictID": "33",
+    "TAName": "Sochie West Ward"
+  },
+  {
+    "TAID": "3315",
+    "DistrictID": "33",
+    "TAName": "MAKATA Ward"
+  },
+  {
+    "TAID": "3316",
+    "DistrictID": "33",
+    "TAName": "MATOPE Ward"
+  },
+  {
+    "TAID": "3317",
+    "DistrictID": "33",
+    "TAName": "MISESA Ward"
+  },
+  {
+    "TAID": "3318",
+    "DistrictID": "33",
+    "TAName": "NAMALIMWE Ward"
+  },
+  {
+    "TAID": "3319",
+    "DistrictID": "33",
+    "TAName": "SOCHE EAST Ward"
+  },
+  {
+    "TAID": "3320",
+    "DistrictID": "33",
+    "TAName": "GAMULANI Ward"
+  },
+  {
+    "TAID": "3321",
+    "DistrictID": "33",
+    "TAName": "GREENCORNER Ward"
+  },
+  {
+    "TAID": "3322",
+    "DistrictID": "33",
+    "TAName": "BLANTYRE SOUTH Ward"
+  },
+  {
+    "TAID": "3323",
+    "DistrictID": "33",
+    "TAName": "Limbe Central Ward"
+  },
+  {
+    "TAID": "3401",
+    "DistrictID": "34",
+    "TAName": "Likangala Ward"
+  },
+  {
+    "TAID": "3402",
+    "DistrictID": "34",
+    "TAName": "Sadzi Ward"
+  },
+  {
+    "TAID": "3403",
+    "DistrictID": "34",
+    "TAName": "Chambo Ward"
+  },
+  {
+    "TAID": "3404",
+    "DistrictID": "34",
+    "TAName": "MPIRA Ward"
+  },
+  {
+    "TAID": "3405",
+    "DistrictID": "34",
+    "TAName": "ZOMBA CENTRAL Ward"
+  },
+  {
+    "TAID": "3406",
+    "DistrictID": "34",
+    "TAName": "Chinamwali Ward"
+  },
+  {
+    "TAID": "3407",
+    "DistrictID": "34",
+    "TAName": "MASONGOLA Ward"
+  },
+  {
+    "TAID": "3408",
+    "DistrictID": "34",
+    "TAName": "MTIYA Ward"
+  },
+  {
+    "TAID": "3409",
+    "DistrictID": "34",
+    "TAName": "MBEDZA Ward"
+  },
+  {
+    "TAID": "3410",
+    "DistrictID": "34",
+    "TAName": "CHILUNGA Ward"
+  }
+]

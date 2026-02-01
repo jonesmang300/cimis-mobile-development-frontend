@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Redirect, Route } from "react-router-dom";
 import {
   IonApp,
@@ -9,18 +9,15 @@ import {
   IonIcon,
   IonLabel,
   setupIonicReact,
+  IonLoading,
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 
-/* Core CSS required for Ionic components to work properly */
+/* Core CSS */
 import "@ionic/react/css/core.css";
-
-/* Basic CSS for apps built with Ionic */
 import "@ionic/react/css/normalize.css";
 import "@ionic/react/css/structure.css";
 import "@ionic/react/css/typography.css";
-
-/* Optional CSS utils that can be commented out */
 import "@ionic/react/css/padding.css";
 import "@ionic/react/css/float-elements.css";
 import "@ionic/react/css/text-alignment.css";
@@ -28,7 +25,6 @@ import "@ionic/react/css/text-transformation.css";
 import "@ionic/react/css/flex-utils.css";
 import "@ionic/react/css/display.css";
 
-/* Theme variables */
 import "./theme/variables.css";
 
 /* Components */
@@ -49,64 +45,81 @@ import {
   peopleOutline,
   walletOutline,
 } from "ionicons/icons";
+
 import { useAutoLogout } from "./hooks/useAutoLogout";
+
+/* SQLite init */
+import { initAndSeed, listSQLiteTables } from "./db/sqlite";
 
 setupIonicReact();
 
 const App: React.FC = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Track login status
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [dbReady, setDbReady] = useState(false);
+
   useAutoLogout();
+
+  useEffect(() => {
+    const setup = async () => {
+      try {
+        console.log("Initializing SQLite...");
+        await initAndSeed();
+        await listSQLiteTables(); // 👈 CHECK TABLES HERE
+        console.log("✅ SQLite initialized successfully");
+      } catch (e) {
+        console.error("❌ SQLite init failed", e);
+      } finally {
+        setDbReady(true);
+      }
+    };
+    setup();
+  }, []);
 
   return (
     <IonApp>
       <IonReactRouter>
+        <IonLoading isOpen={!dbReady} message="Preparing local database..." />
+
         {isLoggedIn ? (
-          // Tabs and Navbar for Logged-In Users
           <IonTabs>
             <IonRouterOutlet>
-              <Route exact path="/home">
-                <Home />
-              </Route>
-              <Route exact path="/validation">
-                <Transactions />
-              </Route>
-              <Route exact path="/settings">
-                <Settings />
-              </Route>
-
-              <Route exact path="/wallet">
-                <Wallet />
-              </Route>
-              <Route exact path="/add-transaction">
-                <AddTransactionForm />
-              </Route>
+              <Route exact path="/home" component={Home} />
+              <Route exact path="/validation" component={Transactions} />
+              <Route exact path="/settings" component={Settings} />
+              <Route exact path="/wallet" component={Wallet} />
+              <Route
+                exact
+                path="/add-transaction"
+                component={AddTransactionForm}
+              />
               <Route path="/cashbox-details" component={CashBoxDetails} />
-
               <Route path="/support" component={SupportPage} exact />
-
               <Route exact path="/">
                 <Redirect to="/home" />
               </Route>
             </IonRouterOutlet>
 
-            {/* Bottom Navigation Bar */}
             <IonTabBar slot="bottom" style={{ backgroundColor: "#4CAF50" }}>
               <IonTabButton tab="home" href="/home">
                 <IonIcon icon={homeOutline} />
                 <IonLabel>Home</IonLabel>
               </IonTabButton>
-              <IonTabButton tab="Validation" href="/Validation">
+
+              <IonTabButton tab="validation" href="/validation">
                 <IonIcon icon={listOutline} />
                 <IonLabel>Validation</IonLabel>
               </IonTabButton>
-              <IonTabButton tab="group-members" href="/groups">
+
+              <IonTabButton tab="groups" href="/groups">
                 <IonIcon icon={peopleOutline} />
                 <IonLabel>Groups</IonLabel>
               </IonTabButton>
-              <IonTabButton tab="transactions" href="/transactions">
+
+              <IonTabButton tab="transactions" href="/wallet">
                 <IonIcon icon={walletOutline} />
                 <IonLabel>Transactions</IonLabel>
               </IonTabButton>
+
               <IonTabButton tab="settings" href="/settings">
                 <IonIcon icon={settingsOutline} />
                 <IonLabel>Settings</IonLabel>
@@ -114,12 +127,9 @@ const App: React.FC = () => {
             </IonTabBar>
           </IonTabs>
         ) : (
-          // Login Page for Non-Logged-In Users
           <IonRouterOutlet>
             <Route exact path="/login">
-              <Login
-                onLogin={() => setIsLoggedIn(true)} // Pass login handler
-              />
+              <Login onLogin={() => setIsLoggedIn(true)} />
             </Route>
             <Redirect exact from="/" to="/login" />
           </IonRouterOutlet>

@@ -1,0 +1,7370 @@
+[
+  {
+    "villageClusterID": "020201001",
+    "villageClusterName": "Chikumbusho",
+    "districtID": "02",
+    "taID": "0201"
+  },
+  {
+    "villageClusterID": "020201002",
+    "villageClusterName": "Mwabulambo",
+    "districtID": "02",
+    "taID": "0201"
+  },
+  {
+    "villageClusterID": "020201003",
+    "villageClusterName": "Yilinafe",
+    "districtID": "02",
+    "taID": "0201"
+  },
+  {
+    "villageClusterID": "020201004",
+    "villageClusterName": "Howoka",
+    "districtID": "02",
+    "taID": "0201"
+  },
+  {
+    "villageClusterID": "020201005",
+    "villageClusterName": "Lower Songwe",
+    "districtID": "02",
+    "taID": "0201"
+  },
+  {
+    "villageClusterID": "020201006",
+    "villageClusterName": "Iyumba",
+    "districtID": "02",
+    "taID": "0201"
+  },
+  {
+    "villageClusterID": "020201007",
+    "villageClusterName": "Unenesho",
+    "districtID": "02",
+    "taID": "0201"
+  },
+  {
+    "villageClusterID": "020201008",
+    "villageClusterName": "Ngerenge",
+    "districtID": "02",
+    "taID": "0201"
+  },
+  {
+    "villageClusterID": "020201009",
+    "villageClusterName": "Malo",
+    "districtID": "02",
+    "taID": "0201"
+  },
+  {
+    "villageClusterID": "020201010",
+    "villageClusterName": "Lufiya",
+    "districtID": "02",
+    "taID": "0201"
+  },
+  {
+    "villageClusterID": "020201011",
+    "villageClusterName": "Ndelema",
+    "districtID": "02",
+    "taID": "0201"
+  },
+  {
+    "villageClusterID": "020201012",
+    "villageClusterName": "Kakoma",
+    "districtID": "02",
+    "taID": "0201"
+  },
+  {
+    "villageClusterID": "020201013",
+    "villageClusterName": "Ujisi",
+    "districtID": "02",
+    "taID": "0201"
+  },
+  {
+    "villageClusterID": "020202001",
+    "villageClusterName": "Iponga",
+    "districtID": "02",
+    "taID": "0202"
+  },
+  {
+    "villageClusterID": "020202002",
+    "villageClusterName": "Lumbasi",
+    "districtID": "02",
+    "taID": "0202"
+  },
+  {
+    "villageClusterID": "020202003",
+    "villageClusterName": "Mayoka",
+    "districtID": "02",
+    "taID": "0202"
+  },
+  {
+    "villageClusterID": "020203001",
+    "villageClusterName": "Tutulane",
+    "districtID": "02",
+    "taID": "0203"
+  },
+  {
+    "villageClusterID": "020203002",
+    "villageClusterName": "Tufwire",
+    "districtID": "02",
+    "taID": "0203"
+  },
+  {
+    "villageClusterID": "020203003",
+    "villageClusterName": "Mlare",
+    "districtID": "02",
+    "taID": "0203"
+  },
+  {
+    "villageClusterID": "020203004",
+    "villageClusterName": "Mwichifye",
+    "districtID": "02",
+    "taID": "0203"
+  },
+  {
+    "villageClusterID": "020203005",
+    "villageClusterName": "Maghemo",
+    "districtID": "02",
+    "taID": "0203"
+  },
+  {
+    "villageClusterID": "020203006",
+    "villageClusterName": "Mpata",
+    "districtID": "02",
+    "taID": "0203"
+  },
+  {
+    "villageClusterID": "020203007",
+    "villageClusterName": "Wiliro",
+    "districtID": "02",
+    "taID": "0203"
+  },
+  {
+    "villageClusterID": "020203008",
+    "villageClusterName": "Mbemba",
+    "districtID": "02",
+    "taID": "0203"
+  },
+  {
+    "villageClusterID": "020203009",
+    "villageClusterName": "Kanyighe",
+    "districtID": "02",
+    "taID": "0203"
+  },
+  {
+    "villageClusterID": "020203010",
+    "villageClusterName": "Bwanaloli",
+    "districtID": "02",
+    "taID": "0203"
+  },
+  {
+    "villageClusterID": "020203011",
+    "villageClusterName": "Mwesha",
+    "districtID": "02",
+    "taID": "0203"
+  },
+  {
+    "villageClusterID": "020203012",
+    "villageClusterName": "Shora",
+    "districtID": "02",
+    "taID": "0203"
+  },
+  {
+    "villageClusterID": "020203013",
+    "villageClusterName": "Mwenilondo",
+    "districtID": "02",
+    "taID": "0203"
+  },
+  {
+    "villageClusterID": "020203014",
+    "villageClusterName": "Sungwa",
+    "districtID": "02",
+    "taID": "0203"
+  },
+  {
+    "villageClusterID": "020204001",
+    "villageClusterName": "Bundi",
+    "districtID": "02",
+    "taID": "0204"
+  },
+  {
+    "villageClusterID": "020204002",
+    "villageClusterName": "Muzokoto",
+    "districtID": "02",
+    "taID": "0204"
+  },
+  {
+    "villageClusterID": "020204003",
+    "villageClusterName": "Malongo",
+    "districtID": "02",
+    "taID": "0204"
+  },
+  {
+    "villageClusterID": "020204004",
+    "villageClusterName": "Mphinga",
+    "districtID": "02",
+    "taID": "0204"
+  },
+  {
+    "villageClusterID": "020204005",
+    "villageClusterName": "Fulirwa",
+    "districtID": "02",
+    "taID": "0204"
+  },
+  {
+    "villageClusterID": "020204006",
+    "villageClusterName": "Vinthukutu",
+    "districtID": "02",
+    "taID": "0204"
+  },
+  {
+    "villageClusterID": "020204007",
+    "villageClusterName": "Khwawa",
+    "districtID": "02",
+    "taID": "0204"
+  },
+  {
+    "villageClusterID": "020204008",
+    "villageClusterName": "Mtema",
+    "districtID": "02",
+    "taID": "0204"
+  },
+  {
+    "villageClusterID": "020204009",
+    "villageClusterName": "Mabalani",
+    "districtID": "02",
+    "taID": "0204"
+  },
+  {
+    "villageClusterID": "020204010",
+    "villageClusterName": "Uliwa",
+    "districtID": "02",
+    "taID": "0204"
+  },
+  {
+    "villageClusterID": "020204011",
+    "villageClusterName": "Tilora",
+    "districtID": "02",
+    "taID": "0204"
+  },
+  {
+    "villageClusterID": "020205001",
+    "villageClusterName": "Ulaha",
+    "districtID": "02",
+    "taID": "0205"
+  },
+  {
+    "villageClusterID": "020205002",
+    "villageClusterName": "Ngala",
+    "districtID": "02",
+    "taID": "0205"
+  },
+  {
+    "villageClusterID": "020205003",
+    "villageClusterName": "Thawiro",
+    "districtID": "02",
+    "taID": "0205"
+  },
+  {
+    "villageClusterID": "020205004",
+    "villageClusterName": "Phapa",
+    "districtID": "02",
+    "taID": "0205"
+  },
+  {
+    "villageClusterID": "020205005",
+    "villageClusterName": "Ndalanje",
+    "districtID": "02",
+    "taID": "0205"
+  },
+  {
+    "villageClusterID": "020205006",
+    "villageClusterName": "Juni",
+    "districtID": "02",
+    "taID": "0205"
+  },
+  {
+    "villageClusterID": "020205007",
+    "villageClusterName": "Vua",
+    "districtID": "02",
+    "taID": "0205"
+  },
+  {
+    "villageClusterID": "030301001",
+    "villageClusterName": "Bumba",
+    "districtID": "03",
+    "taID": "0301"
+  },
+  {
+    "villageClusterID": "030301002",
+    "villageClusterName": "Lusani",
+    "districtID": "03",
+    "taID": "0301"
+  },
+  {
+    "villageClusterID": "030301003",
+    "villageClusterName": "Chikwawa",
+    "districtID": "03",
+    "taID": "0301"
+  },
+  {
+    "villageClusterID": "030301004",
+    "villageClusterName": "Chirambo",
+    "districtID": "03",
+    "taID": "0301"
+  },
+  {
+    "villageClusterID": "030301005",
+    "villageClusterName": "Bolero",
+    "districtID": "03",
+    "taID": "0301"
+  },
+  {
+    "villageClusterID": "030301006",
+    "villageClusterName": "Bowe",
+    "districtID": "03",
+    "taID": "0301"
+  },
+  {
+    "villageClusterID": "030301007",
+    "villageClusterName": "Chozoli",
+    "districtID": "03",
+    "taID": "0301"
+  },
+  {
+    "villageClusterID": "030301008",
+    "villageClusterName": "Kawaza",
+    "districtID": "03",
+    "taID": "0301"
+  },
+  {
+    "villageClusterID": "030301009",
+    "villageClusterName": "Kankhoka",
+    "districtID": "03",
+    "taID": "0301"
+  },
+  {
+    "villageClusterID": "030301010",
+    "villageClusterName": "Luhono",
+    "districtID": "03",
+    "taID": "0301"
+  },
+  {
+    "villageClusterID": "030301011",
+    "villageClusterName": "Bondi",
+    "districtID": "03",
+    "taID": "0301"
+  },
+  {
+    "villageClusterID": "030301012",
+    "villageClusterName": "Chitanga",
+    "districtID": "03",
+    "taID": "0301"
+  },
+  {
+    "villageClusterID": "030301013",
+    "villageClusterName": "Luviri",
+    "districtID": "03",
+    "taID": "0301"
+  },
+  {
+    "villageClusterID": "030301014",
+    "villageClusterName": "Kanyerere",
+    "districtID": "03",
+    "taID": "0301"
+  },
+  {
+    "villageClusterID": "030301015",
+    "villageClusterName": "Kamphenda",
+    "districtID": "03",
+    "taID": "0301"
+  },
+  {
+    "villageClusterID": "030301016",
+    "villageClusterName": "Bululuji",
+    "districtID": "03",
+    "taID": "0301"
+  },
+  {
+    "villageClusterID": "030301017",
+    "villageClusterName": "Chankhalamu",
+    "districtID": "03",
+    "taID": "0301"
+  },
+  {
+    "villageClusterID": "030301018",
+    "villageClusterName": "Mwazisi",
+    "districtID": "03",
+    "taID": "0301"
+  },
+  {
+    "villageClusterID": "030301019",
+    "villageClusterName": "Luviri-Bembe",
+    "districtID": "03",
+    "taID": "0301"
+  },
+  {
+    "villageClusterID": "030301020",
+    "villageClusterName": "Thazima",
+    "districtID": "03",
+    "taID": "0301"
+  },
+  {
+    "villageClusterID": "030302001",
+    "villageClusterName": "Mlowe 2",
+    "districtID": "03",
+    "taID": "0302"
+  },
+  {
+    "villageClusterID": "030302002",
+    "villageClusterName": "Zowo",
+    "districtID": "03",
+    "taID": "0302"
+  },
+  {
+    "villageClusterID": "030302003",
+    "villageClusterName": "Mlowe",
+    "districtID": "03",
+    "taID": "0302"
+  },
+  {
+    "villageClusterID": "030303001",
+    "villageClusterName": "Chimyanga",
+    "districtID": "03",
+    "taID": "0303"
+  },
+  {
+    "villageClusterID": "030303002",
+    "villageClusterName": "Chivungulu",
+    "districtID": "03",
+    "taID": "0303"
+  },
+  {
+    "villageClusterID": "030303003",
+    "villageClusterName": "Mhuju",
+    "districtID": "03",
+    "taID": "0303"
+  },
+  {
+    "villageClusterID": "030304001",
+    "villageClusterName": "Lura",
+    "districtID": "03",
+    "taID": "0304"
+  },
+  {
+    "villageClusterID": "030304002",
+    "villageClusterName": "Chitimba",
+    "districtID": "03",
+    "taID": "0304"
+  },
+  {
+    "villageClusterID": "030304003",
+    "villageClusterName": "Mchenga",
+    "districtID": "03",
+    "taID": "0304"
+  },
+  {
+    "villageClusterID": "030304004",
+    "villageClusterName": "Chiweta",
+    "districtID": "03",
+    "taID": "0304"
+  },
+  {
+    "villageClusterID": "030304005",
+    "villageClusterName": "Chihanga- Chitimba",
+    "districtID": "03",
+    "taID": "0304"
+  },
+  {
+    "villageClusterID": "030304006",
+    "villageClusterName": "Thunda",
+    "districtID": "03",
+    "taID": "0304"
+  },
+  {
+    "villageClusterID": "030306001",
+    "villageClusterName": "Tchalo",
+    "districtID": "03",
+    "taID": "0306"
+  },
+  {
+    "villageClusterID": "030307001",
+    "villageClusterName": "Mkombezi",
+    "districtID": "03",
+    "taID": "0307"
+  },
+  {
+    "villageClusterID": "030307002",
+    "villageClusterName": "Bale",
+    "districtID": "03",
+    "taID": "0307"
+  },
+  {
+    "villageClusterID": "030307003",
+    "villageClusterName": "Mzokoto",
+    "districtID": "03",
+    "taID": "0307"
+  },
+  {
+    "villageClusterID": "030307004",
+    "villageClusterName": "Usowoya",
+    "districtID": "03",
+    "taID": "0307"
+  },
+  {
+    "villageClusterID": "030307005",
+    "villageClusterName": "Uzumala",
+    "districtID": "03",
+    "taID": "0307"
+  },
+  {
+    "villageClusterID": "030307006",
+    "villageClusterName": "Mulyezi",
+    "districtID": "03",
+    "taID": "0307"
+  },
+  {
+    "villageClusterID": "030307007",
+    "villageClusterName": "Mphompha",
+    "districtID": "03",
+    "taID": "0307"
+  },
+  {
+    "villageClusterID": "030307008",
+    "villageClusterName": "Chinyolo",
+    "districtID": "03",
+    "taID": "0307"
+  },
+  {
+    "villageClusterID": "030308001",
+    "villageClusterName": "Mzwawa",
+    "districtID": "03",
+    "taID": "0308"
+  },
+  {
+    "villageClusterID": "030308002",
+    "villageClusterName": "Katowo",
+    "districtID": "03",
+    "taID": "0308"
+  },
+  {
+    "villageClusterID": "030308003",
+    "villageClusterName": "Chisimuka",
+    "districtID": "03",
+    "taID": "0308"
+  },
+  {
+    "villageClusterID": "030309001",
+    "villageClusterName": "Zolokere",
+    "districtID": "03",
+    "taID": "0309"
+  },
+  {
+    "villageClusterID": "030309002",
+    "villageClusterName": "Kanyenjere",
+    "districtID": "03",
+    "taID": "0309"
+  },
+  {
+    "villageClusterID": "030310001",
+    "villageClusterName": "Phoka",
+    "districtID": "03",
+    "taID": "0310"
+  },
+  {
+    "villageClusterID": "030310002",
+    "villageClusterName": "Junju",
+    "districtID": "03",
+    "taID": "0310"
+  },
+  {
+    "villageClusterID": "030312001",
+    "villageClusterName": "Makupula",
+    "districtID": "03",
+    "taID": "0312"
+  },
+  {
+    "villageClusterID": "030312002",
+    "villageClusterName": "Mlangacharo",
+    "districtID": "03",
+    "taID": "0312"
+  },
+  {
+    "villageClusterID": "030314001",
+    "villageClusterName": "Jalawe",
+    "districtID": "03",
+    "taID": "0314"
+  },
+  {
+    "villageClusterID": "030315001",
+    "villageClusterName": "Kawaza-Chilulu",
+    "districtID": "03",
+    "taID": "0315"
+  },
+  {
+    "villageClusterID": "030315002",
+    "villageClusterName": "Lukali",
+    "districtID": "03",
+    "taID": "0315"
+  },
+  {
+    "villageClusterID": "060601001",
+    "villageClusterName": "Chizeo",
+    "districtID": "06",
+    "taID": "0601"
+  },
+  {
+    "villageClusterID": "060601002",
+    "villageClusterName": "Chigunda",
+    "districtID": "06",
+    "taID": "0601"
+  },
+  {
+    "villageClusterID": "060601003",
+    "villageClusterName": "Mnema",
+    "districtID": "06",
+    "taID": "0601"
+  },
+  {
+    "villageClusterID": "060601004",
+    "villageClusterName": "Liwaladzi Ii",
+    "districtID": "06",
+    "taID": "0601"
+  },
+  {
+    "villageClusterID": "060601005",
+    "villageClusterName": "Nkhongo",
+    "districtID": "06",
+    "taID": "0601"
+  },
+  {
+    "villageClusterID": "060601006",
+    "villageClusterName": "Msenjere",
+    "districtID": "06",
+    "taID": "0601"
+  },
+  {
+    "villageClusterID": "060601007",
+    "villageClusterName": "Chipando",
+    "districtID": "06",
+    "taID": "0601"
+  },
+  {
+    "villageClusterID": "060601008",
+    "villageClusterName": "Chinyambome",
+    "districtID": "06",
+    "taID": "0601"
+  },
+  {
+    "villageClusterID": "060601009",
+    "villageClusterName": "Liwaladzi I",
+    "districtID": "06",
+    "taID": "0601"
+  },
+  {
+    "villageClusterID": "060601010",
+    "villageClusterName": "Chirwana",
+    "districtID": "06",
+    "taID": "0601"
+  },
+  {
+    "villageClusterID": "060601011",
+    "villageClusterName": "Kabiza",
+    "districtID": "06",
+    "taID": "0601"
+  },
+  {
+    "villageClusterID": "060601012",
+    "villageClusterName": "Chinthimbiri",
+    "districtID": "06",
+    "taID": "0601"
+  },
+  {
+    "villageClusterID": "060601013",
+    "villageClusterName": "Dwangwa",
+    "districtID": "06",
+    "taID": "0601"
+  },
+  {
+    "villageClusterID": "060601014",
+    "villageClusterName": "Maliwa",
+    "districtID": "06",
+    "taID": "0601"
+  },
+  {
+    "villageClusterID": "060601015",
+    "villageClusterName": "Kapuku",
+    "districtID": "06",
+    "taID": "0601"
+  },
+  {
+    "villageClusterID": "060601016",
+    "villageClusterName": "Nkhunga",
+    "districtID": "06",
+    "taID": "0601"
+  },
+  {
+    "villageClusterID": "060601017",
+    "villageClusterName": "Ngala",
+    "districtID": "06",
+    "taID": "0601"
+  },
+  {
+    "villageClusterID": "060601018",
+    "villageClusterName": "Chipopomo",
+    "districtID": "06",
+    "taID": "0601"
+  },
+  {
+    "villageClusterID": "060601019",
+    "villageClusterName": "Chinkhuti",
+    "districtID": "06",
+    "taID": "0601"
+  },
+  {
+    "villageClusterID": "060601020",
+    "villageClusterName": "Chauma",
+    "districtID": "06",
+    "taID": "0601"
+  },
+  {
+    "villageClusterID": "060601021",
+    "villageClusterName": "Tipate",
+    "districtID": "06",
+    "taID": "0601"
+  },
+  {
+    "villageClusterID": "060601022",
+    "villageClusterName": "Kaongozi",
+    "districtID": "06",
+    "taID": "0601"
+  },
+  {
+    "villageClusterID": "060601023",
+    "villageClusterName": "Mkangazinja",
+    "districtID": "06",
+    "taID": "0601"
+  },
+  {
+    "villageClusterID": "060601024",
+    "villageClusterName": "Chikowa",
+    "districtID": "06",
+    "taID": "0601"
+  },
+  {
+    "villageClusterID": "060601025",
+    "villageClusterName": "Chidebwe",
+    "districtID": "06",
+    "taID": "0601"
+  },
+  {
+    "villageClusterID": "060601026",
+    "villageClusterName": "Bowa",
+    "districtID": "06",
+    "taID": "0601"
+  },
+  {
+    "villageClusterID": "060602001",
+    "villageClusterName": "Kasitu",
+    "districtID": "06",
+    "taID": "0602"
+  },
+  {
+    "villageClusterID": "060602002",
+    "villageClusterName": "Mkoma",
+    "districtID": "06",
+    "taID": "0602"
+  },
+  {
+    "villageClusterID": "060602003",
+    "villageClusterName": "Kazomba",
+    "districtID": "06",
+    "taID": "0602"
+  },
+  {
+    "villageClusterID": "060602004",
+    "villageClusterName": "Dwambazi",
+    "districtID": "06",
+    "taID": "0602"
+  },
+  {
+    "villageClusterID": "060602005",
+    "villageClusterName": "Lupachi",
+    "districtID": "06",
+    "taID": "0602"
+  },
+  {
+    "villageClusterID": "060603001",
+    "villageClusterName": "Chamkoma",
+    "districtID": "06",
+    "taID": "0603"
+  },
+  {
+    "villageClusterID": "060603002",
+    "villageClusterName": "Kayadzi",
+    "districtID": "06",
+    "taID": "0603"
+  },
+  {
+    "villageClusterID": "060603003",
+    "villageClusterName": "Kampunga",
+    "districtID": "06",
+    "taID": "0603"
+  },
+  {
+    "villageClusterID": "060603004",
+    "villageClusterName": "Lingona",
+    "districtID": "06",
+    "taID": "0603"
+  },
+  {
+    "villageClusterID": "060603005",
+    "villageClusterName": "Chandia",
+    "districtID": "06",
+    "taID": "0603"
+  },
+  {
+    "villageClusterID": "060603006",
+    "villageClusterName": "Linga",
+    "districtID": "06",
+    "taID": "0603"
+  },
+  {
+    "villageClusterID": "060603007",
+    "villageClusterName": "Kampala",
+    "districtID": "06",
+    "taID": "0603"
+  },
+  {
+    "villageClusterID": "060603008",
+    "villageClusterName": "Kasamba I",
+    "districtID": "06",
+    "taID": "0603"
+  },
+  {
+    "villageClusterID": "060603009",
+    "villageClusterName": "Mndira",
+    "districtID": "06",
+    "taID": "0603"
+  },
+  {
+    "villageClusterID": "060603010",
+    "villageClusterName": "Sani",
+    "districtID": "06",
+    "taID": "0603"
+  },
+  {
+    "villageClusterID": "060603011",
+    "villageClusterName": "Chisoti",
+    "districtID": "06",
+    "taID": "0603"
+  },
+  {
+    "villageClusterID": "060603012",
+    "villageClusterName": "Kasamba Ii",
+    "districtID": "06",
+    "taID": "0603"
+  },
+  {
+    "villageClusterID": "060603013",
+    "villageClusterName": "Thale I",
+    "districtID": "06",
+    "taID": "0603"
+  },
+  {
+    "villageClusterID": "060604001",
+    "villageClusterName": "Ngala",
+    "districtID": "06",
+    "taID": "0604"
+  },
+  {
+    "villageClusterID": "060604002",
+    "villageClusterName": "Chamatete",
+    "districtID": "06",
+    "taID": "0604"
+  },
+  {
+    "villageClusterID": "060604003",
+    "villageClusterName": "Mpondagaga",
+    "districtID": "06",
+    "taID": "0604"
+  },
+  {
+    "villageClusterID": "060604004",
+    "villageClusterName": "Lunga",
+    "districtID": "06",
+    "taID": "0604"
+  },
+  {
+    "villageClusterID": "060604005",
+    "villageClusterName": "Mlambe",
+    "districtID": "06",
+    "taID": "0604"
+  },
+  {
+    "villageClusterID": "060604006",
+    "villageClusterName": "Shuluti",
+    "districtID": "06",
+    "taID": "0604"
+  },
+  {
+    "villageClusterID": "060604007",
+    "villageClusterName": "Buamufu",
+    "districtID": "06",
+    "taID": "0604"
+  },
+  {
+    "villageClusterID": "060605001",
+    "villageClusterName": "M'Njima",
+    "districtID": "06",
+    "taID": "0605"
+  },
+  {
+    "villageClusterID": "060605002",
+    "villageClusterName": "Saliona",
+    "districtID": "06",
+    "taID": "0605"
+  },
+  {
+    "villageClusterID": "060605003",
+    "villageClusterName": "Mwalawalonga",
+    "districtID": "06",
+    "taID": "0605"
+  },
+  {
+    "villageClusterID": "060605004",
+    "villageClusterName": "Mtosa",
+    "districtID": "06",
+    "taID": "0605"
+  },
+  {
+    "villageClusterID": "060605005",
+    "villageClusterName": "Nthasewe",
+    "districtID": "06",
+    "taID": "0605"
+  },
+  {
+    "villageClusterID": "060605006",
+    "villageClusterName": "Kangamowa",
+    "districtID": "06",
+    "taID": "0605"
+  },
+  {
+    "villageClusterID": "060605007",
+    "villageClusterName": "Chiyanjano",
+    "districtID": "06",
+    "taID": "0605"
+  },
+  {
+    "villageClusterID": "060605008",
+    "villageClusterName": "Suluwi",
+    "districtID": "06",
+    "taID": "0605"
+  },
+  {
+    "villageClusterID": "060605009",
+    "villageClusterName": "Kapiri",
+    "districtID": "06",
+    "taID": "0605"
+  },
+  {
+    "villageClusterID": "060605010",
+    "villageClusterName": "Mkhula",
+    "districtID": "06",
+    "taID": "0605"
+  },
+  {
+    "villageClusterID": "060605011",
+    "villageClusterName": "Chinkhwamba",
+    "districtID": "06",
+    "taID": "0605"
+  },
+  {
+    "villageClusterID": "060605012",
+    "villageClusterName": "Lipenga",
+    "districtID": "06",
+    "taID": "0605"
+  },
+  {
+    "villageClusterID": "060605013",
+    "villageClusterName": "Mkumbaleza",
+    "districtID": "06",
+    "taID": "0605"
+  },
+  {
+    "villageClusterID": "060605014",
+    "villageClusterName": "Mkuluzina",
+    "districtID": "06",
+    "taID": "0605"
+  },
+  {
+    "villageClusterID": "060605015",
+    "villageClusterName": "Mkaika",
+    "districtID": "06",
+    "taID": "0605"
+  },
+  {
+    "villageClusterID": "060605016",
+    "villageClusterName": "Chibothera",
+    "districtID": "06",
+    "taID": "0605"
+  },
+  {
+    "villageClusterID": "060606001",
+    "villageClusterName": "Liudzi",
+    "districtID": "06",
+    "taID": "0606"
+  },
+  {
+    "villageClusterID": "060606002",
+    "villageClusterName": "Chamalire",
+    "districtID": "06",
+    "taID": "0606"
+  },
+  {
+    "villageClusterID": "060606003",
+    "villageClusterName": "Chiondo",
+    "districtID": "06",
+    "taID": "0606"
+  },
+  {
+    "villageClusterID": "060606004",
+    "villageClusterName": "Mphandamadzi",
+    "districtID": "06",
+    "taID": "0606"
+  },
+  {
+    "villageClusterID": "060606005",
+    "villageClusterName": "Tadwe",
+    "districtID": "06",
+    "taID": "0606"
+  },
+  {
+    "villageClusterID": "060606006",
+    "villageClusterName": "Mombo",
+    "districtID": "06",
+    "taID": "0606"
+  },
+  {
+    "villageClusterID": "060606007",
+    "villageClusterName": "Katope",
+    "districtID": "06",
+    "taID": "0606"
+  },
+  {
+    "villageClusterID": "060606008",
+    "villageClusterName": "Kasangadzi",
+    "districtID": "06",
+    "taID": "0606"
+  },
+  {
+    "villageClusterID": "060607001",
+    "villageClusterName": "Chitenje",
+    "districtID": "06",
+    "taID": "0607"
+  },
+  {
+    "villageClusterID": "060607002",
+    "villageClusterName": "Mapala",
+    "districtID": "06",
+    "taID": "0607"
+  },
+  {
+    "villageClusterID": "060607003",
+    "villageClusterName": "Namasasu",
+    "districtID": "06",
+    "taID": "0607"
+  },
+  {
+    "villageClusterID": "060607004",
+    "villageClusterName": "Malowa",
+    "districtID": "06",
+    "taID": "0607"
+  },
+  {
+    "villageClusterID": "060617001",
+    "villageClusterName": "Mtaya",
+    "districtID": "06",
+    "taID": "0617"
+  },
+  {
+    "villageClusterID": "060617002",
+    "villageClusterName": "Chamalala",
+    "districtID": "06",
+    "taID": "0617"
+  },
+  {
+    "villageClusterID": "060617003",
+    "villageClusterName": "Kachere",
+    "districtID": "06",
+    "taID": "0617"
+  },
+  {
+    "villageClusterID": "060617004",
+    "villageClusterName": "Chia",
+    "districtID": "06",
+    "taID": "0617"
+  },
+  {
+    "villageClusterID": "070701001",
+    "villageClusterName": "Chipata",
+    "districtID": "07",
+    "taID": "0701"
+  },
+  {
+    "villageClusterID": "070701002",
+    "villageClusterName": "Nthembwe",
+    "districtID": "07",
+    "taID": "0701"
+  },
+  {
+    "villageClusterID": "070701003",
+    "villageClusterName": "Nkhamenya",
+    "districtID": "07",
+    "taID": "0701"
+  },
+  {
+    "villageClusterID": "070701004",
+    "villageClusterName": "Boni",
+    "districtID": "07",
+    "taID": "0701"
+  },
+  {
+    "villageClusterID": "070701005",
+    "villageClusterName": "Nkhanyenkhu",
+    "districtID": "07",
+    "taID": "0701"
+  },
+  {
+    "villageClusterID": "070701006",
+    "villageClusterName": "Kapirimnyanga",
+    "districtID": "07",
+    "taID": "0701"
+  },
+  {
+    "villageClusterID": "070701007",
+    "villageClusterName": "Boni",
+    "districtID": "07",
+    "taID": "0701"
+  },
+  {
+    "villageClusterID": "070701008",
+    "villageClusterName": "Kachinda",
+    "districtID": "07",
+    "taID": "0701"
+  },
+  {
+    "villageClusterID": "070701009",
+    "villageClusterName": "Kalikokha",
+    "districtID": "07",
+    "taID": "0701"
+  },
+  {
+    "villageClusterID": "070701010",
+    "villageClusterName": "Kalikokha",
+    "districtID": "07",
+    "taID": "0701"
+  },
+  {
+    "villageClusterID": "070701011",
+    "villageClusterName": "Kavidebwere",
+    "districtID": "07",
+    "taID": "0701"
+  },
+  {
+    "villageClusterID": "070701012",
+    "villageClusterName": "Kamphalika",
+    "districtID": "07",
+    "taID": "0701"
+  },
+  {
+    "villageClusterID": "070701013",
+    "villageClusterName": "Kavilitchere",
+    "districtID": "07",
+    "taID": "0701"
+  },
+  {
+    "villageClusterID": "070701014",
+    "villageClusterName": "Chimbilanjala",
+    "districtID": "07",
+    "taID": "0701"
+  },
+  {
+    "villageClusterID": "070701015",
+    "villageClusterName": "Kamwalembo",
+    "districtID": "07",
+    "taID": "0701"
+  },
+  {
+    "villageClusterID": "070701016",
+    "villageClusterName": "Chembelu",
+    "districtID": "07",
+    "taID": "0701"
+  },
+  {
+    "villageClusterID": "070701017",
+    "villageClusterName": "Takumanapo",
+    "districtID": "07",
+    "taID": "0701"
+  },
+  {
+    "villageClusterID": "070701018",
+    "villageClusterName": "Chiwisi",
+    "districtID": "07",
+    "taID": "0701"
+  },
+  {
+    "villageClusterID": "070701019",
+    "villageClusterName": "Katondo",
+    "districtID": "07",
+    "taID": "0701"
+  },
+  {
+    "villageClusterID": "070701020",
+    "villageClusterName": "Kaurambwe",
+    "districtID": "07",
+    "taID": "0701"
+  },
+  {
+    "villageClusterID": "070701021",
+    "villageClusterName": "Hora",
+    "districtID": "07",
+    "taID": "0701"
+  },
+  {
+    "villageClusterID": "070702001",
+    "villageClusterName": "Chisani",
+    "districtID": "07",
+    "taID": "0702"
+  },
+  {
+    "villageClusterID": "070702002",
+    "villageClusterName": "Mkukumira",
+    "districtID": "07",
+    "taID": "0702"
+  },
+  {
+    "villageClusterID": "070702003",
+    "villageClusterName": "Lunju",
+    "districtID": "07",
+    "taID": "0702"
+  },
+  {
+    "villageClusterID": "070702004",
+    "villageClusterName": "Dambo",
+    "districtID": "07",
+    "taID": "0702"
+  },
+  {
+    "villageClusterID": "070702005",
+    "villageClusterName": "Jumbo",
+    "districtID": "07",
+    "taID": "0702"
+  },
+  {
+    "villageClusterID": "070702006",
+    "villageClusterName": "Chiwinga",
+    "districtID": "07",
+    "taID": "0702"
+  },
+  {
+    "villageClusterID": "070702007",
+    "villageClusterName": "Manjondo",
+    "districtID": "07",
+    "taID": "0702"
+  },
+  {
+    "villageClusterID": "070702008",
+    "villageClusterName": "Dewenga",
+    "districtID": "07",
+    "taID": "0702"
+  },
+  {
+    "villageClusterID": "070702009",
+    "villageClusterName": "Kavipini",
+    "districtID": "07",
+    "taID": "0702"
+  },
+  {
+    "villageClusterID": "070702010",
+    "villageClusterName": "Mndera",
+    "districtID": "07",
+    "taID": "0702"
+  },
+  {
+    "villageClusterID": "070702011",
+    "villageClusterName": "Kapata",
+    "districtID": "07",
+    "taID": "0702"
+  },
+  {
+    "villageClusterID": "070702012",
+    "villageClusterName": "Chimwa",
+    "districtID": "07",
+    "taID": "0702"
+  },
+  {
+    "villageClusterID": "070702013",
+    "villageClusterName": "St Luwisi",
+    "districtID": "07",
+    "taID": "0702"
+  },
+  {
+    "villageClusterID": "070702014",
+    "villageClusterName": "Kaweta",
+    "districtID": "07",
+    "taID": "0702"
+  },
+  {
+    "villageClusterID": "070702015",
+    "villageClusterName": "Chavula",
+    "districtID": "07",
+    "taID": "0702"
+  },
+  {
+    "villageClusterID": "070702016",
+    "villageClusterName": "Mnyamadzi",
+    "districtID": "07",
+    "taID": "0702"
+  },
+  {
+    "villageClusterID": "070702017",
+    "villageClusterName": "Nkhundangu",
+    "districtID": "07",
+    "taID": "0702"
+  },
+  {
+    "villageClusterID": "070702018",
+    "villageClusterName": "Mawawa",
+    "districtID": "07",
+    "taID": "0702"
+  },
+  {
+    "villageClusterID": "070702019",
+    "villageClusterName": "Kamndele",
+    "districtID": "07",
+    "taID": "0702"
+  },
+  {
+    "villageClusterID": "070702020",
+    "villageClusterName": "Mutamenji",
+    "districtID": "07",
+    "taID": "0702"
+  },
+  {
+    "villageClusterID": "070702021",
+    "villageClusterName": "Kalolo",
+    "districtID": "07",
+    "taID": "0702"
+  },
+  {
+    "villageClusterID": "070702022",
+    "villageClusterName": "Kapoko",
+    "districtID": "07",
+    "taID": "0702"
+  },
+  {
+    "villageClusterID": "070702023",
+    "villageClusterName": "Chankhoni",
+    "districtID": "07",
+    "taID": "0702"
+  },
+  {
+    "villageClusterID": "070702024",
+    "villageClusterName": "Chikomambuzi",
+    "districtID": "07",
+    "taID": "0702"
+  },
+  {
+    "villageClusterID": "070702025",
+    "villageClusterName": "Simlemba",
+    "districtID": "07",
+    "taID": "0702"
+  },
+  {
+    "villageClusterID": "070702026",
+    "villageClusterName": "Nkhuta",
+    "districtID": "07",
+    "taID": "0702"
+  },
+  {
+    "villageClusterID": "070702027",
+    "villageClusterName": "Mthabuwa",
+    "districtID": "07",
+    "taID": "0702"
+  },
+  {
+    "villageClusterID": "070703001",
+    "villageClusterName": "Kadineya",
+    "districtID": "07",
+    "taID": "0703"
+  },
+  {
+    "villageClusterID": "070703002",
+    "villageClusterName": "Chenjewazi",
+    "districtID": "07",
+    "taID": "0703"
+  },
+  {
+    "villageClusterID": "070703003",
+    "villageClusterName": "Mpeni",
+    "districtID": "07",
+    "taID": "0703"
+  },
+  {
+    "villageClusterID": "070703004",
+    "villageClusterName": "Chizungu",
+    "districtID": "07",
+    "taID": "0703"
+  },
+  {
+    "villageClusterID": "070703005",
+    "villageClusterName": "Chinjoka",
+    "districtID": "07",
+    "taID": "0703"
+  },
+  {
+    "villageClusterID": "070703006",
+    "villageClusterName": "Jati",
+    "districtID": "07",
+    "taID": "0703"
+  },
+  {
+    "villageClusterID": "070703007",
+    "villageClusterName": "Chimgogo",
+    "districtID": "07",
+    "taID": "0703"
+  },
+  {
+    "villageClusterID": "070703008",
+    "villageClusterName": "Daka",
+    "districtID": "07",
+    "taID": "0703"
+  },
+  {
+    "villageClusterID": "070703009",
+    "villageClusterName": "Benjemani",
+    "districtID": "07",
+    "taID": "0703"
+  },
+  {
+    "villageClusterID": "070703010",
+    "villageClusterName": "Goma",
+    "districtID": "07",
+    "taID": "0703"
+  },
+  {
+    "villageClusterID": "070703011",
+    "villageClusterName": "Kautsiro",
+    "districtID": "07",
+    "taID": "0703"
+  },
+  {
+    "villageClusterID": "070703012",
+    "villageClusterName": "Chawo",
+    "districtID": "07",
+    "taID": "0703"
+  },
+  {
+    "villageClusterID": "070703013",
+    "villageClusterName": "Chivweni",
+    "districtID": "07",
+    "taID": "0703"
+  },
+  {
+    "villageClusterID": "070703014",
+    "villageClusterName": "Mpapa",
+    "districtID": "07",
+    "taID": "0703"
+  },
+  {
+    "villageClusterID": "070703015",
+    "villageClusterName": "Mchetche",
+    "districtID": "07",
+    "taID": "0703"
+  },
+  {
+    "villageClusterID": "070703016",
+    "villageClusterName": "Chikuyu",
+    "districtID": "07",
+    "taID": "0703"
+  },
+  {
+    "villageClusterID": "070703017",
+    "villageClusterName": "Jiti",
+    "districtID": "07",
+    "taID": "0703"
+  },
+  {
+    "villageClusterID": "070703018",
+    "villageClusterName": "Visoyo",
+    "districtID": "07",
+    "taID": "0703"
+  },
+  {
+    "villageClusterID": "070703019",
+    "villageClusterName": "Mthawira",
+    "districtID": "07",
+    "taID": "0703"
+  },
+  {
+    "villageClusterID": "070703020",
+    "villageClusterName": "Kapululu",
+    "districtID": "07",
+    "taID": "0703"
+  },
+  {
+    "villageClusterID": "070703021",
+    "villageClusterName": "Chalaula",
+    "districtID": "07",
+    "taID": "0703"
+  },
+  {
+    "villageClusterID": "070703022",
+    "villageClusterName": "Mbongozi",
+    "districtID": "07",
+    "taID": "0703"
+  },
+  {
+    "villageClusterID": "070703023",
+    "villageClusterName": "Kanjala",
+    "districtID": "07",
+    "taID": "0703"
+  },
+  {
+    "villageClusterID": "070703024",
+    "villageClusterName": "Chasimpha",
+    "districtID": "07",
+    "taID": "0703"
+  },
+  {
+    "villageClusterID": "070703025",
+    "villageClusterName": "Nkhulande",
+    "districtID": "07",
+    "taID": "0703"
+  },
+  {
+    "villageClusterID": "070703026",
+    "villageClusterName": "Khungwa",
+    "districtID": "07",
+    "taID": "0703"
+  },
+  {
+    "villageClusterID": "070703027",
+    "villageClusterName": "Kaongo",
+    "districtID": "07",
+    "taID": "0703"
+  },
+  {
+    "villageClusterID": "070704001",
+    "villageClusterName": "Kamphako",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704002",
+    "villageClusterName": "Chaima",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704003",
+    "villageClusterName": "Sadalaki",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704004",
+    "villageClusterName": "Chimombo",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704005",
+    "villageClusterName": "Chaphuka",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704006",
+    "villageClusterName": "Chakwira",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704007",
+    "villageClusterName": "Mpepa",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704008",
+    "villageClusterName": "Chikuyu",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704009",
+    "villageClusterName": "Nkhanga",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704010",
+    "villageClusterName": "Mneni",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704011",
+    "villageClusterName": "Cadecom",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704012",
+    "villageClusterName": "Ntchenda",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704013",
+    "villageClusterName": "Kaizwanga",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704014",
+    "villageClusterName": "Kakuku",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704015",
+    "villageClusterName": "Mlambali",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704016",
+    "villageClusterName": "Kachinda",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704017",
+    "villageClusterName": "kamdidi",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704018",
+    "villageClusterName": "Kaswadongo",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704019",
+    "villageClusterName": "Gwalire",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704020",
+    "villageClusterName": "Msusu",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704021",
+    "villageClusterName": "Solowa",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704022",
+    "villageClusterName": "Kahanga",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704023",
+    "villageClusterName": "Nkhakama",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704024",
+    "villageClusterName": "Lojwa",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704025",
+    "villageClusterName": "Longwe",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704026",
+    "villageClusterName": "Kathuza",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704027",
+    "villageClusterName": "Kambulu",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704028",
+    "villageClusterName": "Maluwa",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704029",
+    "villageClusterName": "Mtuwa",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704030",
+    "villageClusterName": "Katsirizika",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704031",
+    "villageClusterName": "Kamsumba",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704032",
+    "villageClusterName": "Majighatuwa",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704033",
+    "villageClusterName": "Kapando",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704034",
+    "villageClusterName": "Kapichira",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704035",
+    "villageClusterName": "Thawani",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704036",
+    "villageClusterName": "Nankumba",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704037",
+    "villageClusterName": "Petros",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704038",
+    "villageClusterName": "Kanyakatika",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704039",
+    "villageClusterName": "Chindindi",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070704040",
+    "villageClusterName": "Kankhamwana",
+    "districtID": "07",
+    "taID": "0704"
+  },
+  {
+    "villageClusterID": "070705001",
+    "villageClusterName": "Gumba",
+    "districtID": "07",
+    "taID": "0705"
+  },
+  {
+    "villageClusterID": "070705002",
+    "villageClusterName": "Zinthonga",
+    "districtID": "07",
+    "taID": "0705"
+  },
+  {
+    "villageClusterID": "070705003",
+    "villageClusterName": "Bondo",
+    "districtID": "07",
+    "taID": "0705"
+  },
+  {
+    "villageClusterID": "070705004",
+    "villageClusterName": "Kabvunguti",
+    "districtID": "07",
+    "taID": "0705"
+  },
+  {
+    "villageClusterID": "070705005",
+    "villageClusterName": "Kapondera",
+    "districtID": "07",
+    "taID": "0705"
+  },
+  {
+    "villageClusterID": "070705006",
+    "villageClusterName": "Chipoka",
+    "districtID": "07",
+    "taID": "0705"
+  },
+  {
+    "villageClusterID": "070705007",
+    "villageClusterName": "Ngwata",
+    "districtID": "07",
+    "taID": "0705"
+  },
+  {
+    "villageClusterID": "070705008",
+    "villageClusterName": "Chilowa",
+    "districtID": "07",
+    "taID": "0705"
+  },
+  {
+    "villageClusterID": "070705009",
+    "villageClusterName": "Mtondo",
+    "districtID": "07",
+    "taID": "0705"
+  },
+  {
+    "villageClusterID": "070705010",
+    "villageClusterName": "Mponda",
+    "districtID": "07",
+    "taID": "0705"
+  },
+  {
+    "villageClusterID": "070705011",
+    "villageClusterName": "Chapomba",
+    "districtID": "07",
+    "taID": "0705"
+  },
+  {
+    "villageClusterID": "070705012",
+    "villageClusterName": "Chipekwe",
+    "districtID": "07",
+    "taID": "0705"
+  },
+  {
+    "villageClusterID": "070705013",
+    "villageClusterName": "Chipokolo",
+    "districtID": "07",
+    "taID": "0705"
+  },
+  {
+    "villageClusterID": "070705014",
+    "villageClusterName": "Kadina",
+    "districtID": "07",
+    "taID": "0705"
+  },
+  {
+    "villageClusterID": "070705015",
+    "villageClusterName": "Chilinda",
+    "districtID": "07",
+    "taID": "0705"
+  },
+  {
+    "villageClusterID": "070705016",
+    "villageClusterName": "Kapawala",
+    "districtID": "07",
+    "taID": "0705"
+  },
+  {
+    "villageClusterID": "070705017",
+    "villageClusterName": "Mankhaka",
+    "districtID": "07",
+    "taID": "0705"
+  },
+  {
+    "villageClusterID": "070705018",
+    "villageClusterName": "Mbiya",
+    "districtID": "07",
+    "taID": "0705"
+  },
+  {
+    "villageClusterID": "070705019",
+    "villageClusterName": "Ndume",
+    "districtID": "07",
+    "taID": "0705"
+  },
+  {
+    "villageClusterID": "070705020",
+    "villageClusterName": "Mdunga",
+    "districtID": "07",
+    "taID": "0705"
+  },
+  {
+    "villageClusterID": "070706001",
+    "villageClusterName": "Kazewetera",
+    "districtID": "07",
+    "taID": "0706"
+  },
+  {
+    "villageClusterID": "070706002",
+    "villageClusterName": "Chankhokwe",
+    "districtID": "07",
+    "taID": "0706"
+  },
+  {
+    "villageClusterID": "070706003",
+    "villageClusterName": "Chafisi",
+    "districtID": "07",
+    "taID": "0706"
+  },
+  {
+    "villageClusterID": "070706004",
+    "villageClusterName": "Madziashawa",
+    "districtID": "07",
+    "taID": "0706"
+  },
+  {
+    "villageClusterID": "070706005",
+    "villageClusterName": "Chidzenje",
+    "districtID": "07",
+    "taID": "0706"
+  },
+  {
+    "villageClusterID": "070706006",
+    "villageClusterName": "Zakochera",
+    "districtID": "07",
+    "taID": "0706"
+  },
+  {
+    "villageClusterID": "070706007",
+    "villageClusterName": "Chimatiro",
+    "districtID": "07",
+    "taID": "0706"
+  },
+  {
+    "villageClusterID": "070706008",
+    "villageClusterName": "Chasomba",
+    "districtID": "07",
+    "taID": "0706"
+  },
+  {
+    "villageClusterID": "070706009",
+    "villageClusterName": "Mkanganya",
+    "districtID": "07",
+    "taID": "0706"
+  },
+  {
+    "villageClusterID": "070706010",
+    "villageClusterName": "Kawilu",
+    "districtID": "07",
+    "taID": "0706"
+  },
+  {
+    "villageClusterID": "070706011",
+    "villageClusterName": "Kalimira",
+    "districtID": "07",
+    "taID": "0706"
+  },
+  {
+    "villageClusterID": "070706012",
+    "villageClusterName": "Msambafumu",
+    "districtID": "07",
+    "taID": "0706"
+  },
+  {
+    "villageClusterID": "070706013",
+    "villageClusterName": "Kambiri",
+    "districtID": "07",
+    "taID": "0706"
+  },
+  {
+    "villageClusterID": "070706014",
+    "villageClusterName": "Champhanda",
+    "districtID": "07",
+    "taID": "0706"
+  },
+  {
+    "villageClusterID": "070706015",
+    "villageClusterName": "Katondo",
+    "districtID": "07",
+    "taID": "0706"
+  },
+  {
+    "villageClusterID": "070706016",
+    "villageClusterName": "Kamphambe",
+    "districtID": "07",
+    "taID": "0706"
+  },
+  {
+    "villageClusterID": "070706017",
+    "villageClusterName": "Chandawe",
+    "districtID": "07",
+    "taID": "0706"
+  },
+  {
+    "villageClusterID": "070706018",
+    "villageClusterName": "Chambidzi",
+    "districtID": "07",
+    "taID": "0706"
+  },
+  {
+    "villageClusterID": "070706019",
+    "villageClusterName": "Mankhaka",
+    "districtID": "07",
+    "taID": "0706"
+  },
+  {
+    "villageClusterID": "070706020",
+    "villageClusterName": "Kapawala",
+    "districtID": "07",
+    "taID": "0706"
+  },
+  {
+    "villageClusterID": "070707001",
+    "villageClusterName": "Magantha",
+    "districtID": "07",
+    "taID": "0707"
+  },
+  {
+    "villageClusterID": "070707002",
+    "villageClusterName": "Chomola",
+    "districtID": "07",
+    "taID": "0707"
+  },
+  {
+    "villageClusterID": "070707003",
+    "villageClusterName": "Valako",
+    "districtID": "07",
+    "taID": "0707"
+  },
+  {
+    "villageClusterID": "070707004",
+    "villageClusterName": "Diwala",
+    "districtID": "07",
+    "taID": "0707"
+  },
+  {
+    "villageClusterID": "070707005",
+    "villageClusterName": "Malepera",
+    "districtID": "07",
+    "taID": "0707"
+  },
+  {
+    "villageClusterID": "070707006",
+    "villageClusterName": "Chimsuku",
+    "districtID": "07",
+    "taID": "0707"
+  },
+  {
+    "villageClusterID": "070707007",
+    "villageClusterName": "kachenje",
+    "districtID": "07",
+    "taID": "0707"
+  },
+  {
+    "villageClusterID": "070707008",
+    "villageClusterName": "kamboni",
+    "districtID": "07",
+    "taID": "0707"
+  },
+  {
+    "villageClusterID": "070707009",
+    "villageClusterName": "Kalima",
+    "districtID": "07",
+    "taID": "0707"
+  },
+  {
+    "villageClusterID": "070707010",
+    "villageClusterName": "Nkhondwera",
+    "districtID": "07",
+    "taID": "0707"
+  },
+  {
+    "villageClusterID": "070707011",
+    "villageClusterName": "Kasakula",
+    "districtID": "07",
+    "taID": "0707"
+  },
+  {
+    "villageClusterID": "070707012",
+    "villageClusterName": "Kawamba-Mwale",
+    "districtID": "07",
+    "taID": "0707"
+  },
+  {
+    "villageClusterID": "070707013",
+    "villageClusterName": "Kawamba-Misozi",
+    "districtID": "07",
+    "taID": "0707"
+  },
+  {
+    "villageClusterID": "070707014",
+    "villageClusterName": "Chisamba",
+    "districtID": "07",
+    "taID": "0707"
+  },
+  {
+    "villageClusterID": "070707015",
+    "villageClusterName": "Lusa",
+    "districtID": "07",
+    "taID": "0707"
+  },
+  {
+    "villageClusterID": "070707016",
+    "villageClusterName": "Mkwantha",
+    "districtID": "07",
+    "taID": "0707"
+  },
+  {
+    "villageClusterID": "070707017",
+    "villageClusterName": "Kanyera",
+    "districtID": "07",
+    "taID": "0707"
+  },
+  {
+    "villageClusterID": "070707018",
+    "villageClusterName": "Mtanila",
+    "districtID": "07",
+    "taID": "0707"
+  },
+  {
+    "villageClusterID": "070707019",
+    "villageClusterName": "Chiderezi",
+    "districtID": "07",
+    "taID": "0707"
+  },
+  {
+    "villageClusterID": "070707020",
+    "villageClusterName": "Selenje",
+    "districtID": "07",
+    "taID": "0707"
+  },
+  {
+    "villageClusterID": "070707021",
+    "villageClusterName": "Munye",
+    "districtID": "07",
+    "taID": "0707"
+  },
+  {
+    "villageClusterID": "070708001",
+    "villageClusterName": "Kadamsana",
+    "districtID": "07",
+    "taID": "0708"
+  },
+  {
+    "villageClusterID": "070708002",
+    "villageClusterName": "Chatalala",
+    "districtID": "07",
+    "taID": "0708"
+  },
+  {
+    "villageClusterID": "070708003",
+    "villageClusterName": "Kawawe",
+    "districtID": "07",
+    "taID": "0708"
+  },
+  {
+    "villageClusterID": "070708004",
+    "villageClusterName": "Kholamaiwe",
+    "districtID": "07",
+    "taID": "0708"
+  },
+  {
+    "villageClusterID": "070708005",
+    "villageClusterName": "Kamphulu",
+    "districtID": "07",
+    "taID": "0708"
+  },
+  {
+    "villageClusterID": "070708006",
+    "villageClusterName": "Dunda",
+    "districtID": "07",
+    "taID": "0708"
+  },
+  {
+    "villageClusterID": "070708007",
+    "villageClusterName": "Kambalira",
+    "districtID": "07",
+    "taID": "0708"
+  },
+  {
+    "villageClusterID": "070708008",
+    "villageClusterName": "Chipokolo",
+    "districtID": "07",
+    "taID": "0708"
+  },
+  {
+    "villageClusterID": "070708009",
+    "villageClusterName": "Misuku",
+    "districtID": "07",
+    "taID": "0708"
+  },
+  {
+    "villageClusterID": "070708010",
+    "villageClusterName": "Chatuvi",
+    "districtID": "07",
+    "taID": "0708"
+  },
+  {
+    "villageClusterID": "070708011",
+    "villageClusterName": "Chimwemwe",
+    "districtID": "07",
+    "taID": "0708"
+  },
+  {
+    "villageClusterID": "070708012",
+    "villageClusterName": "Mkumbaleza",
+    "districtID": "07",
+    "taID": "0708"
+  },
+  {
+    "villageClusterID": "070708013",
+    "villageClusterName": "Chiwizi",
+    "districtID": "07",
+    "taID": "0708"
+  },
+  {
+    "villageClusterID": "070708014",
+    "villageClusterName": "Chimwala",
+    "districtID": "07",
+    "taID": "0708"
+  },
+  {
+    "villageClusterID": "070708015",
+    "villageClusterName": "Chandawe",
+    "districtID": "07",
+    "taID": "0708"
+  },
+  {
+    "villageClusterID": "070708016",
+    "villageClusterName": "Ganyani",
+    "districtID": "07",
+    "taID": "0708"
+  },
+  {
+    "villageClusterID": "070708017",
+    "villageClusterName": "Kamwankhuku",
+    "districtID": "07",
+    "taID": "0708"
+  },
+  {
+    "villageClusterID": "070708018",
+    "villageClusterName": "Mziza",
+    "districtID": "07",
+    "taID": "0708"
+  },
+  {
+    "villageClusterID": "070708019",
+    "villageClusterName": "Bua",
+    "districtID": "07",
+    "taID": "0708"
+  },
+  {
+    "villageClusterID": "070708020",
+    "villageClusterName": "Manyani",
+    "districtID": "07",
+    "taID": "0708"
+  },
+  {
+    "villageClusterID": "070708021",
+    "villageClusterName": "Lisandwa",
+    "districtID": "07",
+    "taID": "0708"
+  },
+  {
+    "villageClusterID": "070708022",
+    "villageClusterName": "Khola",
+    "districtID": "07",
+    "taID": "0708"
+  },
+  {
+    "villageClusterID": "070708023",
+    "villageClusterName": "Msandire",
+    "districtID": "07",
+    "taID": "0708"
+  },
+  {
+    "villageClusterID": "070708024",
+    "villageClusterName": "Chanyumbu",
+    "districtID": "07",
+    "taID": "0708"
+  },
+  {
+    "villageClusterID": "070708025",
+    "villageClusterName": "Makungwa",
+    "districtID": "07",
+    "taID": "0708"
+  },
+  {
+    "villageClusterID": "070708026",
+    "villageClusterName": "Kashakadza",
+    "districtID": "07",
+    "taID": "0708"
+  },
+  {
+    "villageClusterID": "070709001",
+    "villageClusterName": "Kachere",
+    "districtID": "07",
+    "taID": "0709"
+  },
+  {
+    "villageClusterID": "070709002",
+    "villageClusterName": "Chima",
+    "districtID": "07",
+    "taID": "0709"
+  },
+  {
+    "villageClusterID": "070709003",
+    "villageClusterName": "Dzimbiri",
+    "districtID": "07",
+    "taID": "0709"
+  },
+  {
+    "villageClusterID": "070709004",
+    "villageClusterName": "Chilindira",
+    "districtID": "07",
+    "taID": "0709"
+  },
+  {
+    "villageClusterID": "070709005",
+    "villageClusterName": "Nkhakomiseza",
+    "districtID": "07",
+    "taID": "0709"
+  },
+  {
+    "villageClusterID": "070709006",
+    "villageClusterName": "Mzoweza",
+    "districtID": "07",
+    "taID": "0709"
+  },
+  {
+    "villageClusterID": "070709007",
+    "villageClusterName": "Kalulu",
+    "districtID": "07",
+    "taID": "0709"
+  },
+  {
+    "villageClusterID": "070709008",
+    "villageClusterName": "Kasambawane",
+    "districtID": "07",
+    "taID": "0709"
+  },
+  {
+    "villageClusterID": "070709009",
+    "villageClusterName": "Chadweka",
+    "districtID": "07",
+    "taID": "0709"
+  },
+  {
+    "villageClusterID": "070709010",
+    "villageClusterName": "Nkhakomiyala",
+    "districtID": "07",
+    "taID": "0709"
+  },
+  {
+    "villageClusterID": "070709011",
+    "villageClusterName": "Chikoko",
+    "districtID": "07",
+    "taID": "0709"
+  },
+  {
+    "villageClusterID": "070709012",
+    "villageClusterName": "Kanandala",
+    "districtID": "07",
+    "taID": "0709"
+  },
+  {
+    "villageClusterID": "070709013",
+    "villageClusterName": "Kadzimete",
+    "districtID": "07",
+    "taID": "0709"
+  },
+  {
+    "villageClusterID": "070709014",
+    "villageClusterName": "Kasuzumile",
+    "districtID": "07",
+    "taID": "0709"
+  },
+  {
+    "villageClusterID": "070709015",
+    "villageClusterName": "Kadanjala",
+    "districtID": "07",
+    "taID": "0709"
+  },
+  {
+    "villageClusterID": "070709016",
+    "villageClusterName": "Misuku",
+    "districtID": "07",
+    "taID": "0709"
+  },
+  {
+    "villageClusterID": "070709017",
+    "villageClusterName": "Chamwabvi",
+    "districtID": "07",
+    "taID": "0709"
+  },
+  {
+    "villageClusterID": "070709018",
+    "villageClusterName": "Chithiba",
+    "districtID": "07",
+    "taID": "0709"
+  },
+  {
+    "villageClusterID": "070709019",
+    "villageClusterName": "Chipembere",
+    "districtID": "07",
+    "taID": "0709"
+  },
+  {
+    "villageClusterID": "070709020",
+    "villageClusterName": "Mtuwanjabvu",
+    "districtID": "07",
+    "taID": "0709"
+  },
+  {
+    "villageClusterID": "070709021",
+    "villageClusterName": "Msulira",
+    "districtID": "07",
+    "taID": "0709"
+  },
+  {
+    "villageClusterID": "070709022",
+    "villageClusterName": "Dzombe",
+    "districtID": "07",
+    "taID": "0709"
+  },
+  {
+    "villageClusterID": "070709023",
+    "villageClusterName": "Misulu",
+    "districtID": "07",
+    "taID": "0709"
+  },
+  {
+    "villageClusterID": "070709024",
+    "villageClusterName": "Kachewere",
+    "districtID": "07",
+    "taID": "0709"
+  },
+  {
+    "villageClusterID": "070709025",
+    "villageClusterName": "Zimwe",
+    "districtID": "07",
+    "taID": "0709"
+  },
+  {
+    "villageClusterID": "070710001",
+    "villageClusterName": "Chisuwe",
+    "districtID": "07",
+    "taID": "0710"
+  },
+  {
+    "villageClusterID": "070710002",
+    "villageClusterName": "Kamtuwale",
+    "districtID": "07",
+    "taID": "0710"
+  },
+  {
+    "villageClusterID": "070710003",
+    "villageClusterName": "Nkhuzikuzi",
+    "districtID": "07",
+    "taID": "0710"
+  },
+  {
+    "villageClusterID": "070710004",
+    "villageClusterName": "Kasichi",
+    "districtID": "07",
+    "taID": "0710"
+  },
+  {
+    "villageClusterID": "070710005",
+    "villageClusterName": "Simkuta",
+    "districtID": "07",
+    "taID": "0710"
+  },
+  {
+    "villageClusterID": "070710006",
+    "villageClusterName": "Kamwatonga",
+    "districtID": "07",
+    "taID": "0710"
+  },
+  {
+    "villageClusterID": "070710007",
+    "villageClusterName": "Matu",
+    "districtID": "07",
+    "taID": "0710"
+  },
+  {
+    "villageClusterID": "070710008",
+    "villageClusterName": "Khombe",
+    "districtID": "07",
+    "taID": "0710"
+  },
+  {
+    "villageClusterID": "070710009",
+    "villageClusterName": "Chaluwala",
+    "districtID": "07",
+    "taID": "0710"
+  },
+  {
+    "villageClusterID": "070710010",
+    "villageClusterName": "Mawawa",
+    "districtID": "07",
+    "taID": "0710"
+  },
+  {
+    "villageClusterID": "070710011",
+    "villageClusterName": "Kasamba",
+    "districtID": "07",
+    "taID": "0710"
+  },
+  {
+    "villageClusterID": "070710012",
+    "villageClusterName": "Mwanadindi",
+    "districtID": "07",
+    "taID": "0710"
+  },
+  {
+    "villageClusterID": "070710013",
+    "villageClusterName": "Chazila",
+    "districtID": "07",
+    "taID": "0710"
+  },
+  {
+    "villageClusterID": "070710014",
+    "villageClusterName": "Katete",
+    "districtID": "07",
+    "taID": "0710"
+  },
+  {
+    "villageClusterID": "070710015",
+    "villageClusterName": "Kaulanda",
+    "districtID": "07",
+    "taID": "0710"
+  },
+  {
+    "villageClusterID": "070710016",
+    "villageClusterName": "Kasungamseche",
+    "districtID": "07",
+    "taID": "0710"
+  },
+  {
+    "villageClusterID": "070710017",
+    "villageClusterName": "Matenje",
+    "districtID": "07",
+    "taID": "0710"
+  },
+  {
+    "villageClusterID": "070710018",
+    "villageClusterName": "Chivwapula",
+    "districtID": "07",
+    "taID": "0710"
+  },
+  {
+    "villageClusterID": "070710019",
+    "villageClusterName": "chisamba",
+    "districtID": "07",
+    "taID": "0710"
+  },
+  {
+    "villageClusterID": "070710020",
+    "villageClusterName": "Kamwala",
+    "districtID": "07",
+    "taID": "0710"
+  },
+  {
+    "villageClusterID": "070711001",
+    "villageClusterName": "Bindu",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711002",
+    "villageClusterName": "Wanyala",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711003",
+    "villageClusterName": "Chiputa",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711004",
+    "villageClusterName": "Ngale",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711005",
+    "villageClusterName": "Mtapu",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711006",
+    "villageClusterName": "Nsambaimfa",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711007",
+    "villageClusterName": "Bvumbwe",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711008",
+    "villageClusterName": "Santhe",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711009",
+    "villageClusterName": "Wangwe",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711010",
+    "villageClusterName": "Chimbalame",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711011",
+    "villageClusterName": "Kapeta",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711012",
+    "villageClusterName": "Kasanduliza",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711013",
+    "villageClusterName": "Mateyo",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711014",
+    "villageClusterName": "Chikapa",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711015",
+    "villageClusterName": "Mchena",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711016",
+    "villageClusterName": "Mwezi",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711017",
+    "villageClusterName": "Chipozinkhono",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711018",
+    "villageClusterName": "Ndaula",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711019",
+    "villageClusterName": "Kolowole",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711020",
+    "villageClusterName": "Chipozi bua",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711021",
+    "villageClusterName": "Makanda",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711022",
+    "villageClusterName": "Mkanda",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711023",
+    "villageClusterName": "Mtsegede",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711024",
+    "villageClusterName": "Mankhaka",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711025",
+    "villageClusterName": "Kalimila",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711026",
+    "villageClusterName": "Diza",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711027",
+    "villageClusterName": "Katukula",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711028",
+    "villageClusterName": "Katenje",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711029",
+    "villageClusterName": "Mazinga",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711030",
+    "villageClusterName": "Chikondi",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711031",
+    "villageClusterName": "Mtendere",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711032",
+    "villageClusterName": "Zulu",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711033",
+    "villageClusterName": "Mkomachilolo",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711034",
+    "villageClusterName": "Chilombo",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070711035",
+    "villageClusterName": "Chikuku",
+    "districtID": "07",
+    "taID": "0711"
+  },
+  {
+    "villageClusterID": "070712001",
+    "villageClusterName": "Katope",
+    "districtID": "07",
+    "taID": "0712"
+  },
+  {
+    "villageClusterID": "070712002",
+    "villageClusterName": "Chigumba",
+    "districtID": "07",
+    "taID": "0712"
+  },
+  {
+    "villageClusterID": "070712003",
+    "villageClusterName": "Chikowa",
+    "districtID": "07",
+    "taID": "0712"
+  },
+  {
+    "villageClusterID": "070712004",
+    "villageClusterName": "Kambowe",
+    "districtID": "07",
+    "taID": "0712"
+  },
+  {
+    "villageClusterID": "070712005",
+    "villageClusterName": "Minjere",
+    "districtID": "07",
+    "taID": "0712"
+  },
+  {
+    "villageClusterID": "070712006",
+    "villageClusterName": "Vikula",
+    "districtID": "07",
+    "taID": "0712"
+  },
+  {
+    "villageClusterID": "070712007",
+    "villageClusterName": "Minjaye",
+    "districtID": "07",
+    "taID": "0712"
+  },
+  {
+    "villageClusterID": "070712008",
+    "villageClusterName": "Likozi",
+    "districtID": "07",
+    "taID": "0712"
+  },
+  {
+    "villageClusterID": "070712009",
+    "villageClusterName": "Kadamsana",
+    "districtID": "07",
+    "taID": "0712"
+  },
+  {
+    "villageClusterID": "070712010",
+    "villageClusterName": "Chamdoni",
+    "districtID": "07",
+    "taID": "0712"
+  },
+  {
+    "villageClusterID": "070712011",
+    "villageClusterName": "Chilipa",
+    "districtID": "07",
+    "taID": "0712"
+  },
+  {
+    "villageClusterID": "070712012",
+    "villageClusterName": "Chintchinda",
+    "districtID": "07",
+    "taID": "0712"
+  },
+  {
+    "villageClusterID": "070712013",
+    "villageClusterName": "Kapyanga",
+    "districtID": "07",
+    "taID": "0712"
+  },
+  {
+    "villageClusterID": "070712014",
+    "villageClusterName": "Mtengowaminga",
+    "districtID": "07",
+    "taID": "0712"
+  },
+  {
+    "villageClusterID": "070712015",
+    "villageClusterName": "Chitimbe",
+    "districtID": "07",
+    "taID": "0712"
+  },
+  {
+    "villageClusterID": "070712016",
+    "villageClusterName": "Kambira",
+    "districtID": "07",
+    "taID": "0712"
+  },
+  {
+    "villageClusterID": "070712017",
+    "villageClusterName": "Mchedwa",
+    "districtID": "07",
+    "taID": "0712"
+  },
+  {
+    "villageClusterID": "070712018",
+    "villageClusterName": "Chimpamba",
+    "districtID": "07",
+    "taID": "0712"
+  },
+  {
+    "villageClusterID": "070712019",
+    "villageClusterName": "Kauzegalu",
+    "districtID": "07",
+    "taID": "0712"
+  },
+  {
+    "villageClusterID": "070712020",
+    "villageClusterName": "Chanjowa",
+    "districtID": "07",
+    "taID": "0712"
+  },
+  {
+    "villageClusterID": "070712021",
+    "villageClusterName": "Liwala",
+    "districtID": "07",
+    "taID": "0712"
+  },
+  {
+    "villageClusterID": "070712022",
+    "villageClusterName": "Mtenthera",
+    "districtID": "07",
+    "taID": "0712"
+  },
+  {
+    "villageClusterID": "070712023",
+    "villageClusterName": "Njobvu",
+    "districtID": "07",
+    "taID": "0712"
+  },
+  {
+    "villageClusterID": "070712024",
+    "villageClusterName": "Kamaza",
+    "districtID": "07",
+    "taID": "0712"
+  },
+  {
+    "villageClusterID": "070712025",
+    "villageClusterName": "Chamalire",
+    "districtID": "07",
+    "taID": "0712"
+  },
+  {
+    "villageClusterID": "070712026",
+    "villageClusterName": "Limamba",
+    "districtID": "07",
+    "taID": "0712"
+  },
+  {
+    "villageClusterID": "070712027",
+    "villageClusterName": "Chamalaza",
+    "districtID": "07",
+    "taID": "0712"
+  },
+  {
+    "villageClusterID": "070713001",
+    "villageClusterName": "Kapheni",
+    "districtID": "07",
+    "taID": "0713"
+  },
+  {
+    "villageClusterID": "070713002",
+    "villageClusterName": "Malambazuka",
+    "districtID": "07",
+    "taID": "0713"
+  },
+  {
+    "villageClusterID": "070713003",
+    "villageClusterName": "Chinkhang'ombe",
+    "districtID": "07",
+    "taID": "0713"
+  },
+  {
+    "villageClusterID": "070713004",
+    "villageClusterName": "Chimwaye",
+    "districtID": "07",
+    "taID": "0713"
+  },
+  {
+    "villageClusterID": "070713005",
+    "villageClusterName": "Ngoleka",
+    "districtID": "07",
+    "taID": "0713"
+  },
+  {
+    "villageClusterID": "070713006",
+    "villageClusterName": "Chigumbu",
+    "districtID": "07",
+    "taID": "0713"
+  },
+  {
+    "villageClusterID": "070713007",
+    "villageClusterName": "Chapinda",
+    "districtID": "07",
+    "taID": "0713"
+  },
+  {
+    "villageClusterID": "070713008",
+    "villageClusterName": "Chipinda",
+    "districtID": "07",
+    "taID": "0713"
+  },
+  {
+    "villageClusterID": "070713009",
+    "villageClusterName": "Chavuwu",
+    "districtID": "07",
+    "taID": "0713"
+  },
+  {
+    "villageClusterID": "070713010",
+    "villageClusterName": "Chispye",
+    "districtID": "07",
+    "taID": "0713"
+  },
+  {
+    "villageClusterID": "070713011",
+    "villageClusterName": "Chankhwali",
+    "districtID": "07",
+    "taID": "0713"
+  },
+  {
+    "villageClusterID": "070714001",
+    "villageClusterName": "Mthoto",
+    "districtID": "07",
+    "taID": "0714"
+  },
+  {
+    "villageClusterID": "070714002",
+    "villageClusterName": "Kapela",
+    "districtID": "07",
+    "taID": "0714"
+  },
+  {
+    "villageClusterID": "070714003",
+    "villageClusterName": "Champhemvu",
+    "districtID": "07",
+    "taID": "0714"
+  },
+  {
+    "villageClusterID": "070714004",
+    "villageClusterName": "Nguzi",
+    "districtID": "07",
+    "taID": "0714"
+  },
+  {
+    "villageClusterID": "070714005",
+    "villageClusterName": "Chagumukire",
+    "districtID": "07",
+    "taID": "0714"
+  },
+  {
+    "villageClusterID": "070714006",
+    "villageClusterName": "Chivumo",
+    "districtID": "07",
+    "taID": "0714"
+  },
+  {
+    "villageClusterID": "070714007",
+    "villageClusterName": "Galaka",
+    "districtID": "07",
+    "taID": "0714"
+  },
+  {
+    "villageClusterID": "070714008",
+    "villageClusterName": "Tundulu",
+    "districtID": "07",
+    "taID": "0714"
+  },
+  {
+    "villageClusterID": "070714009",
+    "villageClusterName": "Nkhongwa",
+    "districtID": "07",
+    "taID": "0714"
+  },
+  {
+    "villageClusterID": "070714010",
+    "villageClusterName": "Linga",
+    "districtID": "07",
+    "taID": "0714"
+  },
+  {
+    "villageClusterID": "070714011",
+    "villageClusterName": "Nguluyanawambe",
+    "districtID": "07",
+    "taID": "0714"
+  },
+  {
+    "villageClusterID": "070714012",
+    "villageClusterName": "Kadula",
+    "districtID": "07",
+    "taID": "0714"
+  },
+  {
+    "villageClusterID": "070714013",
+    "villageClusterName": "Kadoweke",
+    "districtID": "07",
+    "taID": "0714"
+  },
+  {
+    "villageClusterID": "070714014",
+    "villageClusterName": "Phanga",
+    "districtID": "07",
+    "taID": "0714"
+  },
+  {
+    "villageClusterID": "070715001",
+    "villageClusterName": "Kavwenji",
+    "districtID": "07",
+    "taID": "0715"
+  },
+  {
+    "villageClusterID": "070715002",
+    "villageClusterName": "Vinyepela",
+    "districtID": "07",
+    "taID": "0715"
+  },
+  {
+    "villageClusterID": "070715003",
+    "villageClusterName": "Mphomwa",
+    "districtID": "07",
+    "taID": "0715"
+  },
+  {
+    "villageClusterID": "070715004",
+    "villageClusterName": "Mphongole",
+    "districtID": "07",
+    "taID": "0715"
+  },
+  {
+    "villageClusterID": "070715005",
+    "villageClusterName": "Lisitu",
+    "districtID": "07",
+    "taID": "0715"
+  },
+  {
+    "villageClusterID": "070715006",
+    "villageClusterName": "Kapopo",
+    "districtID": "07",
+    "taID": "0715"
+  },
+  {
+    "villageClusterID": "070715007",
+    "villageClusterName": "zifa",
+    "districtID": "07",
+    "taID": "0715"
+  },
+  {
+    "villageClusterID": "070716001",
+    "villageClusterName": "Kanjaluni",
+    "districtID": "07",
+    "taID": "0716"
+  },
+  {
+    "villageClusterID": "070716002",
+    "villageClusterName": "Mthabama",
+    "districtID": "07",
+    "taID": "0716"
+  },
+  {
+    "villageClusterID": "070716003",
+    "villageClusterName": "Kanyata",
+    "districtID": "07",
+    "taID": "0716"
+  },
+  {
+    "villageClusterID": "070716004",
+    "villageClusterName": "Chizungu",
+    "districtID": "07",
+    "taID": "0716"
+  },
+  {
+    "villageClusterID": "070716005",
+    "villageClusterName": "Kauyenda",
+    "districtID": "07",
+    "taID": "0716"
+  },
+  {
+    "villageClusterID": "070716006",
+    "villageClusterName": "Mpapa",
+    "districtID": "07",
+    "taID": "0716"
+  },
+  {
+    "villageClusterID": "070716007",
+    "villageClusterName": "Mbuzi",
+    "districtID": "07",
+    "taID": "0716"
+  },
+  {
+    "villageClusterID": "070716008",
+    "villageClusterName": "Mkweu",
+    "districtID": "07",
+    "taID": "0716"
+  },
+  {
+    "villageClusterID": "070716009",
+    "villageClusterName": "Thimbimimbi",
+    "districtID": "07",
+    "taID": "0716"
+  },
+  {
+    "villageClusterID": "070719001",
+    "villageClusterName": "Bilale",
+    "districtID": "07",
+    "taID": "0719"
+  },
+  {
+    "villageClusterID": "070719002",
+    "villageClusterName": "Chikukula",
+    "districtID": "07",
+    "taID": "0719"
+  },
+  {
+    "villageClusterID": "070719003",
+    "villageClusterName": "Kamwankhuku",
+    "districtID": "07",
+    "taID": "0719"
+  },
+  {
+    "villageClusterID": "070719004",
+    "villageClusterName": "Kavuta",
+    "districtID": "07",
+    "taID": "0719"
+  },
+  {
+    "villageClusterID": "070719005",
+    "villageClusterName": "Kapita",
+    "districtID": "07",
+    "taID": "0719"
+  },
+  {
+    "villageClusterID": "070719006",
+    "villageClusterName": "Nkhuta",
+    "districtID": "07",
+    "taID": "0719"
+  },
+  {
+    "villageClusterID": "070720001",
+    "villageClusterName": "Lusa",
+    "districtID": "07",
+    "taID": "0720"
+  },
+  {
+    "villageClusterID": "070720002",
+    "villageClusterName": "Chitenje",
+    "districtID": "07",
+    "taID": "0720"
+  },
+  {
+    "villageClusterID": "070720003",
+    "villageClusterName": "Kapanje",
+    "districtID": "07",
+    "taID": "0720"
+  },
+  {
+    "villageClusterID": "070720004",
+    "villageClusterName": "Chidzuma",
+    "districtID": "07",
+    "taID": "0720"
+  },
+  {
+    "villageClusterID": "070720005",
+    "villageClusterName": "Nsawala",
+    "districtID": "07",
+    "taID": "0720"
+  },
+  {
+    "villageClusterID": "070720006",
+    "villageClusterName": "Chisazima",
+    "districtID": "07",
+    "taID": "0720"
+  },
+  {
+    "villageClusterID": "070720007",
+    "villageClusterName": "Kaphirimtiwa",
+    "districtID": "07",
+    "taID": "0720"
+  },
+  {
+    "villageClusterID": "070720008",
+    "villageClusterName": "Chafisi",
+    "districtID": "07",
+    "taID": "0720"
+  },
+  {
+    "villageClusterID": "070720009",
+    "villageClusterName": "Kagowa",
+    "districtID": "07",
+    "taID": "0720"
+  },
+  {
+    "villageClusterID": "070720010",
+    "villageClusterName": "Dwendo",
+    "districtID": "07",
+    "taID": "0720"
+  },
+  {
+    "villageClusterID": "070720011",
+    "villageClusterName": "Kasowa",
+    "districtID": "07",
+    "taID": "0720"
+  },
+  {
+    "villageClusterID": "070720012",
+    "villageClusterName": "Chingabanje",
+    "districtID": "07",
+    "taID": "0720"
+  },
+  {
+    "villageClusterID": "070720013",
+    "villageClusterName": "Mpeka",
+    "districtID": "07",
+    "taID": "0720"
+  },
+  {
+    "villageClusterID": "070720014",
+    "villageClusterName": "Mphazi",
+    "districtID": "07",
+    "taID": "0720"
+  },
+  {
+    "villageClusterID": "070720015",
+    "villageClusterName": "Kamwendo",
+    "districtID": "07",
+    "taID": "0720"
+  },
+  {
+    "villageClusterID": "070721001",
+    "villageClusterName": "Kantukungwa",
+    "districtID": "07",
+    "taID": "0721"
+  },
+  {
+    "villageClusterID": "070721002",
+    "villageClusterName": "Mkwantha",
+    "districtID": "07",
+    "taID": "0721"
+  },
+  {
+    "villageClusterID": "070721003",
+    "villageClusterName": "Chizanda",
+    "districtID": "07",
+    "taID": "0721"
+  },
+  {
+    "villageClusterID": "070721004",
+    "villageClusterName": "Chimwala",
+    "districtID": "07",
+    "taID": "0721"
+  },
+  {
+    "villageClusterID": "070721005",
+    "villageClusterName": "Msulu",
+    "districtID": "07",
+    "taID": "0721"
+  },
+  {
+    "villageClusterID": "070721006",
+    "villageClusterName": "Kamwana",
+    "districtID": "07",
+    "taID": "0721"
+  },
+  {
+    "villageClusterID": "070721007",
+    "villageClusterName": "Mavumbwe",
+    "districtID": "07",
+    "taID": "0721"
+  },
+  {
+    "villageClusterID": "070721008",
+    "villageClusterName": "Chifelo",
+    "districtID": "07",
+    "taID": "0721"
+  },
+  {
+    "villageClusterID": "070721009",
+    "villageClusterName": "Malanyama",
+    "districtID": "07",
+    "taID": "0721"
+  },
+  {
+    "villageClusterID": "070721010",
+    "villageClusterName": "Mwendo",
+    "districtID": "07",
+    "taID": "0721"
+  },
+  {
+    "villageClusterID": "070721011",
+    "villageClusterName": "Chifipa",
+    "districtID": "07",
+    "taID": "0721"
+  },
+  {
+    "villageClusterID": "070721012",
+    "villageClusterName": "Leza",
+    "districtID": "07",
+    "taID": "0721"
+  },
+  {
+    "villageClusterID": "070721013",
+    "villageClusterName": "Kapatuka",
+    "districtID": "07",
+    "taID": "0721"
+  },
+  {
+    "villageClusterID": "070721014",
+    "villageClusterName": "Gogo",
+    "districtID": "07",
+    "taID": "0721"
+  },
+  {
+    "villageClusterID": "070722001",
+    "villageClusterName": "Kapyela",
+    "districtID": "07",
+    "taID": "0722"
+  },
+  {
+    "villageClusterID": "070722002",
+    "villageClusterName": "Chifwefwe",
+    "districtID": "07",
+    "taID": "0722"
+  },
+  {
+    "villageClusterID": "070722003",
+    "villageClusterName": "Kazingilira",
+    "districtID": "07",
+    "taID": "0722"
+  },
+  {
+    "villageClusterID": "070722004",
+    "villageClusterName": "Mtendere",
+    "districtID": "07",
+    "taID": "0722"
+  },
+  {
+    "villageClusterID": "070722005",
+    "villageClusterName": "Chabvunguma",
+    "districtID": "07",
+    "taID": "0722"
+  },
+  {
+    "villageClusterID": "070722006",
+    "villageClusterName": "Kaphaizi",
+    "districtID": "07",
+    "taID": "0722"
+  },
+  {
+    "villageClusterID": "070723001",
+    "villageClusterName": "Chankhalamo",
+    "districtID": "07",
+    "taID": "0723"
+  },
+  {
+    "villageClusterID": "070723002",
+    "villageClusterName": "Vikuyu",
+    "districtID": "07",
+    "taID": "0723"
+  },
+  {
+    "villageClusterID": "070723003",
+    "villageClusterName": "Chamalaza",
+    "districtID": "07",
+    "taID": "0723"
+  },
+  {
+    "villageClusterID": "070723004",
+    "villageClusterName": "Kammasala",
+    "districtID": "07",
+    "taID": "0723"
+  },
+  {
+    "villageClusterID": "070723005",
+    "villageClusterName": "Kanonono",
+    "districtID": "07",
+    "taID": "0723"
+  },
+  {
+    "villageClusterID": "070723006",
+    "villageClusterName": "Kambulu",
+    "districtID": "07",
+    "taID": "0723"
+  },
+  {
+    "villageClusterID": "070723007",
+    "villageClusterName": "Chimwang'ombe",
+    "districtID": "07",
+    "taID": "0723"
+  },
+  {
+    "villageClusterID": "070723008",
+    "villageClusterName": "Masaka",
+    "districtID": "07",
+    "taID": "0723"
+  },
+  {
+    "villageClusterID": "070723009",
+    "villageClusterName": "Longwe",
+    "districtID": "07",
+    "taID": "0723"
+  },
+  {
+    "villageClusterID": "070723010",
+    "villageClusterName": "Masakandeu",
+    "districtID": "07",
+    "taID": "0723"
+  },
+  {
+    "villageClusterID": "070723011",
+    "villageClusterName": "Mkambalika",
+    "districtID": "07",
+    "taID": "0723"
+  },
+  {
+    "villageClusterID": "070723012",
+    "villageClusterName": "Msambaisa",
+    "districtID": "07",
+    "taID": "0723"
+  },
+  {
+    "villageClusterID": "070723013",
+    "villageClusterName": "Mgoza",
+    "districtID": "07",
+    "taID": "0723"
+  },
+  {
+    "villageClusterID": "070723014",
+    "villageClusterName": "Thulula",
+    "districtID": "07",
+    "taID": "0723"
+  },
+  {
+    "villageClusterID": "070723015",
+    "villageClusterName": "Liwala",
+    "districtID": "07",
+    "taID": "0723"
+  },
+  {
+    "villageClusterID": "070723016",
+    "villageClusterName": "Thumba",
+    "districtID": "07",
+    "taID": "0723"
+  },
+  {
+    "villageClusterID": "070723017",
+    "villageClusterName": "Vitsuto",
+    "districtID": "07",
+    "taID": "0723"
+  },
+  {
+    "villageClusterID": "070724001",
+    "villageClusterName": "KAMANDA",
+    "districtID": "07",
+    "taID": "0724"
+  },
+  {
+    "villageClusterID": "070724002",
+    "villageClusterName": "MAGWELO",
+    "districtID": "07",
+    "taID": "0724"
+  },
+  {
+    "villageClusterID": "070724003",
+    "villageClusterName": "KAWILU",
+    "districtID": "07",
+    "taID": "0724"
+  },
+  {
+    "villageClusterID": "070724004",
+    "villageClusterName": "CHASOMBA",
+    "districtID": "07",
+    "taID": "0724"
+  },
+  {
+    "villageClusterID": "070724005",
+    "villageClusterName": "CHANGALUWE",
+    "districtID": "07",
+    "taID": "0724"
+  },
+  {
+    "villageClusterID": "070724006",
+    "villageClusterName": "KUNGA",
+    "districtID": "07",
+    "taID": "0724"
+  },
+  {
+    "villageClusterID": "070724007",
+    "villageClusterName": "KASWAMCHENJE",
+    "districtID": "07",
+    "taID": "0724"
+  },
+  {
+    "villageClusterID": "070724008",
+    "villageClusterName": "KAMIMITA",
+    "districtID": "07",
+    "taID": "0724"
+  },
+  {
+    "villageClusterID": "070724009",
+    "villageClusterName": "MNDAKA",
+    "districtID": "07",
+    "taID": "0724"
+  },
+  {
+    "villageClusterID": "070726001",
+    "villageClusterName": "Mpalankhwazi",
+    "districtID": "07",
+    "taID": "0726"
+  },
+  {
+    "villageClusterID": "070726002",
+    "villageClusterName": "Tiyanjane",
+    "districtID": "07",
+    "taID": "0726"
+  },
+  {
+    "villageClusterID": "070726003",
+    "villageClusterName": "Katondo",
+    "districtID": "07",
+    "taID": "0726"
+  },
+  {
+    "villageClusterID": "070726004",
+    "villageClusterName": "Chiwuni",
+    "districtID": "07",
+    "taID": "0726"
+  },
+  {
+    "villageClusterID": "070726005",
+    "villageClusterName": "Madzimayera",
+    "districtID": "07",
+    "taID": "0726"
+  },
+  {
+    "villageClusterID": "070726006",
+    "villageClusterName": "Kazingilira",
+    "districtID": "07",
+    "taID": "0726"
+  },
+  {
+    "villageClusterID": "070726007",
+    "villageClusterName": "Lusa",
+    "districtID": "07",
+    "taID": "0726"
+  },
+  {
+    "villageClusterID": "070726008",
+    "villageClusterName": "Mawili",
+    "districtID": "07",
+    "taID": "0726"
+  },
+  {
+    "villageClusterID": "070726009",
+    "villageClusterName": "Chitu",
+    "districtID": "07",
+    "taID": "0726"
+  },
+  {
+    "villageClusterID": "070727001",
+    "villageClusterName": "Chipoli",
+    "districtID": "07",
+    "taID": "0727"
+  },
+  {
+    "villageClusterID": "070727002",
+    "villageClusterName": "Chambwe",
+    "districtID": "07",
+    "taID": "0727"
+  },
+  {
+    "villageClusterID": "070727003",
+    "villageClusterName": "Nkhondwera",
+    "districtID": "07",
+    "taID": "0727"
+  },
+  {
+    "villageClusterID": "070727004",
+    "villageClusterName": "Wimbemtuwa",
+    "districtID": "07",
+    "taID": "0727"
+  },
+  {
+    "villageClusterID": "070727005",
+    "villageClusterName": "Kadifula",
+    "districtID": "07",
+    "taID": "0727"
+  },
+  {
+    "villageClusterID": "070727006",
+    "villageClusterName": "Nthumbidwa",
+    "districtID": "07",
+    "taID": "0727"
+  },
+  {
+    "villageClusterID": "070728001",
+    "villageClusterName": "Kapichira",
+    "districtID": "07",
+    "taID": "0728"
+  },
+  {
+    "villageClusterID": "070728002",
+    "villageClusterName": "Chikoko",
+    "districtID": "07",
+    "taID": "0728"
+  },
+  {
+    "villageClusterID": "070728003",
+    "villageClusterName": "Kambuzi",
+    "districtID": "07",
+    "taID": "0728"
+  },
+  {
+    "villageClusterID": "070728004",
+    "villageClusterName": "Katozi",
+    "districtID": "07",
+    "taID": "0728"
+  },
+  {
+    "villageClusterID": "070728005",
+    "villageClusterName": "Damba",
+    "districtID": "07",
+    "taID": "0728"
+  },
+  {
+    "villageClusterID": "070728006",
+    "villageClusterName": "Chasefu",
+    "districtID": "07",
+    "taID": "0728"
+  },
+  {
+    "villageClusterID": "070729001",
+    "villageClusterName": "Livwezi",
+    "districtID": "07",
+    "taID": "0729"
+  },
+  {
+    "villageClusterID": "070729002",
+    "villageClusterName": "Mkando",
+    "districtID": "07",
+    "taID": "0729"
+  },
+  {
+    "villageClusterID": "070729003",
+    "villageClusterName": "Chankhokwe",
+    "districtID": "07",
+    "taID": "0729"
+  },
+  {
+    "villageClusterID": "070729004",
+    "villageClusterName": "Dwankhwali",
+    "districtID": "07",
+    "taID": "0729"
+  },
+  {
+    "villageClusterID": "070729005",
+    "villageClusterName": "Sankhula",
+    "districtID": "07",
+    "taID": "0729"
+  },
+  {
+    "villageClusterID": "070729006",
+    "villageClusterName": "Kayeleka",
+    "districtID": "07",
+    "taID": "0729"
+  },
+  {
+    "villageClusterID": "070729007",
+    "villageClusterName": "Lizili",
+    "districtID": "07",
+    "taID": "0729"
+  },
+  {
+    "villageClusterID": "070729008",
+    "villageClusterName": "Misani",
+    "districtID": "07",
+    "taID": "0729"
+  },
+  {
+    "villageClusterID": "070729009",
+    "villageClusterName": "Chalizya",
+    "districtID": "07",
+    "taID": "0729"
+  },
+  {
+    "villageClusterID": "070729010",
+    "villageClusterName": "Kadzimomwe",
+    "districtID": "07",
+    "taID": "0729"
+  },
+  {
+    "villageClusterID": "070729011",
+    "villageClusterName": "Mtenthera",
+    "districtID": "07",
+    "taID": "0729"
+  },
+  {
+    "villageClusterID": "070729012",
+    "villageClusterName": "Mpongozipita",
+    "districtID": "07",
+    "taID": "0729"
+  },
+  {
+    "villageClusterID": "070729013",
+    "villageClusterName": "Vigando",
+    "districtID": "07",
+    "taID": "0729"
+  },
+  {
+    "villageClusterID": "080801001",
+    "villageClusterName": "Chaola",
+    "districtID": "08",
+    "taID": "0801"
+  },
+  {
+    "villageClusterID": "080801002",
+    "villageClusterName": "Chikho II",
+    "districtID": "08",
+    "taID": "0801"
+  },
+  {
+    "villageClusterID": "080801003",
+    "villageClusterName": "Chimbindu",
+    "districtID": "08",
+    "taID": "0801"
+  },
+  {
+    "villageClusterID": "080801004",
+    "villageClusterName": "Kasakula",
+    "districtID": "08",
+    "taID": "0801"
+  },
+  {
+    "villageClusterID": "080801005",
+    "villageClusterName": "Liwonde",
+    "districtID": "08",
+    "taID": "0801"
+  },
+  {
+    "villageClusterID": "080801006",
+    "villageClusterName": "Chamafuwa",
+    "districtID": "08",
+    "taID": "0801"
+  },
+  {
+    "villageClusterID": "080801007",
+    "villageClusterName": "Chinguluwe",
+    "districtID": "08",
+    "taID": "0801"
+  },
+  {
+    "villageClusterID": "080801008",
+    "villageClusterName": "Mawiri",
+    "districtID": "08",
+    "taID": "0801"
+  },
+  {
+    "villageClusterID": "080801009",
+    "villageClusterName": "Sambakusi",
+    "districtID": "08",
+    "taID": "0801"
+  },
+  {
+    "villageClusterID": "080802001",
+    "villageClusterName": "Chadaka",
+    "districtID": "08",
+    "taID": "0802"
+  },
+  {
+    "villageClusterID": "080802002",
+    "villageClusterName": "Chibweya",
+    "districtID": "08",
+    "taID": "0802"
+  },
+  {
+    "villageClusterID": "080802003",
+    "villageClusterName": "Chikho",
+    "districtID": "08",
+    "taID": "0802"
+  },
+  {
+    "villageClusterID": "080802004",
+    "villageClusterName": "Kambadzo",
+    "districtID": "08",
+    "taID": "0802"
+  },
+  {
+    "villageClusterID": "080802005",
+    "villageClusterName": "Malindi",
+    "districtID": "08",
+    "taID": "0802"
+  },
+  {
+    "villageClusterID": "080803001",
+    "villageClusterName": "Champhoyo",
+    "districtID": "08",
+    "taID": "0803"
+  },
+  {
+    "villageClusterID": "080803002",
+    "villageClusterName": "Kayoyo",
+    "districtID": "08",
+    "taID": "0803"
+  },
+  {
+    "villageClusterID": "080803003",
+    "villageClusterName": "Kwezani",
+    "districtID": "08",
+    "taID": "0803"
+  },
+  {
+    "villageClusterID": "080803004",
+    "villageClusterName": "Mndinda",
+    "districtID": "08",
+    "taID": "0803"
+  },
+  {
+    "villageClusterID": "080803005",
+    "villageClusterName": "Muuta",
+    "districtID": "08",
+    "taID": "0803"
+  },
+  {
+    "villageClusterID": "080803006",
+    "villageClusterName": "Nthondo",
+    "districtID": "08",
+    "taID": "0803"
+  },
+  {
+    "villageClusterID": "080803007",
+    "villageClusterName": "Sambakusi",
+    "districtID": "08",
+    "taID": "0803"
+  },
+  {
+    "villageClusterID": "080804001",
+    "villageClusterName": "Chitete",
+    "districtID": "08",
+    "taID": "0804"
+  },
+  {
+    "villageClusterID": "080804002",
+    "villageClusterName": "Chorwe",
+    "districtID": "08",
+    "taID": "0804"
+  },
+  {
+    "villageClusterID": "080804003",
+    "villageClusterName": "Gwangwa",
+    "districtID": "08",
+    "taID": "0804"
+  },
+  {
+    "villageClusterID": "080804004",
+    "villageClusterName": "Kalumo",
+    "districtID": "08",
+    "taID": "0804"
+  },
+  {
+    "villageClusterID": "080804005",
+    "villageClusterName": "Kanyenda",
+    "districtID": "08",
+    "taID": "0804"
+  },
+  {
+    "villageClusterID": "080804006",
+    "villageClusterName": "Kaulatsitsi",
+    "districtID": "08",
+    "taID": "0804"
+  },
+  {
+    "villageClusterID": "080804007",
+    "villageClusterName": "Kaziwa",
+    "districtID": "08",
+    "taID": "0804"
+  },
+  {
+    "villageClusterID": "080804008",
+    "villageClusterName": "Khuwi",
+    "districtID": "08",
+    "taID": "0804"
+  },
+  {
+    "villageClusterID": "080804009",
+    "villageClusterName": "Mankhamba",
+    "districtID": "08",
+    "taID": "0804"
+  },
+  {
+    "villageClusterID": "080804010",
+    "villageClusterName": "Mbuyedziko",
+    "districtID": "08",
+    "taID": "0804"
+  },
+  {
+    "villageClusterID": "080804011",
+    "villageClusterName": "Nyalavu",
+    "districtID": "08",
+    "taID": "0804"
+  },
+  {
+    "villageClusterID": "080804012",
+    "villageClusterName": "Phuye",
+    "districtID": "08",
+    "taID": "0804"
+  },
+  {
+    "villageClusterID": "080805001",
+    "villageClusterName": "Chakulanjala",
+    "districtID": "08",
+    "taID": "0805"
+  },
+  {
+    "villageClusterID": "080805002",
+    "villageClusterName": "Kabvulala",
+    "districtID": "08",
+    "taID": "0805"
+  },
+  {
+    "villageClusterID": "080805003",
+    "villageClusterName": "Malomo",
+    "districtID": "08",
+    "taID": "0805"
+  },
+  {
+    "villageClusterID": "080805004",
+    "villageClusterName": "Mankhaka",
+    "districtID": "08",
+    "taID": "0805"
+  },
+  {
+    "villageClusterID": "080805005",
+    "villageClusterName": "Mawiri",
+    "districtID": "08",
+    "taID": "0805"
+  },
+  {
+    "villageClusterID": "080805006",
+    "villageClusterName": "Mkweche",
+    "districtID": "08",
+    "taID": "0805"
+  },
+  {
+    "villageClusterID": "080805007",
+    "villageClusterName": "Mpofo",
+    "districtID": "08",
+    "taID": "0805"
+  },
+  {
+    "villageClusterID": "080806001",
+    "villageClusterName": "Buzi",
+    "districtID": "08",
+    "taID": "0806"
+  },
+  {
+    "villageClusterID": "080806002",
+    "villageClusterName": "Chimbalu",
+    "districtID": "08",
+    "taID": "0806"
+  },
+  {
+    "villageClusterID": "080806003",
+    "villageClusterName": "Kamsonga",
+    "districtID": "08",
+    "taID": "0806"
+  },
+  {
+    "villageClusterID": "080806004",
+    "villageClusterName": "Kazonga",
+    "districtID": "08",
+    "taID": "0806"
+  },
+  {
+    "villageClusterID": "080806005",
+    "villageClusterName": "Madanjala",
+    "districtID": "08",
+    "taID": "0806"
+  },
+  {
+    "villageClusterID": "080806006",
+    "villageClusterName": "Mayala",
+    "districtID": "08",
+    "taID": "0806"
+  },
+  {
+    "villageClusterID": "080806007",
+    "villageClusterName": "Mbototo",
+    "districtID": "08",
+    "taID": "0806"
+  },
+  {
+    "villageClusterID": "080806008",
+    "villageClusterName": "Chipwapwata",
+    "districtID": "08",
+    "taID": "0806"
+  },
+  {
+    "villageClusterID": "080806009",
+    "villageClusterName": "Malambo",
+    "districtID": "08",
+    "taID": "0806"
+  },
+  {
+    "villageClusterID": "080806010",
+    "villageClusterName": "msolokera",
+    "districtID": "08",
+    "taID": "0806"
+  },
+  {
+    "villageClusterID": "080806011",
+    "villageClusterName": "Mndinda",
+    "districtID": "08",
+    "taID": "0806"
+  },
+  {
+    "villageClusterID": "080806012",
+    "villageClusterName": "Muuta",
+    "districtID": "08",
+    "taID": "0806"
+  },
+  {
+    "villageClusterID": "080808001",
+    "villageClusterName": "Chimwala",
+    "districtID": "08",
+    "taID": "0808"
+  },
+  {
+    "villageClusterID": "080808002",
+    "villageClusterName": "Chinthembwe",
+    "districtID": "08",
+    "taID": "0808"
+  },
+  {
+    "villageClusterID": "080808003",
+    "villageClusterName": "Ndevu",
+    "districtID": "08",
+    "taID": "0808"
+  },
+  {
+    "villageClusterID": "080808004",
+    "villageClusterName": "Nyanga",
+    "districtID": "08",
+    "taID": "0808"
+  },
+  {
+    "villageClusterID": "080808005",
+    "villageClusterName": "Vuso jere",
+    "districtID": "08",
+    "taID": "0808"
+  },
+  {
+    "villageClusterID": "090901001",
+    "villageClusterName": "Chimwetsero",
+    "districtID": "09",
+    "taID": "0901"
+  },
+  {
+    "villageClusterID": "090901002",
+    "villageClusterName": "Chikankha",
+    "districtID": "09",
+    "taID": "0901"
+  },
+  {
+    "villageClusterID": "090901003",
+    "villageClusterName": "Kabulungo",
+    "districtID": "09",
+    "taID": "0901"
+  },
+  {
+    "villageClusterID": "090901004",
+    "villageClusterName": "Chibweza",
+    "districtID": "09",
+    "taID": "0901"
+  },
+  {
+    "villageClusterID": "090901005",
+    "villageClusterName": "Bvumokazoma",
+    "districtID": "09",
+    "taID": "0901"
+  },
+  {
+    "villageClusterID": "090901006",
+    "villageClusterName": "Mwachiswa",
+    "districtID": "09",
+    "taID": "0901"
+  },
+  {
+    "villageClusterID": "090901007",
+    "villageClusterName": "Mtsiro",
+    "districtID": "09",
+    "taID": "0901"
+  },
+  {
+    "villageClusterID": "090901008",
+    "villageClusterName": "Tchawale",
+    "districtID": "09",
+    "taID": "0901"
+  },
+  {
+    "villageClusterID": "090901009",
+    "villageClusterName": "Chilemba",
+    "districtID": "09",
+    "taID": "0901"
+  },
+  {
+    "villageClusterID": "090901010",
+    "villageClusterName": "Chidzenje",
+    "districtID": "09",
+    "taID": "0901"
+  },
+  {
+    "villageClusterID": "090901011",
+    "villageClusterName": "Chipangula",
+    "districtID": "09",
+    "taID": "0901"
+  },
+  {
+    "villageClusterID": "090901012",
+    "villageClusterName": "Debywa",
+    "districtID": "09",
+    "taID": "0901"
+  },
+  {
+    "villageClusterID": "090901013",
+    "villageClusterName": "Kabanga",
+    "districtID": "09",
+    "taID": "0901"
+  },
+  {
+    "villageClusterID": "090901014",
+    "villageClusterName": "Chawawa",
+    "districtID": "09",
+    "taID": "0901"
+  },
+  {
+    "villageClusterID": "090901015",
+    "villageClusterName": "Mauni",
+    "districtID": "09",
+    "taID": "0901"
+  },
+  {
+    "villageClusterID": "090901016",
+    "villageClusterName": "Kachisa",
+    "districtID": "09",
+    "taID": "0901"
+  },
+  {
+    "villageClusterID": "090901017",
+    "villageClusterName": "Longwani",
+    "districtID": "09",
+    "taID": "0901"
+  },
+  {
+    "villageClusterID": "090901018",
+    "villageClusterName": "Kamantha",
+    "districtID": "09",
+    "taID": "0901"
+  },
+  {
+    "villageClusterID": "090902001",
+    "villageClusterName": "Chizolowondo",
+    "districtID": "09",
+    "taID": "0902"
+  },
+  {
+    "villageClusterID": "090902002",
+    "villageClusterName": "Kabwinja",
+    "districtID": "09",
+    "taID": "0902"
+  },
+  {
+    "villageClusterID": "090902003",
+    "villageClusterName": "Linthembwe",
+    "districtID": "09",
+    "taID": "0902"
+  },
+  {
+    "villageClusterID": "090902004",
+    "villageClusterName": "Madzo",
+    "districtID": "09",
+    "taID": "0902"
+  },
+  {
+    "villageClusterID": "090902005",
+    "villageClusterName": "Mtambalika",
+    "districtID": "09",
+    "taID": "0902"
+  },
+  {
+    "villageClusterID": "090902006",
+    "villageClusterName": "Phwazi",
+    "districtID": "09",
+    "taID": "0902"
+  },
+  {
+    "villageClusterID": "090902007",
+    "villageClusterName": "Kasese",
+    "districtID": "09",
+    "taID": "0902"
+  },
+  {
+    "villageClusterID": "090902008",
+    "villageClusterName": "Mwalala",
+    "districtID": "09",
+    "taID": "0902"
+  },
+  {
+    "villageClusterID": "090902009",
+    "villageClusterName": "Chinkhwiri",
+    "districtID": "09",
+    "taID": "0902"
+  },
+  {
+    "villageClusterID": "090902010",
+    "villageClusterName": "Joseni",
+    "districtID": "09",
+    "taID": "0902"
+  },
+  {
+    "villageClusterID": "090902011",
+    "villageClusterName": "Mpale",
+    "districtID": "09",
+    "taID": "0902"
+  },
+  {
+    "villageClusterID": "090902012",
+    "villageClusterName": "Kasangazi",
+    "districtID": "09",
+    "taID": "0902"
+  },
+  {
+    "villageClusterID": "090902013",
+    "villageClusterName": "Chambidzi",
+    "districtID": "09",
+    "taID": "0902"
+  },
+  {
+    "villageClusterID": "090902014",
+    "villageClusterName": "Mpuntha",
+    "districtID": "09",
+    "taID": "0902"
+  },
+  {
+    "villageClusterID": "090902015",
+    "villageClusterName": "Dzalo",
+    "districtID": "09",
+    "taID": "0902"
+  },
+  {
+    "villageClusterID": "090902016",
+    "villageClusterName": "Mtimaumodzi",
+    "districtID": "09",
+    "taID": "0902"
+  },
+  {
+    "villageClusterID": "090902017",
+    "villageClusterName": "Bweya",
+    "districtID": "09",
+    "taID": "0902"
+  },
+  {
+    "villageClusterID": "090902018",
+    "villageClusterName": "Nyangala",
+    "districtID": "09",
+    "taID": "0902"
+  },
+  {
+    "villageClusterID": "090902019",
+    "villageClusterName": "Chiwira",
+    "districtID": "09",
+    "taID": "0902"
+  },
+  {
+    "villageClusterID": "090902020",
+    "villageClusterName": "Sangayambe",
+    "districtID": "09",
+    "taID": "0902"
+  },
+  {
+    "villageClusterID": "090902021",
+    "villageClusterName": "Chikwawe",
+    "districtID": "09",
+    "taID": "0902"
+  },
+  {
+    "villageClusterID": "090902022",
+    "villageClusterName": "Tsanganga",
+    "districtID": "09",
+    "taID": "0902"
+  },
+  {
+    "villageClusterID": "090902023",
+    "villageClusterName": "Chipanje",
+    "districtID": "09",
+    "taID": "0902"
+  },
+  {
+    "villageClusterID": "090902024",
+    "villageClusterName": "Kalikwala",
+    "districtID": "09",
+    "taID": "0902"
+  },
+  {
+    "villageClusterID": "090902025",
+    "villageClusterName": "Mkhobola",
+    "districtID": "09",
+    "taID": "0902"
+  },
+  {
+    "villageClusterID": "090902026",
+    "villageClusterName": "Khosi",
+    "districtID": "09",
+    "taID": "0902"
+  },
+  {
+    "villageClusterID": "090902027",
+    "villageClusterName": "Kabuluzi",
+    "districtID": "09",
+    "taID": "0902"
+  },
+  {
+    "villageClusterID": "090902028",
+    "villageClusterName": "Kanyungu",
+    "districtID": "09",
+    "taID": "0902"
+  },
+  {
+    "villageClusterID": "090903001",
+    "villageClusterName": "mbachundu",
+    "districtID": "09",
+    "taID": "0903"
+  },
+  {
+    "villageClusterID": "090903002",
+    "villageClusterName": "kafulu",
+    "districtID": "09",
+    "taID": "0903"
+  },
+  {
+    "villageClusterID": "090903003",
+    "villageClusterName": "Mafunthe",
+    "districtID": "09",
+    "taID": "0903"
+  },
+  {
+    "villageClusterID": "090903004",
+    "villageClusterName": "kasuntha",
+    "districtID": "09",
+    "taID": "0903"
+  },
+  {
+    "villageClusterID": "090903005",
+    "villageClusterName": "kalumbi/mwasala",
+    "districtID": "09",
+    "taID": "0903"
+  },
+  {
+    "villageClusterID": "090903006",
+    "villageClusterName": "kantchentche1",
+    "districtID": "09",
+    "taID": "0903"
+  },
+  {
+    "villageClusterID": "090903007",
+    "villageClusterName": "chimbalu",
+    "districtID": "09",
+    "taID": "0903"
+  },
+  {
+    "villageClusterID": "090903008",
+    "villageClusterName": "muwomba",
+    "districtID": "09",
+    "taID": "0903"
+  },
+  {
+    "villageClusterID": "090903009",
+    "villageClusterName": "mbangala",
+    "districtID": "09",
+    "taID": "0903"
+  },
+  {
+    "villageClusterID": "090903010",
+    "villageClusterName": "katete",
+    "districtID": "09",
+    "taID": "0903"
+  },
+  {
+    "villageClusterID": "090903011",
+    "villageClusterName": "kantchentche2",
+    "districtID": "09",
+    "taID": "0903"
+  },
+  {
+    "villageClusterID": "090903012",
+    "villageClusterName": "chimphande",
+    "districtID": "09",
+    "taID": "0903"
+  },
+  {
+    "villageClusterID": "090903013",
+    "villageClusterName": "mphinda/khungwa",
+    "districtID": "09",
+    "taID": "0903"
+  },
+  {
+    "villageClusterID": "090903014",
+    "villageClusterName": "sindeya",
+    "districtID": "09",
+    "taID": "0903"
+  },
+  {
+    "villageClusterID": "090903015",
+    "villageClusterName": "sese",
+    "districtID": "09",
+    "taID": "0903"
+  },
+  {
+    "villageClusterID": "090903016",
+    "villageClusterName": "mtuwanjobvu",
+    "districtID": "09",
+    "taID": "0903"
+  },
+  {
+    "villageClusterID": "090903017",
+    "villageClusterName": "mtawa",
+    "districtID": "09",
+    "taID": "0903"
+  },
+  {
+    "villageClusterID": "090903018",
+    "villageClusterName": "nkwichi",
+    "districtID": "09",
+    "taID": "0903"
+  },
+  {
+    "villageClusterID": "090903019",
+    "villageClusterName": "simwila",
+    "districtID": "09",
+    "taID": "0903"
+  },
+  {
+    "villageClusterID": "090903020",
+    "villageClusterName": "msonjola",
+    "districtID": "09",
+    "taID": "0903"
+  },
+  {
+    "villageClusterID": "090904001",
+    "villageClusterName": "Namonimakombe",
+    "districtID": "09",
+    "taID": "0904"
+  },
+  {
+    "villageClusterID": "090904002",
+    "villageClusterName": "Mponda",
+    "districtID": "09",
+    "taID": "0904"
+  },
+  {
+    "villageClusterID": "090904003",
+    "villageClusterName": "Chingamba",
+    "districtID": "09",
+    "taID": "0904"
+  },
+  {
+    "villageClusterID": "090904004",
+    "villageClusterName": "Mtembe",
+    "districtID": "09",
+    "taID": "0904"
+  },
+  {
+    "villageClusterID": "090904005",
+    "villageClusterName": "Mtungwi",
+    "districtID": "09",
+    "taID": "0904"
+  },
+  {
+    "villageClusterID": "090904006",
+    "villageClusterName": "Mawende",
+    "districtID": "09",
+    "taID": "0904"
+  },
+  {
+    "villageClusterID": "090904007",
+    "villageClusterName": "Kaluma",
+    "districtID": "09",
+    "taID": "0904"
+  },
+  {
+    "villageClusterID": "090904008",
+    "villageClusterName": "Chiwere",
+    "districtID": "09",
+    "taID": "0904"
+  },
+  {
+    "villageClusterID": "090904009",
+    "villageClusterName": "Dzuwa",
+    "districtID": "09",
+    "taID": "0904"
+  },
+  {
+    "villageClusterID": "090904010",
+    "villageClusterName": "Kandulu",
+    "districtID": "09",
+    "taID": "0904"
+  },
+  {
+    "villageClusterID": "090904011",
+    "villageClusterName": "Gawamadzi",
+    "districtID": "09",
+    "taID": "0904"
+  },
+  {
+    "villageClusterID": "090904012",
+    "villageClusterName": "Maweru",
+    "districtID": "09",
+    "taID": "0904"
+  },
+  {
+    "villageClusterID": "090904013",
+    "villageClusterName": "namatonje",
+    "districtID": "09",
+    "taID": "0904"
+  },
+  {
+    "villageClusterID": "090904014",
+    "villageClusterName": "Mkuwani",
+    "districtID": "09",
+    "taID": "0904"
+  },
+  {
+    "villageClusterID": "090904015",
+    "villageClusterName": "Kambulire",
+    "districtID": "09",
+    "taID": "0904"
+  },
+  {
+    "villageClusterID": "090904016",
+    "villageClusterName": "chisowa",
+    "districtID": "09",
+    "taID": "0904"
+  },
+  {
+    "villageClusterID": "090904017",
+    "villageClusterName": "chesalinonyongo",
+    "districtID": "09",
+    "taID": "0904"
+  },
+  {
+    "villageClusterID": "090904018",
+    "villageClusterName": "Chinsewo",
+    "districtID": "09",
+    "taID": "0904"
+  },
+  {
+    "villageClusterID": "090904019",
+    "villageClusterName": "Chimeza",
+    "districtID": "09",
+    "taID": "0904"
+  },
+  {
+    "villageClusterID": "090904020",
+    "villageClusterName": "mayani",
+    "districtID": "09",
+    "taID": "0904"
+  },
+  {
+    "villageClusterID": "090904021",
+    "villageClusterName": "Nafisi",
+    "districtID": "09",
+    "taID": "0904"
+  },
+  {
+    "villageClusterID": "090905001",
+    "villageClusterName": "M'bindo",
+    "districtID": "09",
+    "taID": "0905"
+  },
+  {
+    "villageClusterID": "090905002",
+    "villageClusterName": "Kafumphe",
+    "districtID": "09",
+    "taID": "0905"
+  },
+  {
+    "villageClusterID": "090905003",
+    "villageClusterName": "Njolomole",
+    "districtID": "09",
+    "taID": "0905"
+  },
+  {
+    "villageClusterID": "090905004",
+    "villageClusterName": "Chezi",
+    "districtID": "09",
+    "taID": "0905"
+  },
+  {
+    "villageClusterID": "090905005",
+    "villageClusterName": "M'bwazi",
+    "districtID": "09",
+    "taID": "0905"
+  },
+  {
+    "villageClusterID": "090905006",
+    "villageClusterName": "Mbalame",
+    "districtID": "09",
+    "taID": "0905"
+  },
+  {
+    "villageClusterID": "090905007",
+    "villageClusterName": "Misanjo",
+    "districtID": "09",
+    "taID": "0905"
+  },
+  {
+    "villageClusterID": "090905008",
+    "villageClusterName": "Nthanzi",
+    "districtID": "09",
+    "taID": "0905"
+  },
+  {
+    "villageClusterID": "090905009",
+    "villageClusterName": "Liweya",
+    "districtID": "09",
+    "taID": "0905"
+  },
+  {
+    "villageClusterID": "090905010",
+    "villageClusterName": "Tatolonga",
+    "districtID": "09",
+    "taID": "0905"
+  },
+  {
+    "villageClusterID": "090905011",
+    "villageClusterName": "Senga",
+    "districtID": "09",
+    "taID": "0905"
+  },
+  {
+    "villageClusterID": "090905012",
+    "villageClusterName": "Manondo",
+    "districtID": "09",
+    "taID": "0905"
+  },
+  {
+    "villageClusterID": "090905013",
+    "villageClusterName": "Simankhwala",
+    "districtID": "09",
+    "taID": "0905"
+  },
+  {
+    "villageClusterID": "090905014",
+    "villageClusterName": "Chankhungu",
+    "districtID": "09",
+    "taID": "0905"
+  },
+  {
+    "villageClusterID": "090905015",
+    "villageClusterName": "Kaputalambwe",
+    "districtID": "09",
+    "taID": "0905"
+  },
+  {
+    "villageClusterID": "090905016",
+    "villageClusterName": "Chibvala",
+    "districtID": "09",
+    "taID": "0905"
+  },
+  {
+    "villageClusterID": "090905017",
+    "villageClusterName": "Mpalankhwali",
+    "districtID": "09",
+    "taID": "0905"
+  },
+  {
+    "villageClusterID": "090906001",
+    "villageClusterName": "Chibwata",
+    "districtID": "09",
+    "taID": "0906"
+  },
+  {
+    "villageClusterID": "090906002",
+    "villageClusterName": "Mbeza",
+    "districtID": "09",
+    "taID": "0906"
+  },
+  {
+    "villageClusterID": "090906003",
+    "villageClusterName": "Mndunje",
+    "districtID": "09",
+    "taID": "0906"
+  },
+  {
+    "villageClusterID": "090906004",
+    "villageClusterName": "Nanthomba",
+    "districtID": "09",
+    "taID": "0906"
+  },
+  {
+    "villageClusterID": "090906005",
+    "villageClusterName": "Chamwala",
+    "districtID": "09",
+    "taID": "0906"
+  },
+  {
+    "villageClusterID": "090906006",
+    "villageClusterName": "Topaizi",
+    "districtID": "09",
+    "taID": "0906"
+  },
+  {
+    "villageClusterID": "090906007",
+    "villageClusterName": "Zolire",
+    "districtID": "09",
+    "taID": "0906"
+  },
+  {
+    "villageClusterID": "090906008",
+    "villageClusterName": "Mdulu",
+    "districtID": "09",
+    "taID": "0906"
+  },
+  {
+    "villageClusterID": "090906009",
+    "villageClusterName": "Chigudu",
+    "districtID": "09",
+    "taID": "0906"
+  },
+  {
+    "villageClusterID": "090906010",
+    "villageClusterName": "Chibazi",
+    "districtID": "09",
+    "taID": "0906"
+  },
+  {
+    "villageClusterID": "090906011",
+    "villageClusterName": "Kwenda",
+    "districtID": "09",
+    "taID": "0906"
+  },
+  {
+    "villageClusterID": "090906012",
+    "villageClusterName": "Matekenya",
+    "districtID": "09",
+    "taID": "0906"
+  },
+  {
+    "villageClusterID": "090906013",
+    "villageClusterName": "Kabinde",
+    "districtID": "09",
+    "taID": "0906"
+  },
+  {
+    "villageClusterID": "090906014",
+    "villageClusterName": "Loke",
+    "districtID": "09",
+    "taID": "0906"
+  },
+  {
+    "villageClusterID": "090906015",
+    "villageClusterName": "Jonasi",
+    "districtID": "09",
+    "taID": "0906"
+  },
+  {
+    "villageClusterID": "090907001",
+    "villageClusterName": "Nkhongoyazizira",
+    "districtID": "09",
+    "taID": "0907"
+  },
+  {
+    "villageClusterID": "090907002",
+    "villageClusterName": "Machentche",
+    "districtID": "09",
+    "taID": "0907"
+  },
+  {
+    "villageClusterID": "090907003",
+    "villageClusterName": "Namwiri",
+    "districtID": "09",
+    "taID": "0907"
+  },
+  {
+    "villageClusterID": "090907004",
+    "villageClusterName": "Kantonya",
+    "districtID": "09",
+    "taID": "0907"
+  },
+  {
+    "villageClusterID": "090907005",
+    "villageClusterName": "Diliro",
+    "districtID": "09",
+    "taID": "0907"
+  },
+  {
+    "villageClusterID": "090907006",
+    "villageClusterName": "Mzizira",
+    "districtID": "09",
+    "taID": "0907"
+  },
+  {
+    "villageClusterID": "090907007",
+    "villageClusterName": "Mtawa",
+    "districtID": "09",
+    "taID": "0907"
+  },
+  {
+    "villageClusterID": "090907008",
+    "villageClusterName": "Chikamoyo",
+    "districtID": "09",
+    "taID": "0907"
+  },
+  {
+    "villageClusterID": "090907009",
+    "villageClusterName": "Mkhuthe",
+    "districtID": "09",
+    "taID": "0907"
+  },
+  {
+    "villageClusterID": "090907010",
+    "villageClusterName": "Chikuluti",
+    "districtID": "09",
+    "taID": "0907"
+  },
+  {
+    "villageClusterID": "090907011",
+    "villageClusterName": "Chilima",
+    "districtID": "09",
+    "taID": "0907"
+  },
+  {
+    "villageClusterID": "090907012",
+    "villageClusterName": "Jonasi",
+    "districtID": "09",
+    "taID": "0907"
+  },
+  {
+    "villageClusterID": "111101001",
+    "villageClusterName": "Chikanga",
+    "districtID": "11",
+    "taID": "1101"
+  },
+  {
+    "villageClusterID": "111101002",
+    "villageClusterName": "Chibwata",
+    "districtID": "11",
+    "taID": "1101"
+  },
+  {
+    "villageClusterID": "111101003",
+    "villageClusterName": "Mwatibu",
+    "districtID": "11",
+    "taID": "1101"
+  },
+  {
+    "villageClusterID": "111101004",
+    "villageClusterName": "Mapembe",
+    "districtID": "11",
+    "taID": "1101"
+  },
+  {
+    "villageClusterID": "111101005",
+    "villageClusterName": "Chingombe",
+    "districtID": "11",
+    "taID": "1101"
+  },
+  {
+    "villageClusterID": "111101006",
+    "villageClusterName": "Mwalamlendo",
+    "districtID": "11",
+    "taID": "1101"
+  },
+  {
+    "villageClusterID": "111101007",
+    "villageClusterName": "Mlodzenzi",
+    "districtID": "11",
+    "taID": "1101"
+  },
+  {
+    "villageClusterID": "111101008",
+    "villageClusterName": "Kalungama",
+    "districtID": "11",
+    "taID": "1101"
+  },
+  {
+    "villageClusterID": "111101009",
+    "villageClusterName": "Msanjiko",
+    "districtID": "11",
+    "taID": "1101"
+  },
+  {
+    "villageClusterID": "111101010",
+    "villageClusterName": "Milala",
+    "districtID": "11",
+    "taID": "1101"
+  },
+  {
+    "villageClusterID": "111101011",
+    "villageClusterName": "Mlodzenzi2",
+    "districtID": "11",
+    "taID": "1101"
+  },
+  {
+    "villageClusterID": "111101012",
+    "villageClusterName": "Mphesi",
+    "districtID": "11",
+    "taID": "1101"
+  },
+  {
+    "villageClusterID": "111101013",
+    "villageClusterName": "Nanjiri",
+    "districtID": "11",
+    "taID": "1101"
+  },
+  {
+    "villageClusterID": "111101014",
+    "villageClusterName": "Namphande",
+    "districtID": "11",
+    "taID": "1101"
+  },
+  {
+    "villageClusterID": "111101015",
+    "villageClusterName": "Tsapa",
+    "districtID": "11",
+    "taID": "1101"
+  },
+  {
+    "villageClusterID": "111101016",
+    "villageClusterName": "Chamadenga",
+    "districtID": "11",
+    "taID": "1101"
+  },
+  {
+    "villageClusterID": "111101017",
+    "villageClusterName": "Chipoka",
+    "districtID": "11",
+    "taID": "1101"
+  },
+  {
+    "villageClusterID": "111101018",
+    "villageClusterName": "Kalimabwera",
+    "districtID": "11",
+    "taID": "1101"
+  },
+  {
+    "villageClusterID": "111101019",
+    "villageClusterName": "Kachono",
+    "districtID": "11",
+    "taID": "1101"
+  },
+  {
+    "villageClusterID": "111101020",
+    "villageClusterName": "Chipili",
+    "districtID": "11",
+    "taID": "1101"
+  },
+  {
+    "villageClusterID": "111101021",
+    "villageClusterName": "Mphesi2",
+    "districtID": "11",
+    "taID": "1101"
+  },
+  {
+    "villageClusterID": "111101022",
+    "villageClusterName": "Phula",
+    "districtID": "11",
+    "taID": "1101"
+  },
+  {
+    "villageClusterID": "111102001",
+    "villageClusterName": "Dzuwa",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102002",
+    "villageClusterName": "Nyanja_2",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102003",
+    "villageClusterName": "Chipanga",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102004",
+    "villageClusterName": "Vilimba",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102005",
+    "villageClusterName": "Muwanga",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102006",
+    "villageClusterName": "Mtwiti",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102007",
+    "villageClusterName": "Chamende",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102008",
+    "villageClusterName": "Nyanja",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102009",
+    "villageClusterName": "Kaledza",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102010",
+    "villageClusterName": "Chilaza",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102011",
+    "villageClusterName": "Kafisi",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102012",
+    "villageClusterName": "Katsumwa",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102013",
+    "villageClusterName": "Chatsala",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102014",
+    "villageClusterName": "Mbavi",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102015",
+    "villageClusterName": "Mtawa",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102016",
+    "villageClusterName": "Kakoma",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102017",
+    "villageClusterName": "Ming'ongo_3",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102018",
+    "villageClusterName": "Kakuyu",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102019",
+    "villageClusterName": "Mtete",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102020",
+    "villageClusterName": "Ming'ongo",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102021",
+    "villageClusterName": "Kabubu",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102022",
+    "villageClusterName": "Kachawa",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102023",
+    "villageClusterName": "Kamadzi",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102024",
+    "villageClusterName": "Chitso",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102025",
+    "villageClusterName": "Livuwadzi",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102026",
+    "villageClusterName": "Luwadzi",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102027",
+    "villageClusterName": "Kakolo",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102028",
+    "villageClusterName": "Mwanjane",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102029",
+    "villageClusterName": "Ming'ongo 2",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102030",
+    "villageClusterName": "Kakoma 2",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102031",
+    "villageClusterName": "Kavuma",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102032",
+    "villageClusterName": "Chithimba",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102033",
+    "villageClusterName": "Kakoma",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111102034",
+    "villageClusterName": "Liwungu",
+    "districtID": "11",
+    "taID": "1102"
+  },
+  {
+    "villageClusterID": "111103001",
+    "villageClusterName": "Changali",
+    "districtID": "11",
+    "taID": "1103"
+  },
+  {
+    "villageClusterID": "111103002",
+    "villageClusterName": "Thambo",
+    "districtID": "11",
+    "taID": "1103"
+  },
+  {
+    "villageClusterID": "111103003",
+    "villageClusterName": "Mchokera",
+    "districtID": "11",
+    "taID": "1103"
+  },
+  {
+    "villageClusterID": "111103004",
+    "villageClusterName": "Muthirakuwiri",
+    "districtID": "11",
+    "taID": "1103"
+  },
+  {
+    "villageClusterID": "111103005",
+    "villageClusterName": "Nalusi",
+    "districtID": "11",
+    "taID": "1103"
+  },
+  {
+    "villageClusterID": "111103006",
+    "villageClusterName": "Chimwala",
+    "districtID": "11",
+    "taID": "1103"
+  },
+  {
+    "villageClusterID": "111103007",
+    "villageClusterName": "Msambe",
+    "districtID": "11",
+    "taID": "1103"
+  },
+  {
+    "villageClusterID": "111103008",
+    "villageClusterName": "Dzedze",
+    "districtID": "11",
+    "taID": "1103"
+  },
+  {
+    "villageClusterID": "111103009",
+    "villageClusterName": "Msele",
+    "districtID": "11",
+    "taID": "1103"
+  },
+  {
+    "villageClusterID": "111103010",
+    "villageClusterName": "Msambe2",
+    "districtID": "11",
+    "taID": "1103"
+  },
+  {
+    "villageClusterID": "111103011",
+    "villageClusterName": "Mbuka",
+    "districtID": "11",
+    "taID": "1103"
+  },
+  {
+    "villageClusterID": "111103012",
+    "villageClusterName": "Mtayamsengwa",
+    "districtID": "11",
+    "taID": "1103"
+  },
+  {
+    "villageClusterID": "111104001",
+    "villageClusterName": "Dzunda",
+    "districtID": "11",
+    "taID": "1104"
+  },
+  {
+    "villageClusterID": "111104002",
+    "villageClusterName": "Mtanda",
+    "districtID": "11",
+    "taID": "1104"
+  },
+  {
+    "villageClusterID": "111104003",
+    "villageClusterName": "Msinda",
+    "districtID": "11",
+    "taID": "1104"
+  },
+  {
+    "villageClusterID": "111104004",
+    "villageClusterName": "Kalamba",
+    "districtID": "11",
+    "taID": "1104"
+  },
+  {
+    "villageClusterID": "111104005",
+    "villageClusterName": "Namiladzi",
+    "districtID": "11",
+    "taID": "1104"
+  },
+  {
+    "villageClusterID": "111104006",
+    "villageClusterName": "Dete",
+    "districtID": "11",
+    "taID": "1104"
+  },
+  {
+    "villageClusterID": "111104007",
+    "villageClusterName": "Milamba",
+    "districtID": "11",
+    "taID": "1104"
+  },
+  {
+    "villageClusterID": "111104008",
+    "villageClusterName": "Dzimbiri",
+    "districtID": "11",
+    "taID": "1104"
+  },
+  {
+    "villageClusterID": "111104009",
+    "villageClusterName": "Nguluwe",
+    "districtID": "11",
+    "taID": "1104"
+  },
+  {
+    "villageClusterID": "111104010",
+    "villageClusterName": "Matapira",
+    "districtID": "11",
+    "taID": "1104"
+  },
+  {
+    "villageClusterID": "111104011",
+    "villageClusterName": "Mjogo",
+    "districtID": "11",
+    "taID": "1104"
+  },
+  {
+    "villageClusterID": "111104012",
+    "villageClusterName": "Kabichi",
+    "districtID": "11",
+    "taID": "1104"
+  },
+  {
+    "villageClusterID": "111104013",
+    "villageClusterName": "Khokhwa",
+    "districtID": "11",
+    "taID": "1104"
+  },
+  {
+    "villageClusterID": "111104014",
+    "villageClusterName": "Dzuwa",
+    "districtID": "11",
+    "taID": "1104"
+  },
+  {
+    "villageClusterID": "111105001",
+    "villageClusterName": "Malindi 1",
+    "districtID": "11",
+    "taID": "1105"
+  },
+  {
+    "villageClusterID": "111105002",
+    "villageClusterName": "Malindi 2",
+    "districtID": "11",
+    "taID": "1105"
+  },
+  {
+    "villageClusterID": "111105003",
+    "villageClusterName": "Chowo",
+    "districtID": "11",
+    "taID": "1105"
+  },
+  {
+    "villageClusterID": "111105004",
+    "villageClusterName": "Chimbalanga",
+    "districtID": "11",
+    "taID": "1105"
+  },
+  {
+    "villageClusterID": "111105005",
+    "villageClusterName": "Milungu",
+    "districtID": "11",
+    "taID": "1105"
+  },
+  {
+    "villageClusterID": "111105006",
+    "villageClusterName": "Thuma",
+    "districtID": "11",
+    "taID": "1105"
+  },
+  {
+    "villageClusterID": "111106001",
+    "villageClusterName": "Matembedza",
+    "districtID": "11",
+    "taID": "1106"
+  },
+  {
+    "villageClusterID": "111106002",
+    "villageClusterName": "Kamuna_2",
+    "districtID": "11",
+    "taID": "1106"
+  },
+  {
+    "villageClusterID": "111106003",
+    "villageClusterName": "Kamuna",
+    "districtID": "11",
+    "taID": "1106"
+  },
+  {
+    "villageClusterID": "111106004",
+    "villageClusterName": "Chipamphale",
+    "districtID": "11",
+    "taID": "1106"
+  },
+  {
+    "villageClusterID": "111106005",
+    "villageClusterName": "Mipondo",
+    "districtID": "11",
+    "taID": "1106"
+  },
+  {
+    "villageClusterID": "111106006",
+    "villageClusterName": "Nsanga",
+    "districtID": "11",
+    "taID": "1106"
+  },
+  {
+    "villageClusterID": "111106007",
+    "villageClusterName": "Mthila kuwiri",
+    "districtID": "11",
+    "taID": "1106"
+  },
+  {
+    "villageClusterID": "111106008",
+    "villageClusterName": "Ng'ombe",
+    "districtID": "11",
+    "taID": "1106"
+  },
+  {
+    "villageClusterID": "111106009",
+    "villageClusterName": "Mtosa",
+    "districtID": "11",
+    "taID": "1106"
+  },
+  {
+    "villageClusterID": "111106010",
+    "villageClusterName": "Buwa",
+    "districtID": "11",
+    "taID": "1106"
+  },
+  {
+    "villageClusterID": "111106011",
+    "villageClusterName": "Buwa_2",
+    "districtID": "11",
+    "taID": "1106"
+  },
+  {
+    "villageClusterID": "111106012",
+    "villageClusterName": "Mude",
+    "districtID": "11",
+    "taID": "1106"
+  },
+  {
+    "villageClusterID": "111106013",
+    "villageClusterName": "Msaleka",
+    "districtID": "11",
+    "taID": "1106"
+  },
+  {
+    "villageClusterID": "111106014",
+    "villageClusterName": "Mango",
+    "districtID": "11",
+    "taID": "1106"
+  },
+  {
+    "villageClusterID": "111106015",
+    "villageClusterName": "Mtayamatalala",
+    "districtID": "11",
+    "taID": "1106"
+  },
+  {
+    "villageClusterID": "111106016",
+    "villageClusterName": "Kaphiri",
+    "districtID": "11",
+    "taID": "1106"
+  },
+  {
+    "villageClusterID": "111106017",
+    "villageClusterName": "Sakali",
+    "districtID": "11",
+    "taID": "1106"
+  },
+  {
+    "villageClusterID": "111106018",
+    "villageClusterName": "Mbula",
+    "districtID": "11",
+    "taID": "1106"
+  },
+  {
+    "villageClusterID": "111106019",
+    "villageClusterName": "Chilobwe",
+    "districtID": "11",
+    "taID": "1106"
+  },
+  {
+    "villageClusterID": "111106020",
+    "villageClusterName": "Chiungo",
+    "districtID": "11",
+    "taID": "1106"
+  },
+  {
+    "villageClusterID": "111107001",
+    "villageClusterName": "Mphunza",
+    "districtID": "11",
+    "taID": "1107"
+  },
+  {
+    "villageClusterID": "111107002",
+    "villageClusterName": "Mbununu",
+    "districtID": "11",
+    "taID": "1107"
+  },
+  {
+    "villageClusterID": "111107003",
+    "villageClusterName": "Mthyoka",
+    "districtID": "11",
+    "taID": "1107"
+  },
+  {
+    "villageClusterID": "111107004",
+    "villageClusterName": "Mankhamba",
+    "districtID": "11",
+    "taID": "1107"
+  },
+  {
+    "villageClusterID": "111107005",
+    "villageClusterName": "Mwadenje",
+    "districtID": "11",
+    "taID": "1107"
+  },
+  {
+    "villageClusterID": "111107006",
+    "villageClusterName": "Nkhweza",
+    "districtID": "11",
+    "taID": "1107"
+  },
+  {
+    "villageClusterID": "111107007",
+    "villageClusterName": "Kawala",
+    "districtID": "11",
+    "taID": "1107"
+  },
+  {
+    "villageClusterID": "111107008",
+    "villageClusterName": "Namfumu",
+    "districtID": "11",
+    "taID": "1107"
+  },
+  {
+    "villageClusterID": "111107009",
+    "villageClusterName": "Ntuwayisa",
+    "districtID": "11",
+    "taID": "1107"
+  },
+  {
+    "villageClusterID": "111107010",
+    "villageClusterName": "Kabande",
+    "districtID": "11",
+    "taID": "1107"
+  },
+  {
+    "villageClusterID": "111107011",
+    "villageClusterName": "Chatanga",
+    "districtID": "11",
+    "taID": "1107"
+  },
+  {
+    "villageClusterID": "111107012",
+    "villageClusterName": "Luwera",
+    "districtID": "11",
+    "taID": "1107"
+  },
+  {
+    "villageClusterID": "111107013",
+    "villageClusterName": "Chimutu",
+    "districtID": "11",
+    "taID": "1107"
+  },
+  {
+    "villageClusterID": "111108001",
+    "villageClusterName": "Mkuyu",
+    "districtID": "11",
+    "taID": "1108"
+  },
+  {
+    "villageClusterID": "111108002",
+    "villageClusterName": "Kanang'a",
+    "districtID": "11",
+    "taID": "1108"
+  },
+  {
+    "villageClusterID": "111108003",
+    "villageClusterName": "Magwero",
+    "districtID": "11",
+    "taID": "1108"
+  },
+  {
+    "villageClusterID": "111108004",
+    "villageClusterName": "Uwuzi",
+    "districtID": "11",
+    "taID": "1108"
+  },
+  {
+    "villageClusterID": "111108005",
+    "villageClusterName": "Nadenga",
+    "districtID": "11",
+    "taID": "1108"
+  },
+  {
+    "villageClusterID": "111108006",
+    "villageClusterName": "Mtapo",
+    "districtID": "11",
+    "taID": "1108"
+  },
+  {
+    "villageClusterID": "111108007",
+    "villageClusterName": "Uzi",
+    "districtID": "11",
+    "taID": "1108"
+  },
+  {
+    "villageClusterID": "111108008",
+    "villageClusterName": "Mtedza",
+    "districtID": "11",
+    "taID": "1108"
+  },
+  {
+    "villageClusterID": "111108009",
+    "villageClusterName": "Chisomo",
+    "districtID": "11",
+    "taID": "1108"
+  },
+  {
+    "villageClusterID": "111108010",
+    "villageClusterName": "Dzamba",
+    "districtID": "11",
+    "taID": "1108"
+  },
+  {
+    "villageClusterID": "111108011",
+    "villageClusterName": "Mtedza 2",
+    "districtID": "11",
+    "taID": "1108"
+  },
+  {
+    "villageClusterID": "111108012",
+    "villageClusterName": "Bowa",
+    "districtID": "11",
+    "taID": "1108"
+  },
+  {
+    "villageClusterID": "111109001",
+    "villageClusterName": "Chiuzimbi",
+    "districtID": "11",
+    "taID": "1109"
+  },
+  {
+    "villageClusterID": "111109002",
+    "villageClusterName": "Maselero",
+    "districtID": "11",
+    "taID": "1109"
+  },
+  {
+    "villageClusterID": "111109003",
+    "villageClusterName": "Mikando",
+    "districtID": "11",
+    "taID": "1109"
+  },
+  {
+    "villageClusterID": "111109004",
+    "villageClusterName": "Kabambe",
+    "districtID": "11",
+    "taID": "1109"
+  },
+  {
+    "villageClusterID": "111109005",
+    "villageClusterName": "Mphonde",
+    "districtID": "11",
+    "taID": "1109"
+  },
+  {
+    "villageClusterID": "111109006",
+    "villageClusterName": "Nthumbwi",
+    "districtID": "11",
+    "taID": "1109"
+  },
+  {
+    "villageClusterID": "111109007",
+    "villageClusterName": "Chipembele",
+    "districtID": "11",
+    "taID": "1109"
+  },
+  {
+    "villageClusterID": "111109008",
+    "villageClusterName": "Kawungu",
+    "districtID": "11",
+    "taID": "1109"
+  },
+  {
+    "villageClusterID": "111109009",
+    "villageClusterName": "Mwaka",
+    "districtID": "11",
+    "taID": "1109"
+  },
+  {
+    "villageClusterID": "111109010",
+    "villageClusterName": "Matanda",
+    "districtID": "11",
+    "taID": "1109"
+  },
+  {
+    "villageClusterID": "111109011",
+    "villageClusterName": "Mseteza",
+    "districtID": "11",
+    "taID": "1109"
+  },
+  {
+    "villageClusterID": "111109012",
+    "villageClusterName": "Mapalo",
+    "districtID": "11",
+    "taID": "1109"
+  },
+  {
+    "villageClusterID": "111109013",
+    "villageClusterName": "Phondo",
+    "districtID": "11",
+    "taID": "1109"
+  },
+  {
+    "villageClusterID": "111109014",
+    "villageClusterName": "Chiwola",
+    "districtID": "11",
+    "taID": "1109"
+  },
+  {
+    "villageClusterID": "111109015",
+    "villageClusterName": "Michembo",
+    "districtID": "11",
+    "taID": "1109"
+  },
+  {
+    "villageClusterID": "111109016",
+    "villageClusterName": "Chokolo",
+    "districtID": "11",
+    "taID": "1109"
+  },
+  {
+    "villageClusterID": "111109017",
+    "villageClusterName": "Kachewere",
+    "districtID": "11",
+    "taID": "1109"
+  },
+  {
+    "villageClusterID": "111110001",
+    "villageClusterName": "Mtenthera",
+    "districtID": "11",
+    "taID": "1110"
+  },
+  {
+    "villageClusterID": "111110002",
+    "villageClusterName": "Misangu",
+    "districtID": "11",
+    "taID": "1110"
+  },
+  {
+    "villageClusterID": "111110003",
+    "villageClusterName": "Kanjedza",
+    "districtID": "11",
+    "taID": "1110"
+  },
+  {
+    "villageClusterID": "111110004",
+    "villageClusterName": "Kampandira",
+    "districtID": "11",
+    "taID": "1110"
+  },
+  {
+    "villageClusterID": "111110005",
+    "villageClusterName": "Mnthesa",
+    "districtID": "11",
+    "taID": "1110"
+  },
+  {
+    "villageClusterID": "111110006",
+    "villageClusterName": "Kanjamwana",
+    "districtID": "11",
+    "taID": "1110"
+  },
+  {
+    "villageClusterID": "111110007",
+    "villageClusterName": "Mtandamula",
+    "districtID": "11",
+    "taID": "1110"
+  },
+  {
+    "villageClusterID": "111110008",
+    "villageClusterName": "Bwese",
+    "districtID": "11",
+    "taID": "1110"
+  },
+  {
+    "villageClusterID": "111110009",
+    "villageClusterName": "Makanya",
+    "districtID": "11",
+    "taID": "1110"
+  },
+  {
+    "villageClusterID": "111110010",
+    "villageClusterName": "Sonkhwe",
+    "districtID": "11",
+    "taID": "1110"
+  },
+  {
+    "villageClusterID": "111110011",
+    "villageClusterName": "Kalumbu",
+    "districtID": "11",
+    "taID": "1110"
+  },
+  {
+    "villageClusterID": "111111001",
+    "villageClusterName": "Nakabondo",
+    "districtID": "11",
+    "taID": "1111"
+  },
+  {
+    "villageClusterID": "111111002",
+    "villageClusterName": "Msambachikho",
+    "districtID": "11",
+    "taID": "1111"
+  },
+  {
+    "villageClusterID": "111111003",
+    "villageClusterName": "Chipeni",
+    "districtID": "11",
+    "taID": "1111"
+  },
+  {
+    "villageClusterID": "111111004",
+    "villageClusterName": "Chimutu",
+    "districtID": "11",
+    "taID": "1111"
+  },
+  {
+    "villageClusterID": "111111005",
+    "villageClusterName": "Nguli",
+    "districtID": "11",
+    "taID": "1111"
+  },
+  {
+    "villageClusterID": "111112001",
+    "villageClusterName": "Chitsime",
+    "districtID": "11",
+    "taID": "1112"
+  },
+  {
+    "villageClusterID": "111112002",
+    "villageClusterName": "Nanjiri",
+    "districtID": "11",
+    "taID": "1112"
+  },
+  {
+    "villageClusterID": "111112003",
+    "villageClusterName": "Chimwamwa",
+    "districtID": "11",
+    "taID": "1112"
+  },
+  {
+    "villageClusterID": "111112004",
+    "villageClusterName": "Muwale",
+    "districtID": "11",
+    "taID": "1112"
+  },
+  {
+    "villageClusterID": "111113001",
+    "villageClusterName": "Sengere",
+    "districtID": "11",
+    "taID": "1113"
+  },
+  {
+    "villageClusterID": "111113002",
+    "villageClusterName": "Liwale",
+    "districtID": "11",
+    "taID": "1113"
+  },
+  {
+    "villageClusterID": "111113003",
+    "villageClusterName": "Kaseche",
+    "districtID": "11",
+    "taID": "1113"
+  },
+  {
+    "villageClusterID": "111113004",
+    "villageClusterName": "Machenga",
+    "districtID": "11",
+    "taID": "1113"
+  },
+  {
+    "villageClusterID": "111113005",
+    "villageClusterName": "Tidziwane",
+    "districtID": "11",
+    "taID": "1113"
+  },
+  {
+    "villageClusterID": "111113006",
+    "villageClusterName": "Namanyanga",
+    "districtID": "11",
+    "taID": "1113"
+  },
+  {
+    "villageClusterID": "111113007",
+    "villageClusterName": "Ngalu",
+    "districtID": "11",
+    "taID": "1113"
+  },
+  {
+    "villageClusterID": "111113008",
+    "villageClusterName": "Kapompho",
+    "districtID": "11",
+    "taID": "1113"
+  },
+  {
+    "villageClusterID": "111114001",
+    "villageClusterName": "Msumba",
+    "districtID": "11",
+    "taID": "1114"
+  },
+  {
+    "villageClusterID": "111114002",
+    "villageClusterName": "Materezi",
+    "districtID": "11",
+    "taID": "1114"
+  },
+  {
+    "villageClusterID": "111114003",
+    "villageClusterName": "Mlinde",
+    "districtID": "11",
+    "taID": "1114"
+  },
+  {
+    "villageClusterID": "111114004",
+    "villageClusterName": "Malimbe",
+    "districtID": "11",
+    "taID": "1114"
+  },
+  {
+    "villageClusterID": "111114005",
+    "villageClusterName": "Tikondane",
+    "districtID": "11",
+    "taID": "1114"
+  },
+  {
+    "villageClusterID": "111114006",
+    "villageClusterName": "Ngowe",
+    "districtID": "11",
+    "taID": "1114"
+  },
+  {
+    "villageClusterID": "111114007",
+    "villageClusterName": "Kanjerenjere",
+    "districtID": "11",
+    "taID": "1114"
+  },
+  {
+    "villageClusterID": "111114008",
+    "villageClusterName": "Kachere",
+    "districtID": "11",
+    "taID": "1114"
+  },
+  {
+    "villageClusterID": "111114009",
+    "villageClusterName": "Tikondane 2",
+    "districtID": "11",
+    "taID": "1114"
+  },
+  {
+    "villageClusterID": "111114010",
+    "villageClusterName": "Kanyelele",
+    "districtID": "11",
+    "taID": "1114"
+  },
+  {
+    "villageClusterID": "111114011",
+    "villageClusterName": "Kandere",
+    "districtID": "11",
+    "taID": "1114"
+  },
+  {
+    "villageClusterID": "111115001",
+    "villageClusterName": "Kambiya",
+    "districtID": "11",
+    "taID": "1115"
+  },
+  {
+    "villageClusterID": "111115002",
+    "villageClusterName": "Malayina",
+    "districtID": "11",
+    "taID": "1115"
+  },
+  {
+    "villageClusterID": "111115003",
+    "villageClusterName": "Kabila",
+    "districtID": "11",
+    "taID": "1115"
+  },
+  {
+    "villageClusterID": "111115004",
+    "villageClusterName": "Demera",
+    "districtID": "11",
+    "taID": "1115"
+  },
+  {
+    "villageClusterID": "111115005",
+    "villageClusterName": "Msolo",
+    "districtID": "11",
+    "taID": "1115"
+  },
+  {
+    "villageClusterID": "111115006",
+    "villageClusterName": "Mpenya",
+    "districtID": "11",
+    "taID": "1115"
+  },
+  {
+    "villageClusterID": "111115007",
+    "villageClusterName": "Malikha",
+    "districtID": "11",
+    "taID": "1115"
+  },
+  {
+    "villageClusterID": "111115008",
+    "villageClusterName": "Kawanga",
+    "districtID": "11",
+    "taID": "1115"
+  },
+  {
+    "villageClusterID": "111115009",
+    "villageClusterName": "Mikundi",
+    "districtID": "11",
+    "taID": "1115"
+  },
+  {
+    "villageClusterID": "111115010",
+    "villageClusterName": "Demera_2",
+    "districtID": "11",
+    "taID": "1115"
+  },
+  {
+    "villageClusterID": "111115011",
+    "villageClusterName": "Mawanga",
+    "districtID": "11",
+    "taID": "1115"
+  },
+  {
+    "villageClusterID": "111115012",
+    "villageClusterName": "Mango",
+    "districtID": "11",
+    "taID": "1115"
+  },
+  {
+    "villageClusterID": "111115013",
+    "villageClusterName": "Nthulu",
+    "districtID": "11",
+    "taID": "1115"
+  },
+  {
+    "villageClusterID": "111115014",
+    "villageClusterName": "Kambiya_2",
+    "districtID": "11",
+    "taID": "1115"
+  },
+  {
+    "villageClusterID": "111115015",
+    "villageClusterName": "Kadakatali",
+    "districtID": "11",
+    "taID": "1115"
+  },
+  {
+    "villageClusterID": "111115016",
+    "villageClusterName": "Miyale",
+    "districtID": "11",
+    "taID": "1115"
+  },
+  {
+    "villageClusterID": "111115017",
+    "villageClusterName": "Misolo",
+    "districtID": "11",
+    "taID": "1115"
+  },
+  {
+    "villageClusterID": "111115018",
+    "villageClusterName": "Kafinya",
+    "districtID": "11",
+    "taID": "1115"
+  },
+  {
+    "villageClusterID": "111115019",
+    "villageClusterName": "Tsapa",
+    "districtID": "11",
+    "taID": "1115"
+  },
+  {
+    "villageClusterID": "111115020",
+    "villageClusterName": "Msanama",
+    "districtID": "11",
+    "taID": "1115"
+  },
+  {
+    "villageClusterID": "111115021",
+    "villageClusterName": "Ukwe",
+    "districtID": "11",
+    "taID": "1115"
+  },
+  {
+    "villageClusterID": "111115022",
+    "villageClusterName": "Muima",
+    "districtID": "11",
+    "taID": "1115"
+  },
+  {
+    "villageClusterID": "111115023",
+    "villageClusterName": "Kachere",
+    "districtID": "11",
+    "taID": "1115"
+  },
+  {
+    "villageClusterID": "111116001",
+    "villageClusterName": "Mphangwe  2",
+    "districtID": "11",
+    "taID": "1116"
+  },
+  {
+    "villageClusterID": "111116002",
+    "villageClusterName": "Madzimayera",
+    "districtID": "11",
+    "taID": "1116"
+  },
+  {
+    "villageClusterID": "111116003",
+    "villageClusterName": "Naminyanga",
+    "districtID": "11",
+    "taID": "1116"
+  },
+  {
+    "villageClusterID": "111116004",
+    "villageClusterName": "Mphangwe 1",
+    "districtID": "11",
+    "taID": "1116"
+  },
+  {
+    "villageClusterID": "111116005",
+    "villageClusterName": "Tiyanjane",
+    "districtID": "11",
+    "taID": "1116"
+  },
+  {
+    "villageClusterID": "111116006",
+    "villageClusterName": "Phirilanjuzi",
+    "districtID": "11",
+    "taID": "1116"
+  },
+  {
+    "villageClusterID": "111116007",
+    "villageClusterName": "Chigumukile",
+    "districtID": "11",
+    "taID": "1116"
+  },
+  {
+    "villageClusterID": "111116008",
+    "villageClusterName": "Liwombwe",
+    "districtID": "11",
+    "taID": "1116"
+  },
+  {
+    "villageClusterID": "111116009",
+    "villageClusterName": "Chimawoneka",
+    "districtID": "11",
+    "taID": "1116"
+  },
+  {
+    "villageClusterID": "111116010",
+    "villageClusterName": "Ndaula",
+    "districtID": "11",
+    "taID": "1116"
+  },
+  {
+    "villageClusterID": "111118001",
+    "villageClusterName": "Kamphoni",
+    "districtID": "11",
+    "taID": "1118"
+  },
+  {
+    "villageClusterID": "111118002",
+    "villageClusterName": "Pingambuto",
+    "districtID": "11",
+    "taID": "1118"
+  },
+  {
+    "villageClusterID": "111118003",
+    "villageClusterName": "Kagwanupenya",
+    "districtID": "11",
+    "taID": "1118"
+  },
+  {
+    "villageClusterID": "111118004",
+    "villageClusterName": "Mdzombwe",
+    "districtID": "11",
+    "taID": "1118"
+  },
+  {
+    "villageClusterID": "111118005",
+    "villageClusterName": "Thawale",
+    "districtID": "11",
+    "taID": "1118"
+  },
+  {
+    "villageClusterID": "111118006",
+    "villageClusterName": "Makungubwi",
+    "districtID": "11",
+    "taID": "1118"
+  },
+  {
+    "villageClusterID": "111118007",
+    "villageClusterName": "Nadzulumi",
+    "districtID": "11",
+    "taID": "1118"
+  },
+  {
+    "villageClusterID": "111118008",
+    "villageClusterName": "Misewa",
+    "districtID": "11",
+    "taID": "1118"
+  },
+  {
+    "villageClusterID": "111118009",
+    "villageClusterName": "Mpingambuto2",
+    "districtID": "11",
+    "taID": "1118"
+  },
+  {
+    "villageClusterID": "111118010",
+    "villageClusterName": "Chankhadwe",
+    "districtID": "11",
+    "taID": "1118"
+  },
+  {
+    "villageClusterID": "111118011",
+    "villageClusterName": "Tchetsa",
+    "districtID": "11",
+    "taID": "1118"
+  },
+  {
+    "villageClusterID": "111125001",
+    "villageClusterName": "Mingongo",
+    "districtID": "11",
+    "taID": "1125"
+  },
+  {
+    "villageClusterID": "111125002",
+    "villageClusterName": "Mnthumbo",
+    "districtID": "11",
+    "taID": "1125"
+  },
+  {
+    "villageClusterID": "111125003",
+    "villageClusterName": "Mphonde",
+    "districtID": "11",
+    "taID": "1125"
+  },
+  {
+    "villageClusterID": "111125004",
+    "villageClusterName": "Chamtambe",
+    "districtID": "11",
+    "taID": "1125"
+  },
+  {
+    "villageClusterID": "111125005",
+    "villageClusterName": "Chikhutu",
+    "districtID": "11",
+    "taID": "1125"
+  },
+  {
+    "villageClusterID": "111125006",
+    "villageClusterName": "Ngwizi",
+    "districtID": "11",
+    "taID": "1125"
+  },
+  {
+    "villageClusterID": "111125007",
+    "villageClusterName": "Chonde",
+    "districtID": "11",
+    "taID": "1125"
+  },
+  {
+    "villageClusterID": "111127001",
+    "villageClusterName": "Mpapa",
+    "districtID": "11",
+    "taID": "1127"
+  },
+  {
+    "villageClusterID": "111127002",
+    "villageClusterName": "Kachigongono",
+    "districtID": "11",
+    "taID": "1127"
+  },
+  {
+    "villageClusterID": "111127003",
+    "villageClusterName": "Kataya Uta",
+    "districtID": "11",
+    "taID": "1127"
+  },
+  {
+    "villageClusterID": "111127004",
+    "villageClusterName": "Mtola",
+    "districtID": "11",
+    "taID": "1127"
+  },
+  {
+    "villageClusterID": "111127005",
+    "villageClusterName": "Kamtondo",
+    "districtID": "11",
+    "taID": "1127"
+  },
+  {
+    "villageClusterID": "111128001",
+    "villageClusterName": "Malimbe",
+    "districtID": "11",
+    "taID": "1128"
+  },
+  {
+    "villageClusterID": "111128002",
+    "villageClusterName": "Katsitsi",
+    "districtID": "11",
+    "taID": "1128"
+  },
+  {
+    "villageClusterID": "111128003",
+    "villageClusterName": "Chingondo",
+    "districtID": "11",
+    "taID": "1128"
+  },
+  {
+    "villageClusterID": "111128004",
+    "villageClusterName": "Chinkhwamba",
+    "districtID": "11",
+    "taID": "1128"
+  },
+  {
+    "villageClusterID": "111128005",
+    "villageClusterName": "Chisamba",
+    "districtID": "11",
+    "taID": "1128"
+  },
+  {
+    "villageClusterID": "111128006",
+    "villageClusterName": "Mbiriyawo",
+    "districtID": "11",
+    "taID": "1128"
+  },
+  {
+    "villageClusterID": "111128007",
+    "villageClusterName": "Kaphaso",
+    "districtID": "11",
+    "taID": "1128"
+  },
+  {
+    "villageClusterID": "111128008",
+    "villageClusterName": "Kanthuzi",
+    "districtID": "11",
+    "taID": "1128"
+  },
+  {
+    "villageClusterID": "111128009",
+    "villageClusterName": "Chiuza",
+    "districtID": "11",
+    "taID": "1128"
+  },
+  {
+    "villageClusterID": "111128010",
+    "villageClusterName": "Katate",
+    "districtID": "11",
+    "taID": "1128"
+  },
+  {
+    "villageClusterID": "111128011",
+    "villageClusterName": "Chankhandwe",
+    "districtID": "11",
+    "taID": "1128"
+  },
+  {
+    "villageClusterID": "111129001",
+    "villageClusterName": "Chiweta",
+    "districtID": "11",
+    "taID": "1129"
+  },
+  {
+    "villageClusterID": "111129002",
+    "villageClusterName": "Chimwala",
+    "districtID": "11",
+    "taID": "1129"
+  },
+  {
+    "villageClusterID": "111129003",
+    "villageClusterName": "Manyaza",
+    "districtID": "11",
+    "taID": "1129"
+  },
+  {
+    "villageClusterID": "111129004",
+    "villageClusterName": "Ng'ombe",
+    "districtID": "11",
+    "taID": "1129"
+  },
+  {
+    "villageClusterID": "111129005",
+    "villageClusterName": "Kazitenge",
+    "districtID": "11",
+    "taID": "1129"
+  },
+  {
+    "villageClusterID": "111129006",
+    "villageClusterName": "Tsekwere",
+    "districtID": "11",
+    "taID": "1129"
+  },
+  {
+    "villageClusterID": "111129007",
+    "villageClusterName": "Katope",
+    "districtID": "11",
+    "taID": "1129"
+  },
+  {
+    "villageClusterID": "191901001",
+    "villageClusterName": "Kanjuchi",
+    "districtID": "19",
+    "taID": "1901"
+  },
+  {
+    "villageClusterID": "191901002",
+    "villageClusterName": "Samikwa",
+    "districtID": "19",
+    "taID": "1901"
+  },
+  {
+    "villageClusterID": "191901003",
+    "villageClusterName": "Manole",
+    "districtID": "19",
+    "taID": "1901"
+  },
+  {
+    "villageClusterID": "191901004",
+    "villageClusterName": "Malika",
+    "districtID": "19",
+    "taID": "1901"
+  },
+  {
+    "villageClusterID": "191901005",
+    "villageClusterName": "Chakachadza",
+    "districtID": "19",
+    "taID": "1901"
+  },
+  {
+    "villageClusterID": "191901006",
+    "villageClusterName": "Dwale",
+    "districtID": "19",
+    "taID": "1901"
+  },
+  {
+    "villageClusterID": "191901007",
+    "villageClusterName": "Namaka",
+    "districtID": "19",
+    "taID": "1901"
+  },
+  {
+    "villageClusterID": "191901008",
+    "villageClusterName": "Chingozi",
+    "districtID": "19",
+    "taID": "1901"
+  },
+  {
+    "villageClusterID": "191901009",
+    "villageClusterName": "Mbalame",
+    "districtID": "19",
+    "taID": "1901"
+  },
+  {
+    "villageClusterID": "191901010",
+    "villageClusterName": "Mwanje",
+    "districtID": "19",
+    "taID": "1901"
+  },
+  {
+    "villageClusterID": "191901011",
+    "villageClusterName": "Nsaka",
+    "districtID": "19",
+    "taID": "1901"
+  },
+  {
+    "villageClusterID": "191901012",
+    "villageClusterName": "Chikanga",
+    "districtID": "19",
+    "taID": "1901"
+  },
+  {
+    "villageClusterID": "191902001",
+    "villageClusterName": "Gomani",
+    "districtID": "19",
+    "taID": "1902"
+  },
+  {
+    "villageClusterID": "191902002",
+    "villageClusterName": "Sumani",
+    "districtID": "19",
+    "taID": "1902"
+  },
+  {
+    "villageClusterID": "191902003",
+    "villageClusterName": "Mathanda",
+    "districtID": "19",
+    "taID": "1902"
+  },
+  {
+    "villageClusterID": "191902004",
+    "villageClusterName": "Nzati",
+    "districtID": "19",
+    "taID": "1902"
+  },
+  {
+    "villageClusterID": "191902005",
+    "villageClusterName": "Ngoleka",
+    "districtID": "19",
+    "taID": "1902"
+  },
+  {
+    "villageClusterID": "191902006",
+    "villageClusterName": "Kanje",
+    "districtID": "19",
+    "taID": "1902"
+  },
+  {
+    "villageClusterID": "191902007",
+    "villageClusterName": "Nkonga",
+    "districtID": "19",
+    "taID": "1902"
+  },
+  {
+    "villageClusterID": "191902008",
+    "villageClusterName": "Likoswe",
+    "districtID": "19",
+    "taID": "1902"
+  },
+  {
+    "villageClusterID": "191902009",
+    "villageClusterName": "Manguwo",
+    "districtID": "19",
+    "taID": "1902"
+  },
+  {
+    "villageClusterID": "191903001",
+    "villageClusterName": "Phwitiko",
+    "districtID": "19",
+    "taID": "1903"
+  },
+  {
+    "villageClusterID": "191903002",
+    "villageClusterName": "Mtendere",
+    "districtID": "19",
+    "taID": "1903"
+  },
+  {
+    "villageClusterID": "191903003",
+    "villageClusterName": "Masanjala",
+    "districtID": "19",
+    "taID": "1903"
+  },
+  {
+    "villageClusterID": "191903004",
+    "villageClusterName": "Ndanga",
+    "districtID": "19",
+    "taID": "1903"
+  },
+  {
+    "villageClusterID": "191903005",
+    "villageClusterName": "Nkupu",
+    "districtID": "19",
+    "taID": "1903"
+  },
+  {
+    "villageClusterID": "191903006",
+    "villageClusterName": "Chilanga",
+    "districtID": "19",
+    "taID": "1903"
+  },
+  {
+    "villageClusterID": "191903007",
+    "villageClusterName": "Kadewere",
+    "districtID": "19",
+    "taID": "1903"
+  },
+  {
+    "villageClusterID": "191903008",
+    "villageClusterName": "Kanyenda",
+    "districtID": "19",
+    "taID": "1903"
+  },
+  {
+    "villageClusterID": "191903009",
+    "villageClusterName": "Lubaini",
+    "districtID": "19",
+    "taID": "1903"
+  },
+  {
+    "villageClusterID": "191903010",
+    "villageClusterName": "Chanje",
+    "districtID": "19",
+    "taID": "1903"
+  },
+  {
+    "villageClusterID": "191903011",
+    "villageClusterName": "Chikoja",
+    "districtID": "19",
+    "taID": "1903"
+  },
+  {
+    "villageClusterID": "191903012",
+    "villageClusterName": "Chikwakwata",
+    "districtID": "19",
+    "taID": "1903"
+  },
+  {
+    "villageClusterID": "191904001",
+    "villageClusterName": "Chisitu",
+    "districtID": "19",
+    "taID": "1904"
+  },
+  {
+    "villageClusterID": "191904002",
+    "villageClusterName": "Namadidi",
+    "districtID": "19",
+    "taID": "1904"
+  },
+  {
+    "villageClusterID": "191904003",
+    "villageClusterName": "Namitembe",
+    "districtID": "19",
+    "taID": "1904"
+  },
+  {
+    "villageClusterID": "191904004",
+    "villageClusterName": "Thuchila",
+    "districtID": "19",
+    "taID": "1904"
+  },
+  {
+    "villageClusterID": "191905001",
+    "villageClusterName": "Luna",
+    "districtID": "19",
+    "taID": "1905"
+  },
+  {
+    "villageClusterID": "191905002",
+    "villageClusterName": "Talandira",
+    "districtID": "19",
+    "taID": "1905"
+  },
+  {
+    "villageClusterID": "191905003",
+    "villageClusterName": "Nyamapole",
+    "districtID": "19",
+    "taID": "1905"
+  },
+  {
+    "villageClusterID": "191905004",
+    "villageClusterName": "Takondwera",
+    "districtID": "19",
+    "taID": "1905"
+  },
+  {
+    "villageClusterID": "191905005",
+    "villageClusterName": "Chelewani",
+    "districtID": "19",
+    "taID": "1905"
+  },
+  {
+    "villageClusterID": "191905006",
+    "villageClusterName": "Chitera",
+    "districtID": "19",
+    "taID": "1905"
+  },
+  {
+    "villageClusterID": "191906001",
+    "villageClusterName": "Tawofo",
+    "districtID": "19",
+    "taID": "1906"
+  },
+  {
+    "villageClusterID": "191906002",
+    "villageClusterName": "Namisecheka",
+    "districtID": "19",
+    "taID": "1906"
+  },
+  {
+    "villageClusterID": "191906003",
+    "villageClusterName": "Mpotola",
+    "districtID": "19",
+    "taID": "1906"
+  },
+  {
+    "villageClusterID": "191906004",
+    "villageClusterName": "Ntchema",
+    "districtID": "19",
+    "taID": "1906"
+  },
+  {
+    "villageClusterID": "191907001",
+    "villageClusterName": "Takondwa",
+    "districtID": "19",
+    "taID": "1907"
+  },
+  {
+    "villageClusterID": "191907002",
+    "villageClusterName": "Namadzi",
+    "districtID": "19",
+    "taID": "1907"
+  },
+  {
+    "villageClusterID": "191907003",
+    "villageClusterName": "Mauwa",
+    "districtID": "19",
+    "taID": "1907"
+  },
+  {
+    "villageClusterID": "191907004",
+    "villageClusterName": "Chigwilizano",
+    "districtID": "19",
+    "taID": "1907"
+  },
+  {
+    "villageClusterID": "191908001",
+    "villageClusterName": "Mbombwe",
+    "districtID": "19",
+    "taID": "1908"
+  },
+  {
+    "villageClusterID": "191908002",
+    "villageClusterName": "PIM",
+    "districtID": "19",
+    "taID": "1908"
+  },
+  {
+    "villageClusterID": "191908003",
+    "villageClusterName": "Onga",
+    "districtID": "19",
+    "taID": "1908"
+  },
+  {
+    "villageClusterID": "191911001",
+    "villageClusterName": "Tawakali",
+    "districtID": "19",
+    "taID": "1911"
+  },
+  {
+    "villageClusterID": "191911002",
+    "villageClusterName": "Khota",
+    "districtID": "19",
+    "taID": "1911"
+  },
+  {
+    "villageClusterID": "191911003",
+    "villageClusterName": "Kuchombe",
+    "districtID": "19",
+    "taID": "1911"
+  },
+  {
+    "villageClusterID": "191911004",
+    "villageClusterName": "majikuta",
+    "districtID": "19",
+    "taID": "1911"
+  },
+  {
+    "villageClusterID": "191911005",
+    "villageClusterName": "Masuku",
+    "districtID": "19",
+    "taID": "1911"
+  },
+  {
+    "villageClusterID": "191911006",
+    "villageClusterName": "Chalamanda",
+    "districtID": "19",
+    "taID": "1911"
+  },
+  {
+    "villageClusterID": "191911007",
+    "villageClusterName": "Chiniko",
+    "districtID": "19",
+    "taID": "1911"
+  },
+  {
+    "villageClusterID": "191911008",
+    "villageClusterName": "Kachanga",
+    "districtID": "19",
+    "taID": "1911"
+  },
+  {
+    "villageClusterID": "191914001",
+    "villageClusterName": "Litchenza",
+    "districtID": "19",
+    "taID": "1914"
+  },
+  {
+    "villageClusterID": "191914002",
+    "villageClusterName": "Tchoda",
+    "districtID": "19",
+    "taID": "1914"
+  },
+  {
+    "villageClusterID": "191914003",
+    "villageClusterName": "Mapesi",
+    "districtID": "19",
+    "taID": "1914"
+  },
+  {
+    "villageClusterID": "191914004",
+    "villageClusterName": "Madalitso",
+    "districtID": "19",
+    "taID": "1914"
+  },
+  {
+    "villageClusterID": "202001001",
+    "villageClusterName": "Chipande",
+    "districtID": "20",
+    "taID": "2001"
+  },
+  {
+    "villageClusterID": "202001002",
+    "villageClusterName": "Chiweta",
+    "districtID": "20",
+    "taID": "2001"
+  },
+  {
+    "villageClusterID": "202001003",
+    "villageClusterName": "Malunga",
+    "districtID": "20",
+    "taID": "2001"
+  },
+  {
+    "villageClusterID": "202001004",
+    "villageClusterName": "Mtenje",
+    "districtID": "20",
+    "taID": "2001"
+  },
+  {
+    "villageClusterID": "202001005",
+    "villageClusterName": "Tanthwe",
+    "districtID": "20",
+    "taID": "2001"
+  },
+  {
+    "villageClusterID": "202002001",
+    "villageClusterName": "Chikalakasa I",
+    "districtID": "20",
+    "taID": "2002"
+  },
+  {
+    "villageClusterID": "202002002",
+    "villageClusterName": "Chisomo",
+    "districtID": "20",
+    "taID": "2002"
+  },
+  {
+    "villageClusterID": "202002003",
+    "villageClusterName": "Gelevulo",
+    "districtID": "20",
+    "taID": "2002"
+  },
+  {
+    "villageClusterID": "202002004",
+    "villageClusterName": "Kajombo",
+    "districtID": "20",
+    "taID": "2002"
+  },
+  {
+    "villageClusterID": "202002005",
+    "villageClusterName": "Katete",
+    "districtID": "20",
+    "taID": "2002"
+  },
+  {
+    "villageClusterID": "202002006",
+    "villageClusterName": "Mangomba",
+    "districtID": "20",
+    "taID": "2002"
+  },
+  {
+    "villageClusterID": "202002007",
+    "villageClusterName": "Mbawe",
+    "districtID": "20",
+    "taID": "2002"
+  },
+  {
+    "villageClusterID": "202002008",
+    "villageClusterName": "Muonekera",
+    "districtID": "20",
+    "taID": "2002"
+  },
+  {
+    "villageClusterID": "202002009",
+    "villageClusterName": "Nansengwe",
+    "districtID": "20",
+    "taID": "2002"
+  },
+  {
+    "villageClusterID": "202002010",
+    "villageClusterName": "Ntonda",
+    "districtID": "20",
+    "taID": "2002"
+  },
+  {
+    "villageClusterID": "202002011",
+    "villageClusterName": "Ntondoko",
+    "districtID": "20",
+    "taID": "2002"
+  },
+  {
+    "villageClusterID": "202002012",
+    "villageClusterName": "Sambachawa",
+    "districtID": "20",
+    "taID": "2002"
+  },
+  {
+    "villageClusterID": "202002013",
+    "villageClusterName": "Thangande",
+    "districtID": "20",
+    "taID": "2002"
+  },
+  {
+    "villageClusterID": "202002014",
+    "villageClusterName": "Tithandizane",
+    "districtID": "20",
+    "taID": "2002"
+  },
+  {
+    "villageClusterID": "202002015",
+    "villageClusterName": "Tiyamike",
+    "districtID": "20",
+    "taID": "2002"
+  },
+  {
+    "villageClusterID": "202003001",
+    "villageClusterName": "Katete II",
+    "districtID": "20",
+    "taID": "2003"
+  },
+  {
+    "villageClusterID": "202003002",
+    "villageClusterName": "Lunguzi",
+    "districtID": "20",
+    "taID": "2003"
+  },
+  {
+    "villageClusterID": "202003003",
+    "villageClusterName": "Mmango",
+    "districtID": "20",
+    "taID": "2003"
+  },
+  {
+    "villageClusterID": "202003004",
+    "villageClusterName": "Ntanangala",
+    "districtID": "20",
+    "taID": "2003"
+  },
+  {
+    "villageClusterID": "202003005",
+    "villageClusterName": "Somba",
+    "districtID": "20",
+    "taID": "2003"
+  },
+  {
+    "villageClusterID": "202004001",
+    "villageClusterName": "Bakasala",
+    "districtID": "20",
+    "taID": "2004"
+  },
+  {
+    "villageClusterID": "202004002",
+    "villageClusterName": "Chinamvuu",
+    "districtID": "20",
+    "taID": "2004"
+  },
+  {
+    "villageClusterID": "202004003",
+    "villageClusterName": "Chiziro",
+    "districtID": "20",
+    "taID": "2004"
+  },
+  {
+    "villageClusterID": "202004004",
+    "villageClusterName": "Masinde",
+    "districtID": "20",
+    "taID": "2004"
+  },
+  {
+    "villageClusterID": "202004005",
+    "villageClusterName": "Matope",
+    "districtID": "20",
+    "taID": "2004"
+  },
+  {
+    "villageClusterID": "202004006",
+    "villageClusterName": "Mdeka",
+    "districtID": "20",
+    "taID": "2004"
+  },
+  {
+    "villageClusterID": "202004007",
+    "villageClusterName": "Mlambe",
+    "districtID": "20",
+    "taID": "2004"
+  },
+  {
+    "villageClusterID": "202004008",
+    "villageClusterName": "Mvunguti",
+    "districtID": "20",
+    "taID": "2004"
+  },
+  {
+    "villageClusterID": "202004009",
+    "villageClusterName": "Namikasi",
+    "districtID": "20",
+    "taID": "2004"
+  },
+  {
+    "villageClusterID": "202004010",
+    "villageClusterName": "Nsambamwali",
+    "districtID": "20",
+    "taID": "2004"
+  },
+  {
+    "villageClusterID": "202005001",
+    "villageClusterName": "Gran Male",
+    "districtID": "20",
+    "taID": "2005"
+  },
+  {
+    "villageClusterID": "202005002",
+    "villageClusterName": "Imbwa",
+    "districtID": "20",
+    "taID": "2005"
+  },
+  {
+    "villageClusterID": "202005003",
+    "villageClusterName": "Kachere",
+    "districtID": "20",
+    "taID": "2005"
+  },
+  {
+    "villageClusterID": "202005004",
+    "villageClusterName": "Majola",
+    "districtID": "20",
+    "taID": "2005"
+  },
+  {
+    "villageClusterID": "202005005",
+    "villageClusterName": "Makanjira",
+    "districtID": "20",
+    "taID": "2005"
+  },
+  {
+    "villageClusterID": "202005006",
+    "villageClusterName": "Mlambe",
+    "districtID": "20",
+    "taID": "2005"
+  },
+  {
+    "villageClusterID": "202005007",
+    "villageClusterName": "Mpatseabwile",
+    "districtID": "20",
+    "taID": "2005"
+  },
+  {
+    "villageClusterID": "202005008",
+    "villageClusterName": "Mzigara",
+    "districtID": "20",
+    "taID": "2005"
+  },
+  {
+    "villageClusterID": "202005009",
+    "villageClusterName": "Namalowe",
+    "districtID": "20",
+    "taID": "2005"
+  },
+  {
+    "villageClusterID": "202005010",
+    "villageClusterName": "Nsuma",
+    "districtID": "20",
+    "taID": "2005"
+  },
+  {
+    "villageClusterID": "202006001",
+    "villageClusterName": "Mlombozi",
+    "districtID": "20",
+    "taID": "2006"
+  },
+  {
+    "villageClusterID": "202006002",
+    "villageClusterName": "Mudi",
+    "districtID": "20",
+    "taID": "2006"
+  },
+  {
+    "villageClusterID": "202006003",
+    "villageClusterName": "Namwanje",
+    "districtID": "20",
+    "taID": "2006"
+  },
+  {
+    "villageClusterID": "202007001",
+    "villageClusterName": "Adamu IV",
+    "districtID": "20",
+    "taID": "2007"
+  },
+  {
+    "villageClusterID": "202007002",
+    "villageClusterName": "Anderson",
+    "districtID": "20",
+    "taID": "2007"
+  },
+  {
+    "villageClusterID": "202007003",
+    "villageClusterName": "Chigumukire",
+    "districtID": "20",
+    "taID": "2007"
+  },
+  {
+    "villageClusterID": "202007004",
+    "villageClusterName": "Chilangoma",
+    "districtID": "20",
+    "taID": "2007"
+  },
+  {
+    "villageClusterID": "202007005",
+    "villageClusterName": "Chilinganiza",
+    "districtID": "20",
+    "taID": "2007"
+  },
+  {
+    "villageClusterID": "202007006",
+    "villageClusterName": "Kachanga",
+    "districtID": "20",
+    "taID": "2007"
+  },
+  {
+    "villageClusterID": "202007007",
+    "villageClusterName": "Kachere",
+    "districtID": "20",
+    "taID": "2007"
+  },
+  {
+    "villageClusterID": "202007008",
+    "villageClusterName": "Khalango",
+    "districtID": "20",
+    "taID": "2007"
+  },
+  {
+    "villageClusterID": "202007009",
+    "villageClusterName": "Khombwe",
+    "districtID": "20",
+    "taID": "2007"
+  },
+  {
+    "villageClusterID": "202007010",
+    "villageClusterName": "Madalitso",
+    "districtID": "20",
+    "taID": "2007"
+  },
+  {
+    "villageClusterID": "202007011",
+    "villageClusterName": "Milala",
+    "districtID": "20",
+    "taID": "2007"
+  },
+  {
+    "villageClusterID": "202007012",
+    "villageClusterName": "Mitsidi",
+    "districtID": "20",
+    "taID": "2007"
+  },
+  {
+    "villageClusterID": "202007013",
+    "villageClusterName": "Mlambe II",
+    "districtID": "20",
+    "taID": "2007"
+  },
+  {
+    "villageClusterID": "202007014",
+    "villageClusterName": "Nthawale",
+    "districtID": "20",
+    "taID": "2007"
+  },
+  {
+    "villageClusterID": "202007015",
+    "villageClusterName": "Sigerege I",
+    "districtID": "20",
+    "taID": "2007"
+  },
+  {
+    "villageClusterID": "202007016",
+    "villageClusterName": "Tayamika",
+    "districtID": "20",
+    "taID": "2007"
+  },
+  {
+    "villageClusterID": "202009001",
+    "villageClusterName": "Chigodi",
+    "districtID": "20",
+    "taID": "2009"
+  },
+  {
+    "villageClusterID": "202009002",
+    "villageClusterName": "Chimwankhunda",
+    "districtID": "20",
+    "taID": "2009"
+  },
+  {
+    "villageClusterID": "202009003",
+    "villageClusterName": "Chimwembe",
+    "districtID": "20",
+    "taID": "2009"
+  },
+  {
+    "villageClusterID": "202009004",
+    "villageClusterName": "Chingombe",
+    "districtID": "20",
+    "taID": "2009"
+  },
+  {
+    "villageClusterID": "202009005",
+    "villageClusterName": "Chipwepwete",
+    "districtID": "20",
+    "taID": "2009"
+  },
+  {
+    "villageClusterID": "202009006",
+    "villageClusterName": "Chiyambi",
+    "districtID": "20",
+    "taID": "2009"
+  },
+  {
+    "villageClusterID": "202009007",
+    "villageClusterName": "Kantimbanya",
+    "districtID": "20",
+    "taID": "2009"
+  },
+  {
+    "villageClusterID": "202009008",
+    "villageClusterName": "Mpapa",
+    "districtID": "20",
+    "taID": "2009"
+  },
+  {
+    "villageClusterID": "202009009",
+    "villageClusterName": "Namende",
+    "districtID": "20",
+    "taID": "2009"
+  },
+  {
+    "villageClusterID": "202009010",
+    "villageClusterName": "Nancholi",
+    "districtID": "20",
+    "taID": "2009"
+  },
+  {
+    "villageClusterID": "202009011",
+    "villageClusterName": "Nsakaniza",
+    "districtID": "20",
+    "taID": "2009"
+  },
+  {
+    "villageClusterID": "202009012",
+    "villageClusterName": "Ntonda II",
+    "districtID": "20",
+    "taID": "2009"
+  }
+]
