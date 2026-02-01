@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">comcip</string>
-    <string name="title_activity_main">comcip</string>
+    <string name="app_name">CIMISMOB</string>
+    <string name="title_activity_main">CIMISMOB</string>
     <string name="package_name">io.ionic.starter</string>
     <string name="custom_url_scheme">io.ionic.starter</string>
 </resources>

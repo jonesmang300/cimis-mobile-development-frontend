@@ -1,4 +1,14 @@
 import React, { useEffect, useState } from "react";
+import { Capacitor } from "@capacitor/core";
+import {
+  getRegions,
+  getDistricts,
+  getTAs,
+  getVillageClusters,
+  getBeneficiaries,
+  preloadBeneficiaries,
+} from "../../db/sqlite";
+
 import {
   IonPage,
   IonHeader,
@@ -36,6 +46,7 @@ import "./Validation.css";
 const BASE_URL = "https://api-development-t6ui.onrender.com/api";
 
 const PAGE_SIZE = 20;
+const isNative = Capacitor.getPlatform() !== "web";
 
 /* ===============================
    COMPONENT
@@ -59,6 +70,7 @@ const GroupAssignment: React.FC = () => {
   const [visibleMembers, setVisibleMembers] = useState<any[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [selectedMembers, setSelectedMembers] = useState<any[]>([]);
+  const [loadingBeneficiaries, setLoadingBeneficiaries] = useState(false);
 
   /* GROUP */
   const [groupName, setGroupName] = useState("");
@@ -102,10 +114,20 @@ const GroupAssignment: React.FC = () => {
      LOAD REGIONS
   =============================== */
   useEffect(() => {
-    setLoadingRegions(true);
-    safeFetch(`${BASE_URL}/regions`)
-      .then(setRegions)
-      .finally(() => setLoadingRegions(false));
+    const load = async () => {
+      setLoadingRegions(true);
+      try {
+        if (isNative) {
+          const res = await getRegions();
+          setRegions(res.values || []);
+        } else {
+          setRegions(await safeFetch(`${BASE_URL}/regions`));
+        }
+      } finally {
+        setLoadingRegions(false);
+      }
+    };
+    load();
   }, []);
 
   /* ===============================
@@ -117,16 +139,25 @@ const GroupAssignment: React.FC = () => {
     setDistrict("");
     setTa("");
     setVc("");
-    setDistricts([]);
-    setTas([]);
-    setVcs([]);
     setMembers([]);
     setVisibleMembers([]);
 
-    setLoadingDistricts(true);
-    safeFetch(`${BASE_URL}/districts?regionID=${region}`)
-      .then(setDistricts)
-      .finally(() => setLoadingDistricts(false));
+    const load = async () => {
+      setLoadingDistricts(true);
+      try {
+        if (isNative) {
+          const res = await getDistricts(region);
+          setDistricts(res.values || []);
+        } else {
+          setDistricts(
+            await safeFetch(`${BASE_URL}/districts?regionID=${region}`),
+          );
+        }
+      } finally {
+        setLoadingDistricts(false);
+      }
+    };
+    load();
   }, [region]);
 
   /* ===============================
@@ -137,15 +168,23 @@ const GroupAssignment: React.FC = () => {
 
     setTa("");
     setVc("");
-    setTas([]);
-    setVcs([]);
     setMembers([]);
     setVisibleMembers([]);
 
-    setLoadingTas(true);
-    safeFetch(`${BASE_URL}/tas?districtID=${district}`)
-      .then(setTas)
-      .finally(() => setLoadingTas(false));
+    const load = async () => {
+      setLoadingTas(true);
+      try {
+        if (isNative) {
+          const res = await getTAs(district);
+          setTas(res.values || []);
+        } else {
+          setTas(await safeFetch(`${BASE_URL}/tas?districtID=${district}`));
+        }
+      } finally {
+        setLoadingTas(false);
+      }
+    };
+    load();
   }, [district]);
 
   /* ===============================
@@ -155,14 +194,23 @@ const GroupAssignment: React.FC = () => {
     if (!ta) return;
 
     setVc("");
-    setVcs([]);
     setMembers([]);
     setVisibleMembers([]);
 
-    setLoadingVcs(true);
-    safeFetch(`${BASE_URL}/village-clusters?taID=${ta}`)
-      .then(setVcs)
-      .finally(() => setLoadingVcs(false));
+    const load = async () => {
+      setLoadingVcs(true);
+      try {
+        if (isNative) {
+          const res = await getVillageClusters(ta);
+          setVcs(res.values || []);
+        } else {
+          setVcs(await safeFetch(`${BASE_URL}/village-clusters?taID=${ta}`));
+        }
+      } finally {
+        setLoadingVcs(false);
+      }
+    };
+    load();
   }, [ta]);
 
   /* ===============================
@@ -171,12 +219,38 @@ const GroupAssignment: React.FC = () => {
   useEffect(() => {
     if (!vc) return;
 
-    safeFetch(`${BASE_URL}/beneficiaries/filter?villageClusterID=${vc}`)
-      .then((data) => {
+    const load = async () => {
+      setMembers([]);
+      setVisibleMembers([]);
+      setHasMore(false);
+      setLoadingBeneficiaries(true);
+
+      try {
+        let data: any[] = [];
+
+        if (isNative) {
+          // fetch latest from API and store into SQLite
+          await preloadBeneficiaries(vc);
+
+          // read from SQLite
+          const res = await getBeneficiaries(vc);
+          data = res.values || [];
+        } else {
+          // web: direct API only
+          data = await safeFetch(
+            `${BASE_URL}/beneficiaries/filter?villageClusterID=${vc}`,
+          );
+        }
+
         setMembers(data);
         setVisibleMembers(data.slice(0, PAGE_SIZE));
         setHasMore(data.length > PAGE_SIZE);
-      });
+      } finally {
+        setLoadingBeneficiaries(false);
+      }
+    };
+
+    load();
   }, [vc]);
 
   /* ===============================
@@ -402,12 +476,12 @@ const GroupAssignment: React.FC = () => {
             loadingRegions
               ? "Loading regions..."
               : loadingDistricts
-              ? "Loading districts..."
-              : loadingTas
-              ? "Loading traditional authorities..."
-              : loadingVcs
-              ? "Loading village clusters..."
-              : "Loading..."
+                ? "Loading districts..."
+                : loadingTas
+                  ? "Loading traditional authorities..."
+                  : loadingVcs
+                    ? "Loading village clusters..."
+                    : "Loading..."
           }
         />
 
@@ -462,7 +536,13 @@ const GroupAssignment: React.FC = () => {
               onScroll={loadMoreMembers}
             >
               <IonList>
-                {Array.isArray(visibleMembers) &&
+                {loadingBeneficiaries ? (
+                  <IonItem lines="none">
+                    <IonSpinner name="crescent" style={{ marginRight: 10 }} />
+                    <IonLabel>Loading beneficiaries...</IonLabel>
+                  </IonItem>
+                ) : (
+                  Array.isArray(visibleMembers) &&
                   visibleMembers.map((m) => {
                     const selected = selectedMembers.some(
                       (x) => x.sppCode === m.sppCode,
@@ -495,9 +575,10 @@ const GroupAssignment: React.FC = () => {
                         </IonButton>
                       </IonItem>
                     );
-                  })}
+                  })
+                )}
 
-                {hasMore && (
+                {!loadingBeneficiaries && hasMore && (
                   <IonItem lines="none">
                     <IonLabel color="medium">Waiting…</IonLabel>
                   </IonItem>
@@ -534,7 +615,9 @@ const GroupAssignment: React.FC = () => {
             <IonToolbar>
               <IonTitle>Edit Beneficiary</IonTitle>
               <IonButtons slot="end">
-                <IonButton onClick={() => setShowEditModal(false)}>Close</IonButton>
+                <IonButton onClick={() => setShowEditModal(false)}>
+                  Close
+                </IonButton>
               </IonButtons>
             </IonToolbar>
           </IonHeader>
