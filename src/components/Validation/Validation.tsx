@@ -43,7 +43,8 @@ import "./Validation.css";
 /* ===============================
    CONFIG
 ================================ */
-const BASE_URL = "https://api-development-j6pl.onrender.com/api";
+const BASE_URL = "https://api-development-t6ui.onrender.com/api";
+
 const PAGE_SIZE = 20;
 const isNative = Capacitor.getPlatform() !== "web";
 
