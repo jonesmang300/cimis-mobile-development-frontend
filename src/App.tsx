@@ -36,6 +36,7 @@ import CashBoxDetails from "./components/Wallet/CashBoxDetails";
 import Login from "./components/Login";
 import AddTransactionForm from "./components/Validation/AddTransactionsForm";
 import SupportPage from "./components/SupportPage";
+import { Capacitor } from "@capacitor/core";
 
 /* Icons */
 import {
@@ -47,33 +48,39 @@ import {
 } from "ionicons/icons";
 
 import { useAutoLogout } from "./hooks/useAutoLogout";
+import { useAuth } from "./components//context/AuthContext";
 
 /* SQLite init */
-import { initAndSeed, listSQLiteTables } from "./db/sqlite";
+import { initAndSeed } from "./db/sqlite";
 
 setupIonicReact();
 
 const App: React.FC = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [dbReady, setDbReady] = useState(false);
+  const isWeb = Capacitor.getPlatform() === "web";
+  const { isLoggedIn } = useAuth();
 
   useAutoLogout();
 
   useEffect(() => {
-    const setup = async () => {
+    (async () => {
       try {
-        console.log("Initializing SQLite...");
-        await initAndSeed();
-        await listSQLiteTables(); // 👈 CHECK TABLES HERE
-        console.log("✅ SQLite initialized successfully");
-      } catch (e) {
-        console.error("❌ SQLite init failed", e);
+        if (Capacitor.getPlatform() !== "web") {
+          await initAndSeed();
+        }
       } finally {
         setDbReady(true);
       }
-    };
-    setup();
+    })();
   }, []);
+
+  if (!dbReady) {
+    if (isWeb) {
+      return null; // 👈 absolutely nothing on web
+    }
+
+    return <IonLoading isOpen message="Preparing local database..." />;
+  }
 
   return (
     <IonApp>
@@ -127,11 +134,9 @@ const App: React.FC = () => {
             </IonTabBar>
           </IonTabs>
         ) : (
-          <IonRouterOutlet>
-            <Route exact path="/login">
-              <Login onLogin={() => setIsLoggedIn(true)} />
-            </Route>
-            <Redirect exact from="/" to="/login" />
+          <IonRouterOutlet key="guest">
+            <Route exact path="/login" component={Login} />
+            <Redirect to="/login" />
           </IonRouterOutlet>
         )}
       </IonReactRouter>

@@ -14,21 +14,24 @@ import {
   IonRow,
   IonCol,
 } from "@ionic/react";
-import {
-  shieldOutline,
-  logOutOutline,
-  helpOutline,
-} from "ionicons/icons";
+import { shieldOutline, logOutOutline, helpOutline } from "ionicons/icons";
 import { useTranslation } from "react-i18next";
 import "./Settings.css";
+import { useHistory } from "react-router-dom";
+import { useState } from "react";
+import { useIonRouter } from "@ionic/react";
+import { useAuth } from "./context/AuthContext";
 
 const SettingsPage: React.FC = () => {
   const { t } = useTranslation();
+  const history = useHistory();
+  const ionRouter = useIonRouter();
+  const { logout } = useAuth();
 
   const handleLogout = () => {
-    setTimeout(() => {
-      window.location.href = "/login";
-    }, 500);
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    logout();
   };
 
   return (
@@ -46,7 +49,10 @@ const SettingsPage: React.FC = () => {
         <IonGrid>
           <IonRow>
             <IonCol>
-              <IonItem lines="none" className="ion-padding-vertical custom-item">
+              <IonItem
+                lines="none"
+                className="ion-padding-vertical custom-item"
+              >
                 <IonLabel>
                   <h3>{t("userName")}</h3>
                   <p>{t("phoneNumber")}</p>
@@ -64,7 +70,11 @@ const SettingsPage: React.FC = () => {
         {/* Group Settings Section */}
         <IonList>
           <IonItem button routerLink="/group-roles">
-            <IonIcon icon={shieldOutline} slot="start" className="custom-icon" />
+            <IonIcon
+              icon={shieldOutline}
+              slot="start"
+              className="custom-icon"
+            />
             <IonLabel>{t("groupRoles")}</IonLabel>
           </IonItem>
 

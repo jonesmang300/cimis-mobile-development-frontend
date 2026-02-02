@@ -1,21 +1,34 @@
-import React from "react";
-import {
-  IonContent,
-  IonPage,
-  IonButton,
-  IonImg,
-} from "@ionic/react";
+import React, { useState } from "react";
+import { IonContent, IonPage, IonButton, IonImg } from "@ionic/react";
 import { Formik, Form } from "formik";
 import { TextInputField } from "./form";
 import * as Yup from "yup";
 import { useHistory } from "react-router-dom";
-import { useNotificationMessage } from "./context/notificationMessageContext";
+import { useAuth } from "./context/AuthContext";
+
 import { NotificationMessage } from "./notificationMessage";
 import "./Login.css";
 
+type MessageType = "success" | "error" | "";
+
 const Login: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
   const history = useHistory();
-  const { messageState, setMessage } = useNotificationMessage();
+  const { login } = useAuth();
+
+  /* ===============================
+     MESSAGE STATE
+  =============================== */
+  const [messageState, setMessageState] = useState<{
+    text: string;
+    type: MessageType;
+  }>({
+    text: "",
+    type: "",
+  });
+
+  const setMessage = (text: string, type: MessageType) => {
+    setMessageState({ text, type });
+  };
 
   /* ===============================
      VALIDATION SCHEMA
@@ -31,16 +44,14 @@ const Login: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
   const handleLoginSubmit = async (formData: any) => {
     const { username, pin } = formData;
 
-    /* ===============================
-       STATIC ADMIN LOGIN
-    =============================== */
     if (username === "admin" && pin === "admin") {
-      setMessage("Admin logged in successfully!", "success");
+      // setMessage("Login successful", "success");
 
-      setTimeout(() => setMessage("", "success"), 2000);
-
-      onLogin();
-      history.push("/home");
+      setTimeout(() => {
+        setMessage("", "");
+        login();
+        history.replace("/home");
+      }, 1000);
     } else {
       setMessage("Invalid username or password.", "error");
     }

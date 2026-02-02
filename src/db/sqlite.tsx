@@ -17,22 +17,16 @@ const API = "https://api-development-j6pl.onrender.com/api";
    INIT SQLITE
 ========================= */
 export const initSQLite = async () => {
-  console.log("📦 Initializing SQLite...");
-
   if (Capacitor.getPlatform() === "web") {
     await sqlite.initWebStore();
   }
-
-  console.log("✅ SQLite ready");
 };
 
 /* =========================
    INTERNAL HELPER
 ========================= */
 const ensureDB = (): SQLiteDBConnection => {
-  if (!db) {
-    throw new Error("❌ Database not initialized. Call initDB() first.");
-  }
+  if (!db) throw new Error("Database not initialized");
   return db;
 };
 
@@ -43,7 +37,7 @@ export const initDB = async (): Promise<SQLiteDBConnection> => {
   if (db) return db;
 
   if (Capacitor.getPlatform() === "web") {
-    throw new Error("SQLite DB is disabled on web");
+    throw new Error("SQLite disabled on web");
   }
 
   await initSQLite();
@@ -59,6 +53,11 @@ export const initDB = async (): Promise<SQLiteDBConnection> => {
   await db.open();
 
   await db.execute(`
+    CREATE TABLE IF NOT EXISTS app_meta (
+      key TEXT PRIMARY KEY,
+      value TEXT
+    );
+
     CREATE TABLE IF NOT EXISTS regions (
       regionID TEXT PRIMARY KEY,
       name TEXT
@@ -102,71 +101,101 @@ export const initDB = async (): Promise<SQLiteDBConnection> => {
     );
   `);
 
-  console.log("✅ SQLite tables ensured");
   return db;
 };
 
 /* =========================
-   INIT + SEED
+   SEED CONTROL
+========================= */
+const isDbSeeded = async (): Promise<boolean> => {
+  const res = await ensureDB().query(
+    `SELECT value FROM app_meta WHERE key='seeded'`,
+  );
+  return (res.values?.length ?? 0) > 0;
+};
+
+const markDbSeeded = async () => {
+  await ensureDB().run(
+    `INSERT OR REPLACE INTO app_meta (key,value) VALUES ('seeded','1')`,
+  );
+};
+
+/* =========================
+   INIT + SEED (SAFE)
 ========================= */
 export const initAndSeed = async () => {
+  if (Capacitor.getPlatform() === "web") {
+    console.log("🌐 Web detected — skipping SQLite");
+    return;
+  }
+
   await initDB();
+
+  if (await isDbSeeded()) {
+    console.log("📦 SQLite already seeded");
+    return;
+  }
+
+  console.log("🌱 First install — seeding data");
+
   await loadRegionsFromJson();
   await loadDistrictsFromJson();
   await loadTAsFromJson();
   await loadVillageClustersFromJson();
+
+  await markDbSeeded();
 };
 
 /* =========================
    LOAD MASTER DATA
 ========================= */
 export const loadRegionsFromJson = async () => {
-  const database = ensureDB();
   const data = await (await fetch("/regions.json")).json();
+  const db = ensureDB();
 
   for (const r of data) {
-    await database.run(
-      `INSERT OR REPLACE INTO regions (regionID, name) VALUES (?, ?)`,
-      [String(r.regionID), r.name],
-    );
+    await db.run(`INSERT OR IGNORE INTO regions (regionID,name) VALUES (?,?)`, [
+      String(r.regionID),
+      r.name,
+    ]);
   }
 };
 
 export const loadDistrictsFromJson = async () => {
-  const database = ensureDB();
   const data = await (await fetch("/districts.json")).json();
+  const db = ensureDB();
 
   for (const d of data) {
-    await database.run(
-      `INSERT OR REPLACE INTO districts (DistrictID, DistrictName, regionID)
-       VALUES (?, ?, ?)`,
+    await db.run(
+      `INSERT OR IGNORE INTO districts (DistrictID,DistrictName,regionID)
+       VALUES (?,?,?)`,
       [String(d.DistrictID), d.DistrictName, String(d.regionID)],
     );
   }
 };
 
 export const loadTAsFromJson = async () => {
-  const database = ensureDB();
   const data = await (await fetch("/tas.json")).json();
+  const db = ensureDB();
 
   for (const t of data) {
-    await database.run(
-      `INSERT OR REPLACE INTO tas (TAID, TAName, DistrictID)
-       VALUES (?, ?, ?)`,
+    await db.run(
+      `INSERT OR IGNORE INTO tas (TAID,TAName,DistrictID)
+       VALUES (?,?,?)`,
       [String(t.TAID), t.TAName, String(t.DistrictID)],
     );
   }
 };
 
 export const loadVillageClustersFromJson = async () => {
-  const database = ensureDB();
   const data = await (await fetch("/village_clusters.json")).json();
+  const db = ensureDB();
 
   for (const v of data) {
-    await database.run(
-      `INSERT OR REPLACE INTO village_clusters
-       (villageClusterID, villageClusterName, taID, districtID)
-       VALUES (?, ?, ?, ?)`,
+    await db.run(
+      `INSERT OR IGNORE INTO village_clusters
+       (villageClusterID,villageClusterName,taID,districtID)
+       VALUES (?,?,?,?)`,
       [
         String(v.villageClusterID),
         v.villageClusterName,
@@ -178,42 +207,50 @@ export const loadVillageClustersFromJson = async () => {
 };
 
 /* =========================
-   BENEFICIARIES SYNC
+   BENEFICIARIES (SAFE LOAD)
 ========================= */
 export const preloadBeneficiaries = async (villageClusterID: string) => {
-  const database = ensureDB();
+  const db = ensureDB();
 
-  const url = `${API}/beneficiaries/filter?villageClusterID=${villageClusterID}`;
-  const data = await (await fetch(url)).json();
+  const existing = await db.query(
+    `SELECT 1 FROM beneficiaries WHERE villageClusterID=? LIMIT 1`,
+    [villageClusterID],
+  );
+
+  if (existing.values?.length) return;
+
+  const data = await (
+    await fetch(
+      `${API}/beneficiaries/filter?villageClusterID=${villageClusterID}`,
+    )
+  ).json();
 
   const sql = `
-    INSERT OR REPLACE INTO beneficiaries (
-      sppCode, hh_head_name, sex, dob, nat_id, hh_code,
-      regionID, districtID, taID, villageClusterID,
-      groupname, selected, created_at, updated_at, dirty
+    INSERT OR IGNORE INTO beneficiaries (
+      sppCode,hh_head_name,sex,dob,nat_id,hh_code,
+      regionID,districtID,taID,villageClusterID,
+      groupname,selected,created_at,updated_at,dirty
     ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,0)
   `;
 
   for (const b of data) {
-    await database.run(sql, [
+    await db.run(sql, [
       b.sppCode,
       b.hh_head_name,
       b.sex,
       b.dob,
       b.nat_id,
       b.hh_code,
-      String(b.regionID),
-      String(b.districtID),
-      String(b.taID),
-      String(b.villageClusterID),
+      b.regionID,
+      b.districtID,
+      b.taID,
+      b.villageClusterID,
       b.groupname,
       b.selected,
       b.created_at,
       b.updated_at,
     ]);
   }
-
-  localStorage.setItem("lastSync", new Date().toISOString());
 };
 
 /* =========================
@@ -244,16 +281,3 @@ export const getBeneficiaries = async (villageClusterID: string) =>
     `SELECT * FROM beneficiaries WHERE villageClusterID=? ORDER BY hh_head_name`,
     [villageClusterID],
   );
-
-/* =========================
-   DEBUG
-========================= */
-export const listSQLiteTables = async () => {
-  const database = await initDB();
-
-  const res = await database.query(
-    `SELECT name FROM sqlite_master WHERE type='table' ORDER BY name`,
-  );
-
-  console.log("📦 SQLite tables:", res.values);
-};

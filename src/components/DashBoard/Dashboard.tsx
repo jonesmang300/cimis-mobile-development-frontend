@@ -33,7 +33,6 @@ import {
 } from "ionicons/icons";
 
 import "./Dashboard.css";
-import { useClusters } from "../context/ClustersContext";
 import { getData } from "../../services/apiServices";
 import { useHistory } from "react-router";
 
@@ -46,80 +45,11 @@ const Dashboard: React.FC = () => {
 
   const history = useHistory();
 
-  const { selectedCluster } = useClusters();
-
   // Calculate total savings for the cluster
-  const calculateClusterSavings = useCallback(() => {
-    if (!selectedCluster?.ClusterID || !savings.length) {
-      setTotalSavings(0);
-      return;
-    }
-
-    const clusterCode = String(selectedCluster.ClusterID).trim();
-
-    const clusterSavings = savings.filter(
-      (s: any) =>
-        String(s.clusterCode || s.ClusterID || "").trim() === clusterCode
-    );
-
-    const total = clusterSavings.reduce(
-      (sum, s) => sum + (parseFloat(s.Amount) || 0),
-      0
-    );
-
-    setTotalSavings(total);
-  }, [selectedCluster, savings]);
 
   // Fetch savings and groups
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!selectedCluster?.ClusterID) return;
-
-      try {
-        setLoading(true);
-        setError(null);
-
-        const encodedClusterID = encodeURIComponent(selectedCluster.ClusterID);
-
-        const [savingsResult, groupsResult] = await Promise.all([
-          getData("/api/savings"),
-          getData(`/api/groups-cluster/${encodedClusterID}`),
-        ]);
-
-        setSavings(
-          Array.isArray(savingsResult)
-            ? savingsResult
-            : savingsResult.data || []
-        );
-
-        setGroups(
-          Array.isArray(groupsResult)
-            ? groupsResult
-            : groupsResult.data || []
-        );
-      } catch (err) {
-        console.error("Error fetching data:", err);
-        setError("Failed to load data");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [selectedCluster]);
-
-  // Recalculate total savings whenever data changes
-  useEffect(() => {
-    calculateClusterSavings();
-  }, [savings, selectedCluster, calculateClusterSavings]);
-
-  const totalGroups = groups.length;
-  const totalTrainings = 5; // static value, change as needed
 
   // ✅ handle click to navigate
-  const handleTrainingClick = () => {
-    history.push("/trainings");
-  };
 
   return (
     <IonSplitPane contentId="main">
@@ -172,8 +102,7 @@ const Dashboard: React.FC = () => {
               {/* Cluster Name */}
               <IonItem lines="none">
                 <IonLabel>
-                  <strong>Cluster:</strong>{" "}
-                  {selectedCluster?.ClusterName || "N/A"}
+                  <strong>Cluster:</strong>
                 </IonLabel>
               </IonItem>
 
@@ -188,7 +117,7 @@ const Dashboard: React.FC = () => {
                         className="card-icon"
                       />
                       <IonCardSubtitle>Total Groups</IonCardSubtitle>
-                      <IonCardTitle>{totalGroups}</IonCardTitle>
+                      <IonCardTitle></IonCardTitle>
                     </IonCardHeader>
                   </IonCard>
                 </IonCol>
