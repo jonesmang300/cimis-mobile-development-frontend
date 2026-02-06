@@ -36,6 +36,9 @@ import CashBoxDetails from "./components/Wallet/CashBoxDetails";
 import Login from "./components/Login";
 import AddTransactionForm from "./components/Validation/AddTransactionsForm";
 import SupportPage from "./components/SupportPage";
+import VerifiedMembers from "./components/Validation/VerifiedMembers";
+import ViewVerifiedMember from "./components/Validation/ViewVerifiedMember";
+
 import { Capacitor } from "@capacitor/core";
 
 /* Icons */
@@ -48,7 +51,7 @@ import {
 } from "ionicons/icons";
 
 import { useAutoLogout } from "./hooks/useAutoLogout";
-import { useAuth } from "./components//context/AuthContext";
+import { useAuth } from "./components/context/AuthContext";
 
 /* SQLite init */
 import { initAndSeed } from "./db/sqlite";
@@ -57,10 +60,14 @@ setupIonicReact();
 
 const App: React.FC = () => {
   const [dbReady, setDbReady] = useState(false);
-  const isWeb = Capacitor.getPlatform() === "web";
-  const { isLoggedIn } = useAuth();
 
-  useAutoLogout();
+  const isWeb = Capacitor.getPlatform() === "web";
+
+  // ✅ get both isLoggedIn and logout
+  const { isLoggedIn, logout } = useAuth();
+
+  // ✅ IMPORTANT: only runs when logged in
+  useAutoLogout(isLoggedIn, logout);
 
   useEffect(() => {
     (async () => {
@@ -99,8 +106,19 @@ const App: React.FC = () => {
                 path="/add-transaction"
                 component={AddTransactionForm}
               />
-              <Route path="/cashbox-details" component={CashBoxDetails} />
-              <Route path="/support" component={SupportPage} exact />
+              <Route exact path="/cashbox-details" component={CashBoxDetails} />
+              <Route exact path="/support" component={SupportPage} />
+              <Route
+                exact
+                path="/verified_members"
+                component={VerifiedMembers}
+              />
+              <Route
+                exact
+                path="/view_verified_member/:sppCode"
+                component={ViewVerifiedMember}
+              />
+
               <Route exact path="/">
                 <Redirect to="/home" />
               </Route>
