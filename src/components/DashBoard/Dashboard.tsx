@@ -23,6 +23,7 @@ import {
   IonSplitPane,
   IonSpinner,
   IonButton,
+  IonBadge,
 } from "@ionic/react";
 import {
   cashOutline,
@@ -42,14 +43,34 @@ const Dashboard: React.FC = () => {
   const [totalSavings, setTotalSavings] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const BASE_URL = "https://api-development-j6pl.onrender.com/api";
 
   const history = useHistory();
+  const [totalMembers, setTotalMembers] = useState<number>(0);
+  const [loadingTotal, setLoadingTotal] = useState(false);
 
   // Calculate total savings for the cluster
 
   // Fetch savings and groups
 
   // ✅ handle click to navigate
+
+  useEffect(() => {
+    const loadTotalMembers = async () => {
+      try {
+        setLoadingTotal(true);
+        const res = await fetch(`${BASE_URL}/beneficiaries/count/selected`);
+        const data = await res.json();
+        setTotalMembers(Number(data.total) || 0);
+      } catch (err) {
+        console.error("Failed to load total members", err);
+      } finally {
+        setLoadingTotal(false);
+      }
+    };
+
+    loadTotalMembers();
+  }, []);
 
   return (
     <IonSplitPane contentId="main">
@@ -99,25 +120,35 @@ const Dashboard: React.FC = () => {
             </IonCard>
           ) : (
             <IonGrid>
-              {/* Cluster Name */}
-              <IonItem lines="none">
-                <IonLabel>
-                  <strong>Cluster:</strong>
-                </IonLabel>
-              </IonItem>
-
               <IonRow>
                 {/* Total Groups Card */}
                 <IonCol size="12" sizeMd="6">
-                  <IonCard className="green-card" routerLink="/groups">
+                  <IonCard
+                    className="green-card"
+                    routerLink="/verified_members"
+                    button
+                  >
                     <IonCardHeader>
                       <IonIcon
                         icon={peopleOutline}
                         size="large"
                         className="card-icon"
+                        style={{ color: "#fff" }}
                       />
-                      <IonCardSubtitle>Total Groups</IonCardSubtitle>
-                      <IonCardTitle></IonCardTitle>
+
+                      <IonCardSubtitle style={{ color: "#fff" }}>
+                        Verified Members
+                      </IonCardSubtitle>
+
+                      <IonCardTitle>
+                        {loadingTotal ? (
+                          <IonSpinner name="crescent" />
+                        ) : (
+                          <IonBadge color="success">
+                            {totalMembers.toLocaleString()}
+                          </IonBadge>
+                        )}
+                      </IonCardTitle>
                     </IonCardHeader>
                   </IonCard>
                 </IonCol>

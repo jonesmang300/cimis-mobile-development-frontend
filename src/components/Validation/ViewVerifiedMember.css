@@ -1,0 +1,59 @@
+/* ===============================
+   View Verified Member Page
+================================ */
+
+.view-verified-member-page {
+  --padding-top: 12px;
+
+  /* IMPORTANT: prevents bottom cut-off */
+  --padding-bottom: calc(40px + var(--ion-safe-area-bottom));
+}
+
+/* Cards */
+.view-verified-member-page ion-card {
+  border-radius: 12px;
+  box-shadow: none;
+  border: 1px solid var(--ion-color-light);
+}
+
+/* Card titles */
+.view-verified-member-page ion-card-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Items */
+.view-verified-member-page ion-item {
+  --inner-padding-end: 8px;
+  --padding-start: 10px;
+  --min-height: 56px;
+}
+
+/* Text formatting */
+.view-verified-member-page ion-item ion-label strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.view-verified-member-page ion-item ion-label p {
+  font-size: 13px;
+  margin: 4px 0 0 0;
+  opacity: 0.85;
+}
+
+/* Center spinner */
+.view-verified-spinner {
+  text-align: center;
+  padding: 20px;
+}
+
+/* Badge style */
+.view-verified-badge {
+  display: inline-block;
+  margin-top: 10px;
+}
+
+/* Bottom spacer */
+.bottom-spacer {
+  height: calc(120px + var(--ion-safe-area-bottom));
+}
