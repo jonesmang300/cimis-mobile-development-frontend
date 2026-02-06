@@ -1,13 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { Capacitor } from "@capacitor/core";
-import {
-  getRegions,
-  getDistricts,
-  getTAs,
-  getVillageClusters,
-  getBeneficiaries,
-  preloadBeneficiaries,
-} from "../../db/sqlite";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useIonRouter } from "@ionic/react";
+import { arrowBack } from "ionicons/icons";
 
 import {
   IonPage,
@@ -35,18 +28,58 @@ import {
   IonCardContent,
   IonSpinner,
   IonLoading,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent,
 } from "@ionic/react";
-import { arrowBack } from "ionicons/icons";
-import { useIonRouter } from "@ionic/react";
+
+import { useLocationFilters } from "../../hooks/useLocationFilters";
+
+import {
+  fetchBeneficiariesByVC,
+  updateBeneficiary,
+  bulkSyncGroup,
+  Beneficiary,
+} from "../../services/beneficiaries.service";
+
 import "./Validation.css";
 
 /* ===============================
    CONFIG
 ================================ */
-const BASE_URL = "https://api-development-t6ui.onrender.com/api";
-
 const PAGE_SIZE = 20;
-const isNative = Capacitor.getPlatform() !== "web";
+
+const MAX_GROUP_NAME = 45;
+const MAX_NAT_ID = 8;
+const MAX_HH_SIZE = 100;
+const MIN_AGE_YEARS = 18;
+
+/* ===============================
+   HELPERS
+================================ */
+const getMaxDobISO = () => {
+  const today = new Date();
+  const max = new Date(
+    today.getFullYear() - MIN_AGE_YEARS,
+    today.getMonth(),
+    today.getDate(),
+  );
+  return max.toISOString();
+};
+
+const cleanNatId = (val: any) => {
+  const v = String(val ?? "").trim();
+  return v === "" ? null : v;
+};
+
+const cleanHHSize = (val: any) => {
+  const v = String(val ?? "").trim();
+  if (v === "") return null;
+
+  const n = Number(v);
+  if (Number.isNaN(n)) return null;
+
+  return n;
+};
 
 /* ===============================
    COMPONENT
@@ -54,197 +87,162 @@ const isNative = Capacitor.getPlatform() !== "web";
 const GroupAssignment: React.FC = () => {
   const router = useIonRouter();
 
-  /* FILTER STATE */
-  const [regions, setRegions] = useState<any[]>([]);
-  const [districts, setDistricts] = useState<any[]>([]);
-  const [tas, setTas] = useState<any[]>([]);
-  const [vcs, setVcs] = useState<any[]>([]);
+  /* ===============================
+     FILTERS
+  ================================ */
+  const {
+    regions,
+    districts,
+    tas,
+    vcs,
 
-  const [region, setRegion] = useState("");
-  const [district, setDistrict] = useState("");
-  const [ta, setTa] = useState("");
-  const [vc, setVc] = useState("");
+    region,
+    district,
+    ta,
+    vc,
 
-  /* BENEFICIARIES */
-  const [members, setMembers] = useState<any[]>([]);
-  const [visibleMembers, setVisibleMembers] = useState<any[]>([]);
-  const [hasMore, setHasMore] = useState(true);
-  const [selectedMembers, setSelectedMembers] = useState<any[]>([]);
-  const [loadingBeneficiaries, setLoadingBeneficiaries] = useState(false);
+    setRegion,
+    setDistrict,
+    setTa,
+    setVc,
 
-  /* GROUP */
-  const [groupName, setGroupName] = useState("");
-
-  /* EDIT MODAL */
-  const [editingMember, setEditingMember] = useState<any | null>(null);
-  const [showEditModal, setShowEditModal] = useState(false);
-
-  /* UI */
-  const [toastMessage, setToastMessage] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false); // spinner state
-
-  const [loadingRegions, setLoadingRegions] = useState(false);
-  const [loadingDistricts, setLoadingDistricts] = useState(false);
-  const [loadingTas, setLoadingTas] = useState(false);
-  const [loadingVcs, setLoadingVcs] = useState(false);
-
-  const isFilterLoading =
-    loadingRegions || loadingDistricts || loadingTas || loadingVcs;
+    loadingDistricts,
+    loadingTas,
+    loadingVcs,
+    isFilterLoading,
+  } = useLocationFilters();
 
   /* ===============================
-     HELPER: FETCH DATA SAFELY
-  =============================== */
-  const safeFetch = async (url: string) => {
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
-      if (!data) return [];
-      if (!Array.isArray(data)) {
-        console.warn("API returned non-array:", data);
-        return [];
-      }
-      return data;
-    } catch (err) {
-      console.error("Fetch error:", err);
-      return [];
+     BENEFICIARIES
+  ================================ */
+  const [members, setMembers] = useState<Beneficiary[]>([]);
+  const [visibleMembers, setVisibleMembers] = useState<Beneficiary[]>([]);
+  const [loadingBeneficiaries, setLoadingBeneficiaries] = useState(false);
+
+  /* ===============================
+     GROUP
+  ================================ */
+  const [groupName, setGroupName] = useState("");
+  const [selectedMembers, setSelectedMembers] = useState<Beneficiary[]>([]);
+
+  /* ===============================
+     EDIT MODAL
+  ================================ */
+  const [editingMember, setEditingMember] = useState<Beneficiary | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+
+  /* ===============================
+     UI
+  ================================ */
+  const [toastMessage, setToastMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const infiniteRef = useRef<HTMLIonInfiniteScrollElement | null>(null);
+
+  /* ===============================
+     VALIDATORS
+  ================================ */
+  const validateGroupName = (name: string) => {
+    const v = (name || "").trim();
+    if (!v) return "Group name is required";
+    if (v.length > MAX_GROUP_NAME)
+      return `Group name must not exceed ${MAX_GROUP_NAME} characters`;
+    return "";
+  };
+
+  const validateSex = (sex: string | null | undefined) => {
+    const v = String(sex || "").trim();
+    if (!v) return "Gender is required";
+    if (v !== "01" && v !== "02") return "Invalid gender selected";
+    return "";
+  };
+
+  const validateDOB18Plus = (dob: string | null | undefined) => {
+    if (!dob) return "Date of birth is required";
+
+    const d = new Date(dob);
+    if (Number.isNaN(d.getTime())) return "Invalid date of birth";
+
+    const today = new Date();
+    const minDate = new Date(
+      today.getFullYear() - MIN_AGE_YEARS,
+      today.getMonth(),
+      today.getDate(),
+    );
+
+    if (d > minDate) {
+      return `Beneficiary must be at least ${MIN_AGE_YEARS} years old`;
     }
+
+    return "";
+  };
+
+  const validateNationalID = (natId: string) => {
+    const v = (natId || "").trim();
+
+    // optional
+    if (!v) return "";
+
+    if (v.length > MAX_NAT_ID) {
+      return `National ID must not exceed ${MAX_NAT_ID} characters`;
+    }
+
+    // avoid ISO date accidentally stored as nat_id
+    if (v.includes("T") && v.includes("-")) {
+      return "National ID looks like a date. Please enter correct ID";
+    }
+
+    return "";
+  };
+
+  const validateHouseholdSize = (size: any) => {
+    // optional
+    if (size === null || size === undefined || size === "") return "";
+
+    const num = Number(size);
+
+    if (Number.isNaN(num)) return "Household size must be a number";
+    if (num > MAX_HH_SIZE) return `Household size cannot exceed ${MAX_HH_SIZE}`;
+    if (num < 0) return "Household size cannot be negative";
+
+    return "";
   };
 
   /* ===============================
-     LOAD REGIONS
-  =============================== */
+     RESET WHEN VC CHANGES
+  ================================ */
   useEffect(() => {
-    const load = async () => {
-      setLoadingRegions(true);
-      try {
-        if (isNative) {
-          const res = await getRegions();
-          setRegions(res.values || []);
-        } else {
-          setRegions(await safeFetch(`${BASE_URL}/regions`));
-        }
-      } finally {
-        setLoadingRegions(false);
-      }
-    };
-    load();
-  }, []);
-
-  /* ===============================
-     LOAD DISTRICTS
-  =============================== */
-  useEffect(() => {
-    if (!region) return;
-
-    setDistrict("");
-    setTa("");
-    setVc("");
     setMembers([]);
     setVisibleMembers([]);
+    setSelectedMembers([]);
 
-    const load = async () => {
-      setLoadingDistricts(true);
-      try {
-        if (isNative) {
-          const res = await getDistricts(region);
-          setDistricts(res.values || []);
-        } else {
-          setDistricts(
-            await safeFetch(`${BASE_URL}/districts?regionID=${region}`),
-          );
-        }
-      } finally {
-        setLoadingDistricts(false);
-      }
-    };
-    load();
-  }, [region]);
-
-  /* ===============================
-     LOAD TAs
-  =============================== */
-  useEffect(() => {
-    if (!district) return;
-
-    setTa("");
-    setVc("");
-    setMembers([]);
-    setVisibleMembers([]);
-
-    const load = async () => {
-      setLoadingTas(true);
-      try {
-        if (isNative) {
-          const res = await getTAs(district);
-          setTas(res.values || []);
-        } else {
-          setTas(await safeFetch(`${BASE_URL}/tas?districtID=${district}`));
-        }
-      } finally {
-        setLoadingTas(false);
-      }
-    };
-    load();
-  }, [district]);
-
-  /* ===============================
-     LOAD VILLAGE CLUSTERS
-  =============================== */
-  useEffect(() => {
-    if (!ta) return;
-
-    setVc("");
-    setMembers([]);
-    setVisibleMembers([]);
-
-    const load = async () => {
-      setLoadingVcs(true);
-      try {
-        if (isNative) {
-          const res = await getVillageClusters(ta);
-          setVcs(res.values || []);
-        } else {
-          setVcs(await safeFetch(`${BASE_URL}/village-clusters?taID=${ta}`));
-        }
-      } finally {
-        setLoadingVcs(false);
-      }
-    };
-    load();
-  }, [ta]);
+    if (infiniteRef.current) {
+      infiniteRef.current.disabled = false;
+    }
+  }, [vc]);
 
   /* ===============================
      LOAD BENEFICIARIES
-  =============================== */
+  ================================ */
   useEffect(() => {
     if (!vc) return;
 
     const load = async () => {
-      setMembers([]);
-      setVisibleMembers([]);
-      setHasMore(false);
       setLoadingBeneficiaries(true);
 
       try {
-        let data: any[] = [];
-
-        if (isNative) {
-          // fetch latest from API and store into SQLite
-          await preloadBeneficiaries(vc);
-
-          // read from SQLite
-          const res = await getBeneficiaries(vc);
-          data = res.values || [];
-        } else {
-          // web: direct API only
-          data = await safeFetch(
-            `${BASE_URL}/beneficiaries/filter?villageClusterID=${vc}`,
-          );
+        if (infiniteRef.current) {
+          infiniteRef.current.disabled = false;
         }
 
+        const data = await fetchBeneficiariesByVC(vc);
         setMembers(data);
         setVisibleMembers(data.slice(0, PAGE_SIZE));
-        setHasMore(data.length > PAGE_SIZE);
+      } catch (err) {
+        console.error("Load beneficiaries failed:", err);
+        setMembers([]);
+        setVisibleMembers([]);
+        setToastMessage("Failed to load beneficiaries");
       } finally {
         setLoadingBeneficiaries(false);
       }
@@ -254,80 +252,126 @@ const GroupAssignment: React.FC = () => {
   }, [vc]);
 
   /* ===============================
-     LOAD MORE ON SCROLL
-  =============================== */
-  const loadMoreMembers = (e: any) => {
-    const el = e.target;
-    if (hasMore && el.scrollTop + el.clientHeight >= el.scrollHeight - 10) {
-      const next = visibleMembers.length + PAGE_SIZE;
-      const nextItems = members.slice(0, next);
-      setVisibleMembers(nextItems);
-      setHasMore(nextItems.length < members.length);
+     LOAD MORE
+  ================================ */
+  const loadMore = async (ev: CustomEvent<void>) => {
+    const next = visibleMembers.length + PAGE_SIZE;
+    const nextItems = members.slice(0, next);
+
+    setVisibleMembers(nextItems);
+
+    (ev.target as HTMLIonInfiniteScrollElement).complete();
+
+    if (nextItems.length >= members.length) {
+      (ev.target as HTMLIonInfiniteScrollElement).disabled = true;
     }
   };
 
   /* ===============================
-     SELECT / UNSELECT
-  =============================== */
-  const toggleMember = (member: any) => {
+     SELECT MEMBER
+  ================================ */
+  const toggleMember = (member: Beneficiary) => {
     setSelectedMembers((prev) => {
-      const exists = prev.find((m) => m.sppCode === member.sppCode);
-      return exists
-        ? prev.filter((m) => m.sppCode !== member.sppCode)
-        : [
-            ...prev,
-            {
-              ...member,
-              groupname: groupName,
-            },
-          ];
+      const exists = prev.some((m) => m.sppCode === member.sppCode);
+
+      if (exists) {
+        return prev.filter((m) => m.sppCode !== member.sppCode);
+      }
+
+      return [
+        ...prev,
+        {
+          ...member,
+          groupname: groupName.trim(),
+        },
+      ];
     });
   };
 
   /* ===============================
-     SAVE EDIT (PATCH)
-  =============================== */
+     SELECT ALL
+  ================================ */
+  const hasMembers = members.length > 0;
+
+  const allSelected =
+    members.length > 0 && selectedMembers.length === members.length;
+
+  const someSelected =
+    selectedMembers.length > 0 && selectedMembers.length < members.length;
+
+  const toggleSelectAll = (checked: boolean) => {
+    if (!checked) {
+      setSelectedMembers([]);
+      return;
+    }
+
+    setSelectedMembers(
+      members.map((m) => ({
+        ...m,
+        groupname: groupName.trim(),
+      })),
+    );
+  };
+
+  /* ===============================
+     UPDATE GROUPNAME ON SELECTED
+  ================================ */
+  useEffect(() => {
+    setSelectedMembers((prev) =>
+      prev.map((m) => ({
+        ...m,
+        groupname: groupName.trim(),
+      })),
+    );
+  }, [groupName]);
+
+  /* ===============================
+     SAVE EDIT
+  ================================ */
   const saveEditedMember = async () => {
     if (!editingMember) return;
 
+    const sexErr = validateSex(editingMember.sex);
+    const dobErr = validateDOB18Plus(editingMember.dob);
+    const natErr = validateNationalID(editingMember.nat_id || "");
+    const hhErr = validateHouseholdSize(editingMember.hh_size);
+
+    if (sexErr) return setToastMessage(sexErr);
+    if (dobErr) return setToastMessage(dobErr);
+    if (natErr) return setToastMessage(natErr);
+    if (hhErr) return setToastMessage(hhErr);
+
+    const cleaned: Beneficiary = {
+      ...editingMember,
+      nat_id: cleanNatId(editingMember.nat_id),
+      hh_size: cleanHHSize(editingMember.hh_size),
+    };
+
     try {
       setIsSubmitting(true);
-      await fetch(
-        `${BASE_URL}/beneficiaries/${encodeURIComponent(
-          editingMember.sppCode,
-        )}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            sex: editingMember.sex,
-            dob: editingMember.dob ? editingMember.dob.split("T")[0] : null,
-          }),
-        },
-      );
+
+      await updateBeneficiary(cleaned);
 
       setMembers((prev) =>
-        prev.map((m) =>
-          m.sppCode === editingMember.sppCode ? editingMember : m,
-        ),
+        prev.map((m) => (m.sppCode === cleaned.sppCode ? cleaned : m)),
       );
 
       setVisibleMembers((prev) =>
-        prev.map((m) =>
-          m.sppCode === editingMember.sppCode ? editingMember : m,
-        ),
+        prev.map((m) => (m.sppCode === cleaned.sppCode ? cleaned : m)),
       );
 
       setSelectedMembers((prev) =>
         prev.map((m) =>
-          m.sppCode === editingMember.sppCode
-            ? { ...editingMember, groupname: groupName }
+          m.sppCode === cleaned.sppCode
+            ? { ...cleaned, groupname: groupName.trim() }
             : m,
         ),
       );
 
       setShowEditModal(false);
-    } catch {
+      setToastMessage("Beneficiary updated");
+    } catch (err) {
+      console.error("Update failed:", err);
       setToastMessage("Failed to update beneficiary");
     } finally {
       setIsSubmitting(false);
@@ -336,53 +380,102 @@ const GroupAssignment: React.FC = () => {
 
   /* ===============================
      SUBMIT GROUP
-  =============================== */
+  ================================ */
   const submitGroup = async () => {
-    if (!groupName.trim()) {
-      setToastMessage("Group name is required");
-      return;
-    }
+    const groupErr = validateGroupName(groupName);
+    if (groupErr) return setToastMessage(groupErr);
 
     if (selectedMembers.length === 0) {
       setToastMessage("Select at least one beneficiary");
       return;
     }
 
-    const incomplete = selectedMembers.find((m) => !m.sex || !m.dob);
-    if (incomplete) {
-      setToastMessage("Some selected beneficiaries need Sex and DOB");
-      return;
+    // validate all selected
+    for (const m of selectedMembers) {
+      const sexErr = validateSex(m.sex);
+      if (sexErr) return setToastMessage(`(${m.hh_head_name}) ${sexErr}`);
+
+      const dobErr = validateDOB18Plus(m.dob);
+      if (dobErr) return setToastMessage(`(${m.hh_head_name}) ${dobErr}`);
+
+      const natErr = validateNationalID(m.nat_id || "");
+      if (natErr) return setToastMessage(`(${m.hh_head_name}) ${natErr}`);
+
+      const hhErr = validateHouseholdSize(m.hh_size);
+      if (hhErr) return setToastMessage(`(${m.hh_head_name}) ${hhErr}`);
     }
+
+    // clean payload
+    const payload: Beneficiary[] = selectedMembers.map((m) => ({
+      ...m,
+      groupname: groupName.trim(),
+      nat_id: cleanNatId(m.nat_id),
+      hh_size: cleanHHSize(m.hh_size),
+    }));
 
     try {
       setIsSubmitting(true);
-      await fetch(`${BASE_URL}/beneficiaries/bulk-sync`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(
-          selectedMembers.map((m) => ({
-            sppCode: m.sppCode,
-            sex: m.sex,
-            dob: m.dob ? m.dob.split("T")[0] : null,
-            groupname: m.groupname,
-            selected: 1,
-          })),
+
+      await bulkSyncGroup(payload, groupName.trim());
+
+      // ✅ IMMEDIATE UI UPDATE (makes badge green instantly)
+      const submittedCodes = new Set(payload.map((p) => p.sppCode));
+
+      setMembers((prev) =>
+        prev.map((m) =>
+          submittedCodes.has(m.sppCode)
+            ? {
+                ...m,
+                selected: 1,
+                groupname: groupName.trim(),
+              }
+            : m,
         ),
-      });
+      );
+
+      setVisibleMembers((prev) =>
+        prev.map((m) =>
+          submittedCodes.has(m.sppCode)
+            ? {
+                ...m,
+                selected: 1,
+                groupname: groupName.trim(),
+              }
+            : m,
+        ),
+      );
 
       setToastMessage("Group created & synced");
       setSelectedMembers([]);
       setGroupName("");
-    } catch {
-      setToastMessage("Sync failed");
+    } catch (err: any) {
+      console.error("Sync failed:", err);
+
+      const msg =
+        err?.response?.data?.message ||
+        err?.response?.data?.error ||
+        err?.message ||
+        "Sync failed";
+
+      setToastMessage(msg);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   /* ===============================
+     UI HELPERS
+  ================================ */
+  const selectedCount = selectedMembers.length;
+
+  const modalTitle = useMemo(() => {
+    if (!editingMember) return "Edit Beneficiary";
+    return `Edit: ${editingMember.hh_head_name || "Beneficiary"}`;
+  }, [editingMember]);
+
+  /* ===============================
      UI
-  =============================== */
+  ================================ */
   return (
     <IonPage>
       <IonHeader>
@@ -396,21 +489,21 @@ const GroupAssignment: React.FC = () => {
         </IonToolbar>
       </IonHeader>
 
-      <IonContent className="ion-padding">
+      <IonContent fullscreen className="ion-padding validation-page">
         {/* FILTER CARD */}
         <IonCard>
           <IonCardHeader>
             <IonCardTitle>Filter Beneficiaries</IonCardTitle>
           </IonCardHeader>
+
           <IonCardContent>
             <IonItem>
               <IonLabel position="stacked">Region</IonLabel>
               <IonSelect
                 value={region}
-                disabled={loadingRegions}
                 onIonChange={(e) => setRegion(e.detail.value)}
               >
-                {regions?.map((r) => (
+                {regions.map((r) => (
                   <IonSelectOption key={r.regionID} value={r.regionID}>
                     {r.name}
                   </IonSelectOption>
@@ -425,7 +518,7 @@ const GroupAssignment: React.FC = () => {
                 disabled={!region || loadingDistricts}
                 onIonChange={(e) => setDistrict(e.detail.value)}
               >
-                {districts?.map((d) => (
+                {districts.map((d) => (
                   <IonSelectOption key={d.DistrictID} value={d.DistrictID}>
                     {d.DistrictName}
                   </IonSelectOption>
@@ -440,7 +533,7 @@ const GroupAssignment: React.FC = () => {
                 disabled={!district || loadingTas}
                 onIonChange={(e) => setTa(e.detail.value)}
               >
-                {tas?.map((t) => (
+                {tas.map((t) => (
                   <IonSelectOption key={t.TAID} value={t.TAID}>
                     {t.TAName}
                   </IonSelectOption>
@@ -455,7 +548,7 @@ const GroupAssignment: React.FC = () => {
                 disabled={!ta || loadingVcs}
                 onIonChange={(e) => setVc(e.detail.value)}
               >
-                {vcs?.map((v) => (
+                {vcs.map((v) => (
                   <IonSelectOption
                     key={v.villageClusterID}
                     value={v.villageClusterID}
@@ -468,123 +561,139 @@ const GroupAssignment: React.FC = () => {
           </IonCardContent>
         </IonCard>
 
-        {/* GLOBAL FILTER LOADER */}
+        {/* FILTER LOADER */}
         <IonLoading
           isOpen={isFilterLoading}
           spinner="crescent"
-          message={
-            loadingRegions
-              ? "Loading regions..."
-              : loadingDistricts
-                ? "Loading districts..."
-                : loadingTas
-                  ? "Loading traditional authorities..."
-                  : loadingVcs
-                    ? "Loading village clusters..."
-                    : "Loading..."
-          }
+          message="Loading filters..."
         />
 
+        {/* TOAST */}
         <IonToast
           isOpen={!!toastMessage}
           message={toastMessage}
-          duration={3000}
+          duration={3500}
           onDidDismiss={() => setToastMessage("")}
         />
 
-        {/* GROUP CARD */}
+        {/* GROUP DETAILS */}
         <IonCard className="group-details-card">
           <IonCardHeader>
             <IonCardTitle>Group Details</IonCardTitle>
           </IonCardHeader>
 
-          <IonCardContent className="group-details-scroll">
-            {/* GROUP NAME */}
+          <IonCardContent>
             <IonItem>
-              <IonLabel position="stacked">Group Name *</IonLabel>
+              <IonLabel position="stacked" className="big-label">
+                Group Name *
+              </IonLabel>
               <IonInput
+                className="big-input"
+                placeholder="Enter group name"
                 value={groupName}
-                onIonInput={(e) => {
-                  const value = e.detail.value!;
-                  setGroupName(value);
-                  setSelectedMembers((prev) =>
-                    prev.map((m) => ({
-                      ...m,
-                      groupname: value,
-                    })),
-                  );
-                }}
+                maxlength={MAX_GROUP_NAME}
+                onIonInput={(e) => setGroupName(e.detail.value || "")}
               />
             </IonItem>
 
-            {/* SELECTED COUNT */}
             <IonItem lines="none">
               <IonLabel>Selected Beneficiaries</IonLabel>
               <IonBadge slot="end" color="success">
-                {selectedMembers.length}
+                {selectedCount}
               </IonBadge>
             </IonItem>
 
-            {/* VIEW-PAGINATED LIST */}
-            <div
-              style={{
-                maxHeight: "55vh",
-                overflowY: "auto",
-                border: "1px solid var(--ion-color-light)",
-                borderRadius: 8,
-              }}
-              onScroll={loadMoreMembers}
-            >
-              <IonList>
-                {loadingBeneficiaries ? (
-                  <IonItem lines="none">
-                    <IonSpinner name="crescent" style={{ marginRight: 10 }} />
-                    <IonLabel>Loading beneficiaries...</IonLabel>
-                  </IonItem>
-                ) : (
-                  Array.isArray(visibleMembers) &&
-                  visibleMembers.map((m) => {
-                    const selected = selectedMembers.some(
-                      (x) => x.sppCode === m.sppCode,
-                    );
-                    const incomplete = !m.sex || !m.dob;
+            {hasMembers && (
+              <IonItem lines="none">
+                <IonCheckbox
+                  slot="start"
+                  checked={allSelected}
+                  indeterminate={someSelected}
+                  onIonChange={(e) => toggleSelectAll(e.detail.checked)}
+                />
+                <IonLabel>Select All Beneficiaries</IonLabel>
+              </IonItem>
+            )}
 
-                    return (
-                      <IonItem key={m.sppCode}>
-                        <IonCheckbox
-                          slot="start"
-                          checked={selected}
-                          onIonChange={() => toggleMember(m)}
-                        />
-                        <IonLabel>
-                          <h2>{m.hh_head_name}</h2>
-                          <p>{m.hh_code}</p>
-                          <IonBadge color={incomplete ? "danger" : "success"}>
-                            {incomplete ? "REQUIRES EDIT" : "COMPLETE"}
-                          </IonBadge>
-                        </IonLabel>
-                        <IonButton
-                          fill="clear"
-                          size="small"
-                          onClick={() => {
-                            setEditingMember(m);
-                            setShowEditModal(true);
-                          }}
+            <IonList>
+              {loadingBeneficiaries ? (
+                <IonItem lines="none">
+                  <IonSpinner name="crescent" style={{ marginRight: 10 }} />
+                  <IonLabel>Loading beneficiaries...</IonLabel>
+                </IonItem>
+              ) : visibleMembers.length === 0 ? (
+                <IonItem lines="none">
+                  <IonLabel color="medium">No beneficiaries found</IonLabel>
+                </IonItem>
+              ) : (
+                visibleMembers.map((m) => {
+                  const selected = selectedMembers.some(
+                    (x) => x.sppCode === m.sppCode,
+                  );
+
+                  const isVerified =
+                    String((m as any).selected ?? "") === "1" ||
+                    Number((m as any).selected) === 1;
+
+                  const incomplete =
+                    validateSex(m.sex) !== "" ||
+                    validateDOB18Plus(m.dob) !== "";
+
+                  return (
+                    <IonItem key={m.sppCode}>
+                      <IonCheckbox
+                        slot="start"
+                        checked={selected}
+                        onIonChange={() => toggleMember(m)}
+                      />
+
+                      <IonLabel>
+                        <h2>{m.hh_head_name}</h2>
+                        <p>{m.hh_code}</p>
+
+                        <IonBadge
+                          color={
+                            incomplete
+                              ? "danger"
+                              : isVerified
+                                ? "success"
+                                : "warning"
+                          }
                         >
-                          Edit
-                        </IonButton>
-                      </IonItem>
-                    );
-                  })
-                )}
+                          {incomplete
+                            ? "REQUIRES EDIT"
+                            : isVerified
+                              ? "COMPLETE & VERIFIED"
+                              : "COMPLETE"}
+                        </IonBadge>
+                      </IonLabel>
 
-                {!loadingBeneficiaries && hasMore && (
-                  <IonItem lines="none">
-                    <IonLabel color="medium">Waiting…</IonLabel>
-                  </IonItem>
-                )}
-              </IonList>
-            </div>
+                      <IonButton
+                        fill="clear"
+                        size="small"
+                        onClick={() => {
+                          setEditingMember(m);
+                          setShowEditModal(true);
+                        }}
+                      >
+                        Edit
+                      </IonButton>
+                    </IonItem>
+                  );
+                })
+              )}
+            </IonList>
+
+            <IonInfiniteScroll
+              ref={infiniteRef}
+              onIonInfinite={loadMore}
+              threshold="120px"
+            >
+              <IonInfiniteScrollContent
+                loadingSpinner="crescent"
+                loadingText="Loading more..."
+              />
+            </IonInfiniteScroll>
           </IonCardContent>
 
           <div className="group-details-footer">
@@ -613,7 +722,7 @@ const GroupAssignment: React.FC = () => {
         >
           <IonHeader>
             <IonToolbar>
-              <IonTitle>Edit Beneficiary</IonTitle>
+              <IonTitle>{modalTitle}</IonTitle>
               <IonButtons slot="end">
                 <IonButton onClick={() => setShowEditModal(false)}>
                   Close
@@ -622,18 +731,22 @@ const GroupAssignment: React.FC = () => {
             </IonToolbar>
           </IonHeader>
 
-          <IonContent className="ion-padding">
+          <IonContent fullscreen className="ion-padding validation-modal">
             {editingMember && (
               <>
                 <IonItem>
-                  <IonLabel position="stacked">Sex</IonLabel>
+                  <IonLabel position="stacked">Gender *</IonLabel>
                   <IonSelect
                     value={editingMember.sex}
                     onIonChange={(e) =>
-                      setEditingMember({
-                        ...editingMember,
-                        sex: e.detail.value,
-                      })
+                      setEditingMember((prev) =>
+                        prev
+                          ? {
+                              ...prev,
+                              sex: e.detail.value,
+                            }
+                          : prev,
+                      )
                     }
                   >
                     <IonSelectOption value="01">Male</IonSelectOption>
@@ -642,16 +755,75 @@ const GroupAssignment: React.FC = () => {
                 </IonItem>
 
                 <IonItem>
-                  <IonLabel position="stacked">Date of Birth</IonLabel>
+                  <IonLabel position="stacked">
+                    Date of Birth (must be 18+) *
+                  </IonLabel>
+
                   <IonDatetime
                     presentation="date"
-                    value={editingMember.dob}
-                    onIonChange={(e) =>
-                      setEditingMember({
-                        ...editingMember,
-                        dob: e.detail.value,
-                      })
+                    value={editingMember.dob || undefined}
+                    max={getMaxDobISO()}
+                    onIonChange={(e) => {
+                      const val = String(e.detail.value || "");
+                      setEditingMember((prev) =>
+                        prev
+                          ? {
+                              ...prev,
+                              dob: val,
+                            }
+                          : prev,
+                      );
+
+                      setTimeout(() => {
+                        (document.activeElement as HTMLElement | null)?.blur();
+                      }, 50);
+                    }}
+                  />
+                </IonItem>
+
+                <IonItem>
+                  <IonLabel position="stacked">
+                    National ID (optional, max {MAX_NAT_ID})
+                  </IonLabel>
+                  <IonInput
+                    type="text"
+                    value={editingMember.nat_id || ""}
+                    maxlength={MAX_NAT_ID}
+                    onIonInput={(e) =>
+                      setEditingMember((prev) =>
+                        prev
+                          ? {
+                              ...prev,
+                              nat_id: String(e.detail.value || ""),
+                            }
+                          : prev,
+                      )
                     }
+                    placeholder="Enter National ID"
+                  />
+                </IonItem>
+
+                <IonItem>
+                  <IonLabel position="stacked">
+                    Household Size (optional, max {MAX_HH_SIZE})
+                  </IonLabel>
+                  <IonInput
+                    type="number"
+                    value={editingMember.hh_size ?? ""}
+                    onIonInput={(e) =>
+                      setEditingMember((prev) =>
+                        prev
+                          ? {
+                              ...prev,
+                              hh_size:
+                                e.detail.value === "" || e.detail.value === null
+                                  ? null
+                                  : Number(String(e.detail.value)),
+                            }
+                          : prev,
+                      )
+                    }
+                    placeholder="Enter household size"
                   />
                 </IonItem>
 
@@ -665,23 +837,20 @@ const GroupAssignment: React.FC = () => {
                   {isSubmitting ? (
                     <>
                       <IonSpinner name="crescent" style={{ marginRight: 8 }} />
-                      Save Changes
+                      Saving…
                     </>
                   ) : (
-                    "Submit Details"
+                    "Save Changes"
                   )}
                 </IonButton>
+
+                <div className="bottom-spacer" />
               </>
             )}
           </IonContent>
         </IonModal>
 
-        <IonToast
-          isOpen={!!toastMessage}
-          message={toastMessage}
-          duration={3000}
-          onDidDismiss={() => setToastMessage("")}
-        />
+        <div className="bottom-spacer" />
       </IonContent>
     </IonPage>
   );
