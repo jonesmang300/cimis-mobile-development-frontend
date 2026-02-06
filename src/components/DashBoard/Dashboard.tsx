@@ -34,7 +34,6 @@ import {
 } from "ionicons/icons";
 
 import "./Dashboard.css";
-import { getData } from "../../services/apiServices";
 import { useHistory } from "react-router";
 
 const Dashboard: React.FC = () => {
