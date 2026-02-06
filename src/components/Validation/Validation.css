@@ -1,21 +1,16 @@
-/* GROUP DETAILS CARD */
-.group-details-card {
-  height: 75vh; /* card scroll area */
-  display: flex;
-  flex-direction: column;
-  padding-bottom: 90px; /* 👈 space for Submit Group button */
+.validation-page {
+  --padding-top: 12px;
+  --padding-bottom: calc(40px + var(--ion-safe-area-bottom));
 }
 
-/* SCROLLABLE CARD CONTENT */
-.group-details-scroll {
-  flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+.bottom-spacer {
+  height: calc(120px + var(--ion-safe-area-bottom));
 }
 
-/* FIXED SUBMIT BUTTON */
-.group-details-footer {
-  padding: 12px;
-  border-top: 1px solid var(--ion-color-light);
-  background: var(--ion-background-color);
+/* Optional: make list look clean */
+.validation-page ion-list {
+  border: 1px solid var(--ion-color-light);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 10px;
 }
