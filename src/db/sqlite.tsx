@@ -6,52 +6,66 @@ import {
 } from "@capacitor-community/sqlite";
 
 /* =========================
-   SINGLETON
+   CONFIG
 ========================= */
+const DB_NAME = "offline_db";
+const DB_VERSION = 1;
+
 const sqlite = new SQLiteConnection(CapacitorSQLite);
 let db: SQLiteDBConnection | null = null;
 
-const API = "https://api-development-j6pl.onrender.com/api";
-
 /* =========================
-   INIT SQLITE
+   HELPERS
 ========================= */
-export const initSQLite = async () => {
-  if (Capacitor.getPlatform() === "web") {
-    await sqlite.initWebStore();
-  }
-};
+const isWeb = () => Capacitor.getPlatform() === "web";
 
-/* =========================
-   INTERNAL HELPER
-========================= */
 const ensureDB = (): SQLiteDBConnection => {
   if (!db) throw new Error("Database not initialized");
   return db;
 };
 
 /* =========================
-   INIT DATABASE + TABLES
+   SQLITE INIT
+========================= */
+export const initSQLite = async () => {
+  if (isWeb()) {
+    await sqlite.initWebStore();
+  }
+};
+
+/* =========================
+   INIT DB (PRODUCTION SAFE)
 ========================= */
 export const initDB = async (): Promise<SQLiteDBConnection> => {
-  if (db) return db;
-
-  if (Capacitor.getPlatform() === "web") {
+  if (isWeb()) {
     throw new Error("SQLite disabled on web");
   }
 
+  if (db) return db;
+
   await initSQLite();
 
-  db = await sqlite.createConnection(
-    "offline_db",
-    false,
-    "no-encryption",
-    1,
-    false,
-  );
+  await sqlite.checkConnectionsConsistency();
+
+  const isConn = (await sqlite.isConnection(DB_NAME, false)).result;
+
+  if (isConn) {
+    db = await sqlite.retrieveConnection(DB_NAME, false);
+  } else {
+    db = await sqlite.createConnection(
+      DB_NAME,
+      false,
+      "no-encryption",
+      DB_VERSION,
+      false,
+    );
+  }
 
   await db.open();
 
+  // =========================
+  // TABLES (NO BENEFICIARIES)
+  // =========================
   await db.execute(`
     CREATE TABLE IF NOT EXISTS app_meta (
       key TEXT PRIMARY KEY,
@@ -81,27 +95,57 @@ export const initDB = async (): Promise<SQLiteDBConnection> => {
       taID TEXT,
       districtID TEXT
     );
-
-    CREATE TABLE IF NOT EXISTS beneficiaries (
-      sppCode TEXT PRIMARY KEY,
-      hh_head_name TEXT,
-      sex TEXT,
-      dob TEXT,
-      nat_id TEXT,
-      hh_code TEXT,
-      regionID TEXT,
-      districtID TEXT,
-      taID TEXT,
-      villageClusterID TEXT,
-      groupname TEXT,
-      selected TEXT,
-      created_at TEXT,
-      updated_at TEXT,
-      dirty INTEGER DEFAULT 0
-    );
   `);
 
   return db;
+};
+
+/* =========================
+   APP META
+========================= */
+export const setAppMeta = async (key: string, value: string) => {
+  if (isWeb()) return;
+
+  await initDB();
+
+  await ensureDB().run(
+    `INSERT OR REPLACE INTO app_meta (key,value) VALUES (?,?)`,
+    [key, value],
+  );
+};
+
+export const getAppMeta = async (key: string): Promise<string | null> => {
+  if (isWeb()) return null;
+
+  await initDB();
+
+  const res = await ensureDB().query(
+    `SELECT value FROM app_meta WHERE key=? LIMIT 1`,
+    [key],
+  );
+
+  return res.values?.[0]?.value ?? null;
+};
+
+/**
+ * ✅ Stable device id stored once in SQLite app_meta
+ */
+export const getStableDeviceId = async (): Promise<string> => {
+  if (isWeb()) return "web";
+
+  await initAndSeed();
+
+  const existing = await getAppMeta("deviceId");
+  if (existing) return existing;
+
+  const newId =
+    "dev_" +
+    Math.random().toString(36).slice(2) +
+    "_" +
+    Date.now().toString(36);
+
+  await setAppMeta("deviceId", newId);
+  return newId;
 };
 
 /* =========================
@@ -109,7 +153,7 @@ export const initDB = async (): Promise<SQLiteDBConnection> => {
 ========================= */
 const isDbSeeded = async (): Promise<boolean> => {
   const res = await ensureDB().query(
-    `SELECT value FROM app_meta WHERE key='seeded'`,
+    `SELECT value FROM app_meta WHERE key='seeded' LIMIT 1`,
   );
   return (res.values?.length ?? 0) > 0;
 };
@@ -124,17 +168,14 @@ const markDbSeeded = async () => {
    INIT + SEED (SAFE)
 ========================= */
 export const initAndSeed = async () => {
-  if (Capacitor.getPlatform() === "web") {
+  if (isWeb()) {
     console.log("🌐 Web detected — skipping SQLite");
     return;
   }
 
   await initDB();
 
-  if (await isDbSeeded()) {
-    console.log("📦 SQLite already seeded");
-    return;
-  }
+  if (await isDbSeeded()) return;
 
   console.log("🌱 First install — seeding data");
 
@@ -150,6 +191,9 @@ export const initAndSeed = async () => {
    LOAD MASTER DATA
 ========================= */
 export const loadRegionsFromJson = async () => {
+  if (isWeb()) return;
+  await initDB();
+
   const data = await (await fetch("/regions.json")).json();
   const db = ensureDB();
 
@@ -162,6 +206,9 @@ export const loadRegionsFromJson = async () => {
 };
 
 export const loadDistrictsFromJson = async () => {
+  if (isWeb()) return;
+  await initDB();
+
   const data = await (await fetch("/districts.json")).json();
   const db = ensureDB();
 
@@ -175,6 +222,9 @@ export const loadDistrictsFromJson = async () => {
 };
 
 export const loadTAsFromJson = async () => {
+  if (isWeb()) return;
+  await initDB();
+
   const data = await (await fetch("/tas.json")).json();
   const db = ensureDB();
 
@@ -188,6 +238,9 @@ export const loadTAsFromJson = async () => {
 };
 
 export const loadVillageClustersFromJson = async () => {
+  if (isWeb()) return;
+  await initDB();
+
   const data = await (await fetch("/village_clusters.json")).json();
   const db = ensureDB();
 
@@ -207,77 +260,37 @@ export const loadVillageClustersFromJson = async () => {
 };
 
 /* =========================
-   BENEFICIARIES (SAFE LOAD)
+   READ QUERIES (MASTER DATA)
 ========================= */
-export const preloadBeneficiaries = async (villageClusterID: string) => {
-  const db = ensureDB();
-
-  const existing = await db.query(
-    `SELECT 1 FROM beneficiaries WHERE villageClusterID=? LIMIT 1`,
-    [villageClusterID],
-  );
-
-  if (existing.values?.length) return;
-
-  const data = await (
-    await fetch(
-      `${API}/beneficiaries/filter?villageClusterID=${villageClusterID}`,
-    )
-  ).json();
-
-  const sql = `
-    INSERT OR IGNORE INTO beneficiaries (
-      sppCode,hh_head_name,sex,dob,nat_id,hh_code,
-      regionID,districtID,taID,villageClusterID,
-      groupname,selected,created_at,updated_at,dirty
-    ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,0)
-  `;
-
-  for (const b of data) {
-    await db.run(sql, [
-      b.sppCode,
-      b.hh_head_name,
-      b.sex,
-      b.dob,
-      b.nat_id,
-      b.hh_code,
-      b.regionID,
-      b.districtID,
-      b.taID,
-      b.villageClusterID,
-      b.groupname,
-      b.selected,
-      b.created_at,
-      b.updated_at,
-    ]);
-  }
+export const getRegions = async () => {
+  if (isWeb()) return { values: [] };
+  await initAndSeed();
+  return ensureDB().query(`SELECT * FROM regions ORDER BY name`);
 };
 
-/* =========================
-   READ QUERIES
-========================= */
-export const getRegions = async () =>
-  ensureDB().query(`SELECT * FROM regions ORDER BY name`);
-
-export const getDistricts = async (regionID: string) =>
-  ensureDB().query(
+export const getDistricts = async (regionID: string) => {
+  if (isWeb()) return { values: [] };
+  await initAndSeed();
+  return ensureDB().query(
     `SELECT * FROM districts WHERE regionID=? ORDER BY DistrictName`,
     [regionID],
   );
+};
 
-export const getTAs = async (districtID: string) =>
-  ensureDB().query(`SELECT * FROM tas WHERE DistrictID=? ORDER BY TAName`, [
-    districtID,
-  ]);
+export const getTAs = async (districtID: string) => {
+  if (isWeb()) return { values: [] };
+  await initAndSeed();
+  return ensureDB().query(
+    `SELECT * FROM tas WHERE DistrictID=? ORDER BY TAName`,
+    [districtID],
+  );
+};
 
-export const getVillageClusters = async (taID: string) =>
-  ensureDB().query(
+export const getVillageClusters = async (taID: string) => {
+  if (isWeb()) return { values: [] };
+  await initAndSeed();
+  return ensureDB().query(
     `SELECT * FROM village_clusters WHERE taID=? ORDER BY villageClusterName`,
     [taID],
   );
-
-export const getBeneficiaries = async (villageClusterID: string) =>
-  ensureDB().query(
-    `SELECT * FROM beneficiaries WHERE villageClusterID=? ORDER BY hh_head_name`,
-    [villageClusterID],
-  );
+};

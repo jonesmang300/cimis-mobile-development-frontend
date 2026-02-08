@@ -55,6 +55,7 @@ import { useAuth } from "./components/context/AuthContext";
 
 /* SQLite init */
 import { initAndSeed } from "./db/sqlite";
+import VerifiedMembersByDevice from "./components/Validation/VerifiedMembersByDevice";
 
 setupIonicReact();
 
@@ -117,6 +118,11 @@ const App: React.FC = () => {
                 exact
                 path="/view_verified_member/:sppCode"
                 component={ViewVerifiedMember}
+              />
+              <Route
+                exact
+                path="/verified_members_by_device"
+                component={VerifiedMembersByDevice}
               />
 
               <Route exact path="/">

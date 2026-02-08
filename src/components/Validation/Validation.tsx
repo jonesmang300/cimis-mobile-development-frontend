@@ -1,44 +1,45 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useIonRouter } from "@ionic/react";
-import { arrowBack } from "ionicons/icons";
-
 import {
-  IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonItem,
-  IonLabel,
-  IonInput,
-  IonList,
-  IonCheckbox,
-  IonButton,
   IonBadge,
-  IonModal,
-  IonSelect,
-  IonSelectOption,
-  IonDatetime,
-  IonToast,
+  IonButton,
   IonButtons,
-  IonIcon,
   IonCard,
+  IonCardContent,
   IonCardHeader,
   IonCardTitle,
-  IonCardContent,
-  IonSpinner,
-  IonLoading,
+  IonCheckbox,
+  IonContent,
+  IonDatetime,
+  IonHeader,
+  IonIcon,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
+  IonInput,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonLoading,
+  IonModal,
+  IonPage,
+  IonSelect,
+  IonSelectOption,
+  IonSpinner,
+  IonTitle,
+  IonToast,
+  IonToolbar,
+  useIonRouter,
 } from "@ionic/react";
+import { arrowBack } from "ionicons/icons";
 
+import { getStableDeviceId } from "../../db/sqlite";
 import { useLocationFilters } from "../../hooks/useLocationFilters";
+import { useLocalInfiniteScroll } from "../../hooks/useLocalInfiniteScroll";
 
 import {
+  Beneficiary,
+  bulkSyncGroup,
   fetchBeneficiariesByVC,
   updateBeneficiary,
-  bulkSyncGroup,
-  Beneficiary,
 } from "../../services/beneficiaries.service";
 
 import "./Validation.css";
@@ -88,7 +89,7 @@ const GroupAssignment: React.FC = () => {
   const router = useIonRouter();
 
   /* ===============================
-     FILTERS
+     FILTERS (SQLite master data)
   ================================ */
   const {
     regions,
@@ -113,11 +114,24 @@ const GroupAssignment: React.FC = () => {
   } = useLocationFilters();
 
   /* ===============================
-     BENEFICIARIES
+     BENEFICIARIES (API DATA)
   ================================ */
   const [members, setMembers] = useState<Beneficiary[]>([]);
-  const [visibleMembers, setVisibleMembers] = useState<Beneficiary[]>([]);
   const [loadingBeneficiaries, setLoadingBeneficiaries] = useState(false);
+
+  /* ===============================
+     INFINITE SCROLL (REUSABLE)
+  ================================ */
+  const {
+    visible: visibleMembers,
+    loadMore,
+    resetKey,
+  } = useLocalInfiniteScroll<Beneficiary>({
+    items: members,
+    pageSize: PAGE_SIZE,
+  });
+
+  const infiniteRef = useRef<HTMLIonInfiniteScrollElement | null>(null);
 
   /* ===============================
      GROUP
@@ -136,8 +150,6 @@ const GroupAssignment: React.FC = () => {
   ================================ */
   const [toastMessage, setToastMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const infiniteRef = useRef<HTMLIonInfiniteScrollElement | null>(null);
 
   /* ===============================
      VALIDATORS
@@ -213,7 +225,6 @@ const GroupAssignment: React.FC = () => {
   ================================ */
   useEffect(() => {
     setMembers([]);
-    setVisibleMembers([]);
     setSelectedMembers([]);
 
     if (infiniteRef.current) {
@@ -222,10 +233,12 @@ const GroupAssignment: React.FC = () => {
   }, [vc]);
 
   /* ===============================
-     LOAD BENEFICIARIES
+     LOAD BENEFICIARIES (API)
   ================================ */
   useEffect(() => {
     if (!vc) return;
+
+    let cancelled = false;
 
     const load = async () => {
       setLoadingBeneficiaries(true);
@@ -236,36 +249,27 @@ const GroupAssignment: React.FC = () => {
         }
 
         const data = await fetchBeneficiariesByVC(vc);
-        setMembers(data);
-        setVisibleMembers(data.slice(0, PAGE_SIZE));
+
+        if (cancelled) return;
+
+        setMembers(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("Load beneficiaries failed:", err);
-        setMembers([]);
-        setVisibleMembers([]);
-        setToastMessage("Failed to load beneficiaries");
+        if (!cancelled) {
+          setMembers([]);
+          setToastMessage("Failed to load beneficiaries");
+        }
       } finally {
-        setLoadingBeneficiaries(false);
+        if (!cancelled) setLoadingBeneficiaries(false);
       }
     };
 
     load();
+
+    return () => {
+      cancelled = true;
+    };
   }, [vc]);
-
-  /* ===============================
-     LOAD MORE
-  ================================ */
-  const loadMore = async (ev: CustomEvent<void>) => {
-    const next = visibleMembers.length + PAGE_SIZE;
-    const nextItems = members.slice(0, next);
-
-    setVisibleMembers(nextItems);
-
-    (ev.target as HTMLIonInfiniteScrollElement).complete();
-
-    if (nextItems.length >= members.length) {
-      (ev.target as HTMLIonInfiniteScrollElement).disabled = true;
-    }
-  };
 
   /* ===============================
      SELECT MEMBER
@@ -326,7 +330,7 @@ const GroupAssignment: React.FC = () => {
   }, [groupName]);
 
   /* ===============================
-     SAVE EDIT
+     SAVE EDIT (API)
   ================================ */
   const saveEditedMember = async () => {
     if (!editingMember) return;
@@ -356,10 +360,6 @@ const GroupAssignment: React.FC = () => {
         prev.map((m) => (m.sppCode === cleaned.sppCode ? cleaned : m)),
       );
 
-      setVisibleMembers((prev) =>
-        prev.map((m) => (m.sppCode === cleaned.sppCode ? cleaned : m)),
-      );
-
       setSelectedMembers((prev) =>
         prev.map((m) =>
           m.sppCode === cleaned.sppCode
@@ -379,7 +379,7 @@ const GroupAssignment: React.FC = () => {
   };
 
   /* ===============================
-     SUBMIT GROUP
+     SUBMIT GROUP (API)
   ================================ */
   const submitGroup = async () => {
     const groupErr = validateGroupName(groupName);
@@ -390,7 +390,6 @@ const GroupAssignment: React.FC = () => {
       return;
     }
 
-    // validate all selected
     for (const m of selectedMembers) {
       const sexErr = validateSex(m.sex);
       if (sexErr) return setToastMessage(`(${m.hh_head_name}) ${sexErr}`);
@@ -405,42 +404,28 @@ const GroupAssignment: React.FC = () => {
       if (hhErr) return setToastMessage(`(${m.hh_head_name}) ${hhErr}`);
     }
 
-    // clean payload
-    const payload: Beneficiary[] = selectedMembers.map((m) => ({
-      ...m,
-      groupname: groupName.trim(),
-      nat_id: cleanNatId(m.nat_id),
-      hh_size: cleanHHSize(m.hh_size),
-    }));
-
     try {
       setIsSubmitting(true);
 
-      await bulkSyncGroup(payload, groupName.trim());
+      const deviceId = await getStableDeviceId();
 
-      // ✅ IMMEDIATE UI UPDATE (makes badge green instantly)
+      const payload: Beneficiary[] = selectedMembers.map((m) => ({
+        ...m,
+        groupname: groupName.trim(),
+        nat_id: cleanNatId(m.nat_id),
+        hh_size: cleanHHSize(m.hh_size),
+        selected: 1,
+        deviceId,
+      }));
+
+      await bulkSyncGroup(payload, groupName.trim(), deviceId);
+
       const submittedCodes = new Set(payload.map((p) => p.sppCode));
 
       setMembers((prev) =>
         prev.map((m) =>
           submittedCodes.has(m.sppCode)
-            ? {
-                ...m,
-                selected: 1,
-                groupname: groupName.trim(),
-              }
-            : m,
-        ),
-      );
-
-      setVisibleMembers((prev) =>
-        prev.map((m) =>
-          submittedCodes.has(m.sppCode)
-            ? {
-                ...m,
-                selected: 1,
-                groupname: groupName.trim(),
-              }
+            ? { ...m, selected: 1, groupname: groupName.trim() }
             : m,
         ),
       );
@@ -561,14 +546,12 @@ const GroupAssignment: React.FC = () => {
           </IonCardContent>
         </IonCard>
 
-        {/* FILTER LOADER */}
         <IonLoading
           isOpen={isFilterLoading}
           spinner="crescent"
           message="Loading filters..."
         />
 
-        {/* TOAST */}
         <IonToast
           isOpen={!!toastMessage}
           message={toastMessage}
@@ -685,6 +668,7 @@ const GroupAssignment: React.FC = () => {
             </IonList>
 
             <IonInfiniteScroll
+              key={resetKey}
               ref={infiniteRef}
               onIonInfinite={loadMore}
               threshold="120px"
@@ -740,12 +724,7 @@ const GroupAssignment: React.FC = () => {
                     value={editingMember.sex}
                     onIonChange={(e) =>
                       setEditingMember((prev) =>
-                        prev
-                          ? {
-                              ...prev,
-                              sex: e.detail.value,
-                            }
-                          : prev,
+                        prev ? { ...prev, sex: e.detail.value } : prev,
                       )
                     }
                   >
@@ -766,12 +745,7 @@ const GroupAssignment: React.FC = () => {
                     onIonChange={(e) => {
                       const val = String(e.detail.value || "");
                       setEditingMember((prev) =>
-                        prev
-                          ? {
-                              ...prev,
-                              dob: val,
-                            }
-                          : prev,
+                        prev ? { ...prev, dob: val } : prev,
                       );
 
                       setTimeout(() => {
@@ -792,10 +766,7 @@ const GroupAssignment: React.FC = () => {
                     onIonInput={(e) =>
                       setEditingMember((prev) =>
                         prev
-                          ? {
-                              ...prev,
-                              nat_id: String(e.detail.value || ""),
-                            }
+                          ? { ...prev, nat_id: String(e.detail.value || "") }
                           : prev,
                       )
                     }
