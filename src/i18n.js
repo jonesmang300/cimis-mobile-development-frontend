@@ -15,10 +15,9 @@ const resources = {
       preferences: "Preferences",
       changeLanguage: "Change Language",
       logout: "Logout",
-      userName: "Uchizi Nyirongo",
-      phoneNumber: "+265984227262",
-      role: "Money Counter",
-      
+      userName: "",
+      phoneNumber: "",
+      role: "",
     },
   },
   ny: {

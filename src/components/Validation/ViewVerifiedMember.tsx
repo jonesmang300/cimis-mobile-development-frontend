@@ -1,28 +1,32 @@
 import React, { useEffect, useState } from "react";
 import {
-  IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonItem,
-  IonLabel,
+  IonBadge,
+  IonButton,
+  IonButtons,
   IonCard,
+  IonCardContent,
   IonCardHeader,
   IonCardTitle,
-  IonCardContent,
-  IonButtons,
-  IonButton,
+  IonContent,
+  IonHeader,
   IonIcon,
+  IonItem,
+  IonLabel,
+  IonPage,
   IonSpinner,
-  IonBadge,
+  IonTitle,
+  IonToolbar,
+  useIonRouter,
 } from "@ionic/react";
-
 import { arrowBack } from "ionicons/icons";
-import { useIonRouter } from "@ionic/react";
 import { useParams } from "react-router-dom";
 
-import { apiGet } from "../../services/api";
+import {
+  getVerifiedMemberBySppCode,
+  getLocationNamesForMember,
+  VerifiedMemberDetails,
+} from "../../services/viewVerifiedMember.service";
+
 import "./ViewVerifiedMember.css";
 
 interface RouteParams {
@@ -33,11 +37,10 @@ const ViewVerifiedMember: React.FC = () => {
   const router = useIonRouter();
   const { sppCode } = useParams<RouteParams>();
 
-  const [member, setMember] = useState<any | null>(null);
+  const [member, setMember] = useState<VerifiedMemberDetails | null>(null);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  // Location Names
   const [regionName, setRegionName] = useState("N/A");
   const [districtName, setDistrictName] = useState("N/A");
   const [taName, setTaName] = useState("N/A");
@@ -49,23 +52,35 @@ const ViewVerifiedMember: React.FC = () => {
   useEffect(() => {
     if (!sppCode) return;
 
+    let cancelled = false;
+
     const load = async () => {
       try {
         setLoading(true);
         setErrorMsg("");
 
-        const data = await apiGet<any>(`/beneficiaries/${sppCode}`);
+        const data = await getVerifiedMemberBySppCode(sppCode);
+
+        if (cancelled) return;
+
         setMember(data || null);
       } catch (err: any) {
         console.error("Load failed:", err);
+
+        if (cancelled) return;
+
         setMember(null);
         setErrorMsg(err?.message || "Failed to load member");
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     load();
+
+    return () => {
+      cancelled = true;
+    };
   }, [sppCode]);
 
   /* ===============================
@@ -74,47 +89,50 @@ const ViewVerifiedMember: React.FC = () => {
   useEffect(() => {
     if (!member) return;
 
+    let cancelled = false;
+
+    // reset names immediately to avoid showing old data
+    setRegionName("N/A");
+    setDistrictName("N/A");
+    setTaName("N/A");
+    setVcName("N/A");
+
     const loadNames = async () => {
       try {
-        const regions = await apiGet<any[]>(`/regions`);
-        const r = regions.find((x) => x.regionID === member.regionID);
-        setRegionName(r?.name || member.regionID || "N/A");
+        const names = await getLocationNamesForMember(member);
 
-        const districts = await apiGet<any[]>(
-          `/districts?regionID=${encodeURIComponent(member.regionID)}`,
-        );
-        const d = districts.find((x) => x.DistrictID === member.districtID);
-        setDistrictName(d?.DistrictName || member.districtID || "N/A");
+        if (cancelled) return;
 
-        const tas = await apiGet<any[]>(
-          `/tas?districtID=${encodeURIComponent(member.districtID)}`,
-        );
-        const t = tas.find((x) => x.TAID === member.taID);
-        setTaName(t?.TAName || member.taID || "N/A");
-
-        const vcs = await apiGet<any[]>(
-          `/village-clusters?taID=${encodeURIComponent(member.taID)}`,
-        );
-        const v = vcs.find(
-          (x) => x.villageClusterID === member.villageClusterID,
-        );
-        setVcName(v?.villageClusterName || member.villageClusterID || "N/A");
+        setRegionName(names.regionName);
+        setDistrictName(names.districtName);
+        setTaName(names.taName);
+        setVcName(names.vcName);
       } catch (err) {
         console.error("Failed loading location names:", err);
       }
     };
 
     loadNames();
+
+    return () => {
+      cancelled = true;
+    };
   }, [member]);
 
   /* ===============================
      FORMATTERS
   ================================ */
-  const formatSex = (sex: string) =>
+  const formatSex = (sex?: string) =>
     sex === "01" ? "Male" : sex === "02" ? "Female" : "N/A";
 
-  const formatDate = (date: string) =>
-    date ? new Date(date).toLocaleDateString() : "N/A";
+  const formatDate = (date?: string) => {
+    if (!date) return "N/A";
+
+    const d = new Date(date);
+    if (Number.isNaN(d.getTime())) return "N/A";
+
+    return d.toLocaleDateString();
+  };
 
   /* ===============================
      UI
@@ -132,7 +150,6 @@ const ViewVerifiedMember: React.FC = () => {
         </IonToolbar>
       </IonHeader>
 
-      {/* IMPORTANT: fullscreen prevents bottom cut-off issues */}
       <IonContent fullscreen className="ion-padding view-verified-member-page">
         {loading ? (
           <div className="view-verified-spinner">
@@ -243,7 +260,6 @@ const ViewVerifiedMember: React.FC = () => {
               </IonCardContent>
             </IonCard>
 
-            {/* IMPORTANT: prevents last item from hiding under tab bar */}
             <div className="bottom-spacer" />
           </>
         )}

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   IonBadge,
   IonButton,
@@ -10,8 +10,6 @@ import {
   IonContent,
   IonHeader,
   IonIcon,
-  IonInfiniteScroll,
-  IonInfiniteScrollContent,
   IonItem,
   IonLabel,
   IonList,
@@ -24,24 +22,21 @@ import {
   IonToolbar,
   useIonRouter,
 } from "@ionic/react";
-import { arrowBack, eyeOutline } from "ionicons/icons";
+
+import { arrowBack } from "ionicons/icons";
 
 import { useLocationFilters } from "../../hooks/useLocationFilters";
-import { useLocalInfiniteScroll } from "../../hooks/useLocalInfiniteScroll";
 
 import {
-  getVerifiedMembers,
-  VerifiedMember,
-} from "../../services/verifiedMembers.service";
+  getGroupMembersSummary,
+  getVerifiedTotals,
+  GroupSummaryRow,
+  VerifiedTotals,
+} from "../../services/groupMembersSummary.service";
 
-import "./VerifiedMembers.css";
+import "./GroupMembersSummary.css";
 
-/* ===============================
-   CONFIG
-================================ */
-const PAGE_SIZE = 20;
-
-const VerifiedMembers: React.FC = () => {
+const GroupMembersSummary: React.FC = () => {
   const router = useIonRouter();
 
   /* ===============================
@@ -72,33 +67,26 @@ const VerifiedMembers: React.FC = () => {
   /* ===============================
      DATA
   ================================ */
-  const [members, setMembers] = useState<VerifiedMember[]>([]);
+  const [rows, setRows] = useState<GroupSummaryRow[]>([]);
+  const [verifiedTotals, setVerifiedTotals] = useState<VerifiedTotals>({
+    M: 0,
+    F: 0,
+    Total: 0,
+  });
+
   const [loading, setLoading] = useState(false);
-
-  /* ===============================
-     INFINITE SCROLL (REUSABLE)
-  ================================ */
-  const { visible, loadMore, resetKey } =
-    useLocalInfiniteScroll<VerifiedMember>({
-      items: members,
-      pageSize: PAGE_SIZE,
-    });
-
-  const infiniteRef = useRef<HTMLIonInfiniteScrollElement | null>(null);
+  const [loadingVerified, setLoadingVerified] = useState(false);
 
   /* ===============================
      RESET WHEN VC CHANGES
   ================================ */
   useEffect(() => {
-    setMembers([]);
-
-    if (infiniteRef.current) {
-      infiniteRef.current.disabled = false;
-    }
+    setRows([]);
+    setVerifiedTotals({ M: 0, F: 0, Total: 0 });
   }, [vc]);
 
   /* ===============================
-     LOAD VERIFIED MEMBERS (ALL)
+     LOAD GROUP SUMMARY
   ================================ */
   useEffect(() => {
     if (!vc) return;
@@ -109,21 +97,14 @@ const VerifiedMembers: React.FC = () => {
       setLoading(true);
 
       try {
-        if (infiniteRef.current) {
-          infiniteRef.current.disabled = false;
-        }
-
-        const rows = await getVerifiedMembers(vc);
+        const data = await getGroupMembersSummary(vc);
 
         if (cancelled) return;
 
-        setMembers(Array.isArray(rows) ? rows : []);
+        setRows(Array.isArray(data) ? data : []);
       } catch (err) {
-        console.error("Load verified failed:", err);
-
-        if (!cancelled) {
-          setMembers([]);
-        }
+        console.error("Load group summary failed:", err);
+        if (!cancelled) setRows([]);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -136,7 +117,52 @@ const VerifiedMembers: React.FC = () => {
     };
   }, [vc]);
 
-  const hasData = members.length > 0;
+  /* ===============================
+     LOAD VERIFIED TOTALS
+  ================================ */
+  useEffect(() => {
+    if (!vc) return;
+
+    let cancelled = false;
+
+    const loadVerified = async () => {
+      setLoadingVerified(true);
+
+      try {
+        const totals = await getVerifiedTotals(vc);
+
+        if (cancelled) return;
+
+        setVerifiedTotals(totals);
+      } catch (err) {
+        console.error("Load verified totals failed:", err);
+        if (!cancelled) setVerifiedTotals({ M: 0, F: 0, Total: 0 });
+      } finally {
+        if (!cancelled) setLoadingVerified(false);
+      }
+    };
+
+    loadVerified();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [vc]);
+
+  const hasData = rows.length > 0;
+
+  /* ===============================
+     TOTALS (FROM GROUPS)
+  ================================ */
+  const totals = rows.reduce(
+    (acc, r) => {
+      acc.males += Number(r.males || 0);
+      acc.females += Number(r.females || 0);
+      acc.total += Number(r.total || 0);
+      return acc;
+    },
+    { males: 0, females: 0, total: 0 },
+  );
 
   return (
     <IonPage>
@@ -147,15 +173,15 @@ const VerifiedMembers: React.FC = () => {
               <IonIcon icon={arrowBack} />
             </IonButton>
           </IonButtons>
-          <IonTitle>Verified Members</IonTitle>
+          <IonTitle>Group Members Summary</IonTitle>
         </IonToolbar>
       </IonHeader>
 
-      <IonContent fullscreen className="ion-padding verified-members-page">
+      <IonContent fullscreen className="ion-padding group-summary-page">
         {/* FILTER CARD */}
         <IonCard>
           <IonCardHeader>
-            <IonCardTitle>Filter Verified Members</IonCardTitle>
+            <IonCardTitle>Filter by Location</IonCardTitle>
           </IonCardHeader>
 
           <IonCardContent>
@@ -229,54 +255,70 @@ const VerifiedMembers: React.FC = () => {
           message="Loading filters..."
         />
 
-        {/* VERIFIED LIST */}
+        {/* LOADING */}
         {loading ? (
-          <div className="verified-members-spinner">
+          <div className="group-summary-spinner">
             <IonSpinner name="crescent" />
           </div>
         ) : !hasData ? (
-          <IonBadge color="medium">No verified beneficiaries found</IonBadge>
+          <IonBadge color="medium">No groups found</IonBadge>
         ) : (
           <>
-            <IonList>
-              {visible.map((m, idx) => (
-                <IonItem key={m.sppCode || idx}>
-                  <IonLabel>
-                    <h2>{m.hh_head_name}</h2>
-                    <p>{m.hh_code}</p>
+            {/* VERIFIED TOTALS */}
+            <IonCard className="summary-total-card">
+              <IonCardHeader>
+                <IonCardTitle>Totals (Verified Members)</IonCardTitle>
+              </IonCardHeader>
 
-                    <IonBadge color="success">
-                      Group: {m.groupname || "No Group"}
-                    </IonBadge>
-                  </IonLabel>
+              <IonCardContent className="summary-totals">
+                {loadingVerified ? (
+                  <IonSpinner name="crescent" />
+                ) : (
+                  <>
+                    <div>
+                      <strong>M:</strong>{" "}
+                      <IonBadge color="primary">{verifiedTotals.M}</IonBadge>
+                    </div>
+                    <div>
+                      <strong>F:</strong>{" "}
+                      <IonBadge color="danger">{verifiedTotals.F}</IonBadge>
+                    </div>
+                    <div>
+                      <strong>Total:</strong>{" "}
+                      <IonBadge color="success">
+                        {verifiedTotals.Total}
+                      </IonBadge>
+                    </div>
+                  </>
+                )}
+              </IonCardContent>
+            </IonCard>
 
-                  <IonButton
-                    slot="end"
-                    fill="clear"
-                    onClick={() => {
-                      localStorage.setItem("view_sppCode", m.sppCode);
-                      router.push(
-                        `/view_verified_member/${encodeURIComponent(m.sppCode)}`,
-                      );
-                    }}
-                  >
-                    <IonIcon icon={eyeOutline} />
-                  </IonButton>
-                </IonItem>
-              ))}
-            </IonList>
+            {/* GROUP LIST */}
+            <IonCard>
+              <IonCardHeader>
+                <IonCardTitle>Groups</IonCardTitle>
+              </IonCardHeader>
 
-            <IonInfiniteScroll
-              key={resetKey}
-              ref={infiniteRef}
-              onIonInfinite={loadMore}
-              threshold="100px"
-            >
-              <IonInfiniteScrollContent
-                loadingSpinner="crescent"
-                loadingText="Loading more..."
-              />
-            </IonInfiniteScroll>
+              <IonCardContent>
+                <IonList>
+                  {rows.map((r, idx) => (
+                    <IonItem key={`${r.groupname}-${idx}`}>
+                      <IonLabel>
+                        <h2>{r.groupname || "No Group"}</h2>
+                        <p>
+                          M: {r.males} | F: {r.females} | Total: {r.total}
+                        </p>
+                      </IonLabel>
+
+                      <IonBadge slot="end" color="success">
+                        {r.total}
+                      </IonBadge>
+                    </IonItem>
+                  ))}
+                </IonList>
+              </IonCardContent>
+            </IonCard>
 
             <div className="bottom-spacer" />
           </>
@@ -286,4 +328,4 @@ const VerifiedMembers: React.FC = () => {
   );
 };
 
-export default VerifiedMembers;
+export default GroupMembersSummary;

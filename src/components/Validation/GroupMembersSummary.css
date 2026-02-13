@@ -1,0 +1,46 @@
+.group-summary-page {
+  --padding-top: 12px;
+  --padding-bottom: calc(40px + var(--ion-safe-area-bottom));
+}
+
+.group-summary-spinner {
+  text-align: center;
+  padding: 20px;
+}
+
+.bottom-spacer {
+  height: calc(120px + var(--ion-safe-area-bottom));
+}
+
+/* Totals card */
+.summary-total-card {
+  border-radius: 12px;
+  border: 1px solid var(--ion-color-light);
+  box-shadow: none;
+}
+
+.summary-totals {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.summary-totals > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Groups card */
+.group-summary-page ion-card {
+  border-radius: 12px;
+  border: 1px solid var(--ion-color-light);
+  box-shadow: none;
+}
+
+.group-summary-page ion-list {
+  border: 1px solid var(--ion-color-light);
+  border-radius: 12px;
+  overflow: hidden;
+}

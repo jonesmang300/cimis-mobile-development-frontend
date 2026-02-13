@@ -1,18 +1,11 @@
-import { Capacitor } from "@capacitor/core";
 import { apiGet, apiPost, apiPatch } from "./api";
-
-import { getBeneficiaries, preloadBeneficiaries } from "../db/sqlite";
-
-/* ===============================
-   PLATFORM
-================================ */
-const isNative = Capacitor.getPlatform() !== "web";
 
 /* ===============================
    TYPES
 ================================ */
 export type Beneficiary = {
   sppCode: string;
+
   hh_head_name?: string;
   hh_code?: string;
 
@@ -23,7 +16,13 @@ export type Beneficiary = {
   hh_size?: number | null;
 
   groupname?: string;
-  selected?: number | string | null; // ✅ add this
+  selected?: number | string | null;
+
+  // optional fields from backend
+  villageClusterID?: string;
+  regionID?: string;
+  districtID?: string;
+  taID?: string;
 };
 
 export type BulkSyncPayload = {
@@ -34,6 +33,7 @@ export type BulkSyncPayload = {
   dob: string | null;
   groupname: string;
   selected: 1;
+  deviceId: string;
 };
 
 /* ===============================
@@ -45,30 +45,22 @@ const toDateOnly = (date: string | null | undefined) => {
 };
 
 /* ===============================
-   FETCH BENEFICIARIES BY VC
+   FETCH BENEFICIARIES BY VC (API ONLY)
 ================================ */
 export const fetchBeneficiariesByVC = async (
   vc: string,
 ): Promise<Beneficiary[]> => {
   if (!vc) return [];
 
-  // Native: sync API -> SQLite -> read from SQLite
-  if (isNative) {
-    await preloadBeneficiaries(vc);
-    const res = await getBeneficiaries(vc);
-    return res.values || [];
-  }
-
-  // Web: API only
   const rows = await apiGet<Beneficiary[]>(
-    `/beneficiaries/filter?villageClusterID=${vc}`,
+    `/beneficiaries/filter?villageClusterID=${encodeURIComponent(vc)}`,
   );
 
   return Array.isArray(rows) ? rows : [];
 };
 
 /* ===============================
-   UPDATE BENEFICIARY
+   UPDATE BENEFICIARY (API ONLY)
 ================================ */
 export const updateBeneficiary = async (beneficiary: Beneficiary) => {
   if (!beneficiary?.sppCode) throw new Error("Missing sppCode");
@@ -95,14 +87,16 @@ export const updateBeneficiary = async (beneficiary: Beneficiary) => {
 };
 
 /* ===============================
-   BULK SYNC GROUP
+   BULK SYNC GROUP (API ONLY)
 ================================ */
 export const bulkSyncGroup = async (
   selectedMembers: Beneficiary[],
   groupName: string,
+  deviceId: string,
 ) => {
   const g = (groupName || "").trim();
   if (!g) throw new Error("Group name is required");
+  if (!deviceId?.trim()) throw new Error("DeviceId is required");
 
   const payload: BulkSyncPayload[] = selectedMembers.map((m) => {
     // nat_id: allow null, but never send ""
@@ -126,10 +120,9 @@ export const bulkSyncGroup = async (
       dob: toDateOnly(m.dob),
       groupname: g,
       selected: 1,
+      deviceId, // ✅ IMPORTANT
     };
   });
 
-  // ✅ IMPORTANT: this is what was missing
-  // Change endpoint to your real backend endpoint if different
   return apiPost("/beneficiaries/bulk-sync", payload);
 };
