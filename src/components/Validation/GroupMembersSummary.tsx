@@ -20,6 +20,8 @@ import {
   IonSpinner,
   IonTitle,
   IonToolbar,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent,
   useIonRouter,
 } from "@ionic/react";
 
@@ -33,6 +35,8 @@ import {
   GroupSummaryRow,
   VerifiedTotals,
 } from "../../services/groupMembersSummary.service";
+
+import { useLocalInfiniteScroll } from "../../hooks/useLocalInfiniteScroll";
 
 import "./GroupMembersSummary.css";
 
@@ -76,6 +80,18 @@ const GroupMembersSummary: React.FC = () => {
 
   const [loading, setLoading] = useState(false);
   const [loadingVerified, setLoadingVerified] = useState(false);
+
+  /* ===============================
+     INFINITE SCROLL (GROUP LIST)
+  ================================ */
+  const {
+    visible: visibleRows,
+    loadMore,
+    resetKey,
+  } = useLocalInfiniteScroll<GroupSummaryRow>({
+    items: rows,
+    pageSize: 20,
+  });
 
   /* ===============================
      RESET WHEN VC CHANGES
@@ -150,19 +166,6 @@ const GroupMembersSummary: React.FC = () => {
   }, [vc]);
 
   const hasData = rows.length > 0;
-
-  /* ===============================
-     TOTALS (FROM GROUPS)
-  ================================ */
-  const totals = rows.reduce(
-    (acc, r) => {
-      acc.males += Number(r.males || 0);
-      acc.females += Number(r.females || 0);
-      acc.total += Number(r.total || 0);
-      return acc;
-    },
-    { males: 0, females: 0, total: 0 },
-  );
 
   return (
     <IonPage>
@@ -294,7 +297,7 @@ const GroupMembersSummary: React.FC = () => {
               </IonCardContent>
             </IonCard>
 
-            {/* GROUP LIST */}
+            {/* GROUP LIST (WITH SCROLL) */}
             <IonCard>
               <IonCardHeader>
                 <IonCardTitle>Groups</IonCardTitle>
@@ -302,7 +305,7 @@ const GroupMembersSummary: React.FC = () => {
 
               <IonCardContent>
                 <IonList>
-                  {rows.map((r, idx) => (
+                  {visibleRows.map((r, idx) => (
                     <IonItem key={`${r.groupname}-${idx}`}>
                       <IonLabel>
                         <h2>{r.groupname || "No Group"}</h2>
@@ -317,6 +320,18 @@ const GroupMembersSummary: React.FC = () => {
                     </IonItem>
                   ))}
                 </IonList>
+
+                {/* INFINITE SCROLL */}
+                <IonInfiniteScroll
+                  key={resetKey}
+                  threshold="100px"
+                  onIonInfinite={loadMore}
+                >
+                  <IonInfiniteScrollContent
+                    loadingSpinner="crescent"
+                    loadingText="Loading more groups..."
+                  />
+                </IonInfiniteScroll>
               </IonCardContent>
             </IonCard>
 

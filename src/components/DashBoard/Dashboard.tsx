@@ -31,10 +31,6 @@ import { homeOutline, settingsOutline, peopleOutline } from "ionicons/icons";
 import { getDashboardCounts } from "../../services/dashboard.service";
 
 import "./Dashboard.css";
-<<<<<<< HEAD
-import { useHistory } from "react-router";
-=======
->>>>>>> 45238ea98bad67bd645aa7954d5a15be83fdc3f9
 
 const Dashboard: React.FC = () => {
   const [totalVerified, setTotalVerified] = useState<number>(0);
