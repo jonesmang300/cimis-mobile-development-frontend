@@ -30,9 +30,9 @@ import { useLocationFilters } from "../../hooks/useLocationFilters";
 import { useLocalInfiniteScroll } from "../../hooks/useLocalInfiniteScroll";
 
 import {
-  getVerifiedMembers,
+  getVerifiedMembersByDevice,
   VerifiedMember,
-} from "../../services/verifiedMembers.service";
+} from "../../services/verifiedMembersByDevice.service";
 
 import "./VerifiedMembers.css";
 
@@ -41,7 +41,7 @@ import "./VerifiedMembers.css";
 ================================ */
 const PAGE_SIZE = 20;
 
-const VerifiedMembers: React.FC = () => {
+const VerifiedMembersByDevice: React.FC = () => {
   const router = useIonRouter();
 
   /* ===============================
@@ -98,7 +98,8 @@ const VerifiedMembers: React.FC = () => {
   }, [vc]);
 
   /* ===============================
-     LOAD VERIFIED MEMBERS (ALL)
+     LOAD VERIFIED MEMBERS
+     BY VC + DEVICEID
   ================================ */
   useEffect(() => {
     if (!vc) return;
@@ -113,13 +114,13 @@ const VerifiedMembers: React.FC = () => {
           infiniteRef.current.disabled = false;
         }
 
-        const rows = await getVerifiedMembers(vc);
+        const rows = await getVerifiedMembersByDevice(vc);
 
         if (cancelled) return;
 
         setMembers(Array.isArray(rows) ? rows : []);
       } catch (err) {
-        console.error("Load verified failed:", err);
+        console.error("Load verified by device failed:", err);
 
         if (!cancelled) {
           setMembers([]);
@@ -147,7 +148,7 @@ const VerifiedMembers: React.FC = () => {
               <IonIcon icon={arrowBack} />
             </IonButton>
           </IonButtons>
-          <IonTitle>Verified Members</IonTitle>
+          <IonTitle>My Verified Members</IonTitle>
         </IonToolbar>
       </IonHeader>
 
@@ -155,7 +156,7 @@ const VerifiedMembers: React.FC = () => {
         {/* FILTER CARD */}
         <IonCard>
           <IonCardHeader>
-            <IonCardTitle>Filter Verified Members</IonCardTitle>
+            <IonCardTitle>Filter My Verified Members</IonCardTitle>
           </IonCardHeader>
 
           <IonCardContent>
@@ -286,4 +287,4 @@ const VerifiedMembers: React.FC = () => {
   );
 };
 
-export default VerifiedMembers;
+export default VerifiedMembersByDevice;

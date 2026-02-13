@@ -1,0 +1,64 @@
+/* ===============================
+   Verified Members Page
+================================ */
+
+.verified-members-page {
+  --padding-top: 12px;
+
+  /* IMPORTANT: this is what prevents last item being hidden */
+  --padding-bottom: calc(40px + var(--ion-safe-area-bottom));
+}
+
+/* Cards */
+.verified-members-page ion-card {
+  border-radius: 12px;
+  box-shadow: none;
+  border: 1px solid var(--ion-color-light);
+}
+
+.verified-members-page ion-card-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Items */
+.verified-members-page ion-item {
+  --inner-padding-end: 8px;
+  --padding-start: 10px;
+  --min-height: 56px;
+}
+
+/* List */
+.verified-members-page ion-list {
+  border: 1px solid var(--ion-color-light);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 10px;
+  padding-bottom: 0;
+}
+
+/* Text */
+.verified-members-page ion-item ion-label h2 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.verified-members-page ion-item ion-label p {
+  font-size: 13px;
+  margin: 4px 0 6px 0;
+  opacity: 0.8;
+}
+
+.verified-members-page ion-badge {
+  margin-top: 6px;
+}
+
+.verified-members-spinner {
+  text-align: center;
+  padding: 20px;
+}
+
+.bottom-spacer {
+  height: calc(120px + var(--ion-safe-area-bottom));
+}

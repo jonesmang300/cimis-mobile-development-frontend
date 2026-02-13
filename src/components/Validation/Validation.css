@@ -1,3 +1,7 @@
+/* ===============================
+   VALIDATION PAGE
+================================ */
+
 .validation-page {
   --padding-top: 12px;
   --padding-bottom: calc(40px + var(--ion-safe-area-bottom));
@@ -13,4 +17,56 @@
   border-radius: 12px;
   overflow: hidden;
   margin-top: 10px;
+}
+
+/* ===============================
+   VALIDATION EDIT MODAL (FIX)
+================================ */
+
+/* modal sizing on tablets + desktop */
+.validation-edit-modal {
+  --width: min(720px, 96vw);
+  --height: min(92vh, 900px);
+  --border-radius: 16px;
+}
+
+/* IonContent in modal */
+.validation-modal {
+  --padding-bottom: 0px;
+}
+
+/* scrollable card */
+.validation-edit-card {
+  margin: 0;
+  border-radius: 14px;
+  border: 1px solid var(--ion-color-light);
+  box-shadow: none;
+
+  /* KEY FIX: card scroll */
+  height: calc(100vh - 210px);
+  overflow-y: auto;
+}
+
+/* On tablets/laptops, use modal height not full viewport */
+@media (min-width: 768px) {
+  .validation-edit-card {
+    height: calc(92vh - 210px);
+  }
+}
+
+.validation-edit-card-content {
+  padding-bottom: 20px;
+}
+
+.validation-edit-spacer {
+  height: 30px;
+}
+
+/* sticky footer button */
+.validation-edit-footer {
+  position: sticky;
+  bottom: 0;
+  padding: 14px 16px calc(14px + var(--ion-safe-area-bottom)) 16px;
+  background: var(--ion-background-color);
+  border-top: 1px solid var(--ion-color-light);
 }
