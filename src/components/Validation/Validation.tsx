@@ -703,6 +703,7 @@ const GroupAssignment: React.FC = () => {
         <IonModal
           isOpen={showEditModal}
           onDidDismiss={() => setShowEditModal(false)}
+          className="validation-edit-modal"
         >
           <IonHeader>
             <IonToolbar>
@@ -715,110 +716,118 @@ const GroupAssignment: React.FC = () => {
             </IonToolbar>
           </IonHeader>
 
-          <IonContent fullscreen className="ion-padding validation-modal">
+          <IonContent className="ion-padding validation-modal">
             {editingMember && (
-              <>
-                <IonItem>
-                  <IonLabel position="stacked">Gender *</IonLabel>
-                  <IonSelect
-                    value={editingMember.sex}
-                    onIonChange={(e) =>
-                      setEditingMember((prev) =>
-                        prev ? { ...prev, sex: e.detail.value } : prev,
-                      )
-                    }
-                  >
-                    <IonSelectOption value="01">Male</IonSelectOption>
-                    <IonSelectOption value="02">Female</IonSelectOption>
-                  </IonSelect>
-                </IonItem>
+              <IonCard className="validation-edit-card">
+                <IonCardContent className="validation-edit-card-content">
+                  <IonItem>
+                    <IonLabel position="stacked">Gender *</IonLabel>
+                    <IonSelect
+                      value={editingMember.sex}
+                      onIonChange={(e) =>
+                        setEditingMember((prev) =>
+                          prev ? { ...prev, sex: e.detail.value } : prev,
+                        )
+                      }
+                    >
+                      <IonSelectOption value="01">Male</IonSelectOption>
+                      <IonSelectOption value="02">Female</IonSelectOption>
+                    </IonSelect>
+                  </IonItem>
 
-                <IonItem>
-                  <IonLabel position="stacked">
-                    Date of Birth (must be 18+) *
-                  </IonLabel>
+                  <IonItem>
+                    <IonLabel position="stacked">
+                      Date of Birth (must be 18+) *
+                    </IonLabel>
 
-                  <IonDatetime
-                    presentation="date"
-                    value={editingMember.dob || undefined}
-                    max={getMaxDobISO()}
-                    onIonChange={(e) => {
-                      const val = String(e.detail.value || "");
-                      setEditingMember((prev) =>
-                        prev ? { ...prev, dob: val } : prev,
-                      );
+                    <IonDatetime
+                      presentation="date"
+                      value={editingMember.dob || undefined}
+                      max={getMaxDobISO()}
+                      onIonChange={(e) => {
+                        const val = String(e.detail.value || "");
+                        setEditingMember((prev) =>
+                          prev ? { ...prev, dob: val } : prev,
+                        );
 
-                      setTimeout(() => {
-                        (document.activeElement as HTMLElement | null)?.blur();
-                      }, 50);
-                    }}
-                  />
-                </IonItem>
+                        setTimeout(() => {
+                          (
+                            document.activeElement as HTMLElement | null
+                          )?.blur();
+                        }, 50);
+                      }}
+                    />
+                  </IonItem>
 
-                <IonItem>
-                  <IonLabel position="stacked">
-                    National ID (optional, max {MAX_NAT_ID})
-                  </IonLabel>
-                  <IonInput
-                    type="text"
-                    value={editingMember.nat_id || ""}
-                    maxlength={MAX_NAT_ID}
-                    onIonInput={(e) =>
-                      setEditingMember((prev) =>
-                        prev
-                          ? { ...prev, nat_id: String(e.detail.value || "") }
-                          : prev,
-                      )
-                    }
-                    placeholder="Enter National ID"
-                  />
-                </IonItem>
+                  <IonItem>
+                    <IonLabel position="stacked">
+                      National ID (optional, max {MAX_NAT_ID})
+                    </IonLabel>
+                    <IonInput
+                      type="text"
+                      value={editingMember.nat_id || ""}
+                      maxlength={MAX_NAT_ID}
+                      onIonInput={(e) =>
+                        setEditingMember((prev) =>
+                          prev
+                            ? { ...prev, nat_id: String(e.detail.value || "") }
+                            : prev,
+                        )
+                      }
+                      placeholder="Enter National ID"
+                    />
+                  </IonItem>
 
-                <IonItem>
-                  <IonLabel position="stacked">
-                    Household Size (optional, max {MAX_HH_SIZE})
-                  </IonLabel>
-                  <IonInput
-                    type="number"
-                    value={editingMember.hh_size ?? ""}
-                    onIonInput={(e) =>
-                      setEditingMember((prev) =>
-                        prev
-                          ? {
-                              ...prev,
-                              hh_size:
-                                e.detail.value === "" || e.detail.value === null
-                                  ? null
-                                  : Number(String(e.detail.value)),
-                            }
-                          : prev,
-                      )
-                    }
-                    placeholder="Enter household size"
-                  />
-                </IonItem>
+                  <IonItem>
+                    <IonLabel position="stacked">
+                      Household Size (optional, max {MAX_HH_SIZE})
+                    </IonLabel>
+                    <IonInput
+                      type="number"
+                      value={editingMember.hh_size ?? ""}
+                      onIonInput={(e) =>
+                        setEditingMember((prev) =>
+                          prev
+                            ? {
+                                ...prev,
+                                hh_size:
+                                  e.detail.value === "" ||
+                                  e.detail.value === null
+                                    ? null
+                                    : Number(String(e.detail.value)),
+                              }
+                            : prev,
+                        )
+                      }
+                      placeholder="Enter household size"
+                    />
+                  </IonItem>
 
-                <IonButton
-                  expand="block"
-                  color="success"
-                  onClick={saveEditedMember}
-                  style={{ marginTop: 20 }}
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <IonSpinner name="crescent" style={{ marginRight: 8 }} />
-                      Saving…
-                    </>
-                  ) : (
-                    "Save Changes"
-                  )}
-                </IonButton>
-
-                <div className="bottom-spacer" />
-              </>
+                  {/* spacer so last item isn't hidden */}
+                  <div className="validation-edit-spacer" />
+                </IonCardContent>
+              </IonCard>
             )}
           </IonContent>
+
+          {/* Sticky footer */}
+          <div className="validation-edit-footer">
+            <IonButton
+              expand="block"
+              color="success"
+              onClick={saveEditedMember}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <IonSpinner name="crescent" style={{ marginRight: 8 }} />
+                  Saving…
+                </>
+              ) : (
+                "Save Changes"
+              )}
+            </IonButton>
+          </div>
         </IonModal>
 
         <div className="bottom-spacer" />

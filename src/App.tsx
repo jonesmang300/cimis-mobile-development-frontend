@@ -56,6 +56,7 @@ import { useAuth } from "./components/context/AuthContext";
 /* SQLite init */
 import { initAndSeed } from "./db/sqlite";
 import VerifiedMembersByDevice from "./components/Validation/VerifiedMembersByDevice";
+import GroupMembersSummary from "./components/Validation/GroupMembersSummary";
 
 setupIonicReact();
 
@@ -123,6 +124,11 @@ const App: React.FC = () => {
                 exact
                 path="/verified_members_by_device"
                 component={VerifiedMembersByDevice}
+              />
+              <Route
+                exact
+                path="/group_members_summary"
+                component={GroupMembersSummary}
               />
 
               <Route exact path="/">

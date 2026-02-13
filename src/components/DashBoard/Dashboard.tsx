@@ -91,6 +91,12 @@ const Dashboard: React.FC = () => {
               <IonIcon icon={settingsOutline} slot="start" />
               <IonLabel>Validation</IonLabel>
             </IonItem>
+
+            {/* ✅ NEW MENU ITEM */}
+            <IonItem button routerLink="/group_members_summary">
+              <IonIcon icon={peopleOutline} slot="start" />
+              <IonLabel>Group Members Summary</IonLabel>
+            </IonItem>
           </IonList>
         </IonContent>
       </IonMenu>
@@ -175,6 +181,32 @@ const Dashboard: React.FC = () => {
                           {myVerified.toLocaleString()}
                         </IonBadge>
                       )}
+                    </IonCardTitle>
+                  </IonCardHeader>
+                </IonCard>
+              </IonCol>
+
+              {/* ✅ NEW CARD: GROUP MEMBERS SUMMARY */}
+              <IonCol size="12" sizeMd="6">
+                <IonCard
+                  className="green-card"
+                  routerLink="/group_members_summary"
+                  button
+                >
+                  <IonCardHeader>
+                    <IonIcon
+                      icon={peopleOutline}
+                      size="large"
+                      className="card-icon"
+                      style={{ color: "#fff" }}
+                    />
+
+                    <IonCardSubtitle style={{ color: "#fff" }}>
+                      Group Members Summary
+                    </IonCardSubtitle>
+
+                    <IonCardTitle style={{ color: "#fff" }}>
+                      View Summary
                     </IonCardTitle>
                   </IonCardHeader>
                 </IonCard>
