@@ -26,7 +26,7 @@ import {
   useIonViewWillEnter,
 } from "@ionic/react";
 
-import { homeOutline, settingsOutline, peopleOutline } from "ionicons/icons";
+import { homeOutline, settingsOutline, peopleOutline, checkmarkCircleOutline } from "ionicons/icons";
 
 import { getDashboardCounts } from "../../services/dashboard.service";
 
@@ -88,9 +88,9 @@ const Dashboard: React.FC = () => {
             </IonItem>
 
             <IonItem button routerLink="/validation">
-              <IonIcon icon={settingsOutline} slot="start" />
-              <IonLabel>Validation</IonLabel>
-            </IonItem>
+  <IonIcon icon={checkmarkCircleOutline} slot="start" />
+  <IonLabel>Validation</IonLabel>
+</IonItem>
 
             {/* ✅ NEW MENU ITEM */}
             <IonItem button routerLink="/group_members_summary">
