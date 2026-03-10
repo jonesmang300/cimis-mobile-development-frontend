@@ -1,53 +1,41 @@
 import React, { useCallback, useState } from "react";
 import {
-  IonContent,
-  IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonIcon,
-  IonCard,
-  IonCardHeader,
-  IonCardSubtitle,
-  IonCardTitle,
-  IonGrid,
+  IonButtons,
   IonCol,
-  IonRow,
-  IonMenu,
-  IonList,
+  IonContent,
+  IonGrid,
+  IonHeader,
+  IonIcon,
   IonItem,
   IonLabel,
+  IonList,
+  IonMenu,
   IonMenuButton,
-  IonButtons,
+  IonPage,
+  IonRow,
   IonSplitPane,
-  IonSpinner,
-  IonBadge,
+  IonTitle,
   IonToast,
+  IonToolbar,
   useIonViewWillEnter,
 } from "@ionic/react";
 
 import { homeOutline, settingsOutline, peopleOutline, checkmarkCircleOutline } from "ionicons/icons";
 
 import { getDashboardCounts } from "../../services/dashboard.service";
-
+import DashboardStatCard from "./DashboardStatCard";
 import "./Dashboard.css";
 
 const Dashboard: React.FC = () => {
   const [totalVerified, setTotalVerified] = useState<number>(0);
   const [myVerified, setMyVerified] = useState<number>(0);
-
   const [loading, setLoading] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
-  /**
-   * ✅ Load counts from server
-   */
   const loadCounts = useCallback(async () => {
     try {
       setLoading(true);
-
       const { totalVerified, myVerified } = await getDashboardCounts();
-
       setTotalVerified(totalVerified);
       setMyVerified(myVerified);
     } catch (err) {
@@ -58,16 +46,12 @@ const Dashboard: React.FC = () => {
     }
   }, []);
 
-  /**
-   * ✅ Reload every time you return to dashboard
-   */
   useIonViewWillEnter(() => {
     loadCounts();
   });
 
   return (
     <IonSplitPane contentId="main">
-      {/* SIDE MENU */}
       <IonMenu contentId="main">
         <IonHeader>
           <IonToolbar className="green-toolbar">
@@ -92,7 +76,6 @@ const Dashboard: React.FC = () => {
   <IonLabel>Validation</IonLabel>
 </IonItem>
 
-            {/* ✅ NEW MENU ITEM */}
             <IonItem button routerLink="/group_members_summary">
               <IonIcon icon={peopleOutline} slot="start" />
               <IonLabel>Group Members Summary</IonLabel>
@@ -101,7 +84,6 @@ const Dashboard: React.FC = () => {
         </IonContent>
       </IonMenu>
 
-      {/* MAIN PAGE */}
       <IonPage id="main">
         <IonHeader>
           <IonToolbar className="green-toolbar">
@@ -122,94 +104,35 @@ const Dashboard: React.FC = () => {
 
           <IonGrid>
             <IonRow>
-              {/* TOTAL VERIFIED */}
               <IonCol size="12" sizeMd="6">
-                <IonCard
-                  className="green-card"
+                <DashboardStatCard
+                  subtitle="Total Members Verified"
+                  icon={peopleOutline}
                   routerLink="/verified_members"
-                  button
-                >
-                  <IonCardHeader>
-                    <IonIcon
-                      icon={peopleOutline}
-                      size="large"
-                      className="card-icon"
-                      style={{ color: "#fff" }}
-                    />
-
-                    <IonCardSubtitle style={{ color: "#fff" }}>
-                      Total Members Verified
-                    </IonCardSubtitle>
-
-                    <IonCardTitle>
-                      {loading ? (
-                        <IonSpinner name="crescent" />
-                      ) : (
-                        <IonBadge color="success">
-                          {totalVerified.toLocaleString()}
-                        </IonBadge>
-                      )}
-                    </IonCardTitle>
-                  </IonCardHeader>
-                </IonCard>
+                  loading={loading}
+                  value={totalVerified}
+                  badgeColor="success"
+                />
               </IonCol>
 
-              {/* MY VERIFIED */}
               <IonCol size="12" sizeMd="6">
-                <IonCard
-                  className="green-card"
+                <DashboardStatCard
+                  subtitle="My Verified Members"
+                  icon={peopleOutline}
                   routerLink="/verified_members_by_device"
-                  button
-                >
-                  <IonCardHeader>
-                    <IonIcon
-                      icon={peopleOutline}
-                      size="large"
-                      className="card-icon"
-                      style={{ color: "#fff" }}
-                    />
-
-                    <IonCardSubtitle style={{ color: "#fff" }}>
-                      My Verified Members
-                    </IonCardSubtitle>
-
-                    <IonCardTitle>
-                      {loading ? (
-                        <IonSpinner name="crescent" />
-                      ) : (
-                        <IonBadge color="warning">
-                          {myVerified.toLocaleString()}
-                        </IonBadge>
-                      )}
-                    </IonCardTitle>
-                  </IonCardHeader>
-                </IonCard>
+                  loading={loading}
+                  value={myVerified}
+                  badgeColor="warning"
+                />
               </IonCol>
 
-              {/* ✅ NEW CARD: GROUP MEMBERS SUMMARY */}
               <IonCol size="12" sizeMd="6">
-                <IonCard
-                  className="green-card"
+                <DashboardStatCard
+                  subtitle="Group Members Summary"
+                  icon={peopleOutline}
                   routerLink="/group_members_summary"
-                  button
-                >
-                  <IonCardHeader>
-                    <IonIcon
-                      icon={peopleOutline}
-                      size="large"
-                      className="card-icon"
-                      style={{ color: "#fff" }}
-                    />
-
-                    <IonCardSubtitle style={{ color: "#fff" }}>
-                      Group Members Summary
-                    </IonCardSubtitle>
-
-                    <IonCardTitle style={{ color: "#fff" }}>
-                      View Summary
-                    </IonCardTitle>
-                  </IonCardHeader>
-                </IonCard>
+                  value="View Summary"
+                />
               </IonCol>
             </IonRow>
           </IonGrid>
