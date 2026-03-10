@@ -11,6 +11,7 @@ export const apiRequest = async <T = any>(
   endpoint: string,
   options?: RequestInit,
 ): Promise<T> => {
+  const token = localStorage.getItem("token");
   const url = endpoint.startsWith("http")
     ? endpoint
     : `${BASE_URL}${endpoint.startsWith("/") ? "" : "/"}${endpoint}`;
@@ -18,6 +19,7 @@ export const apiRequest = async <T = any>(
   const res = await fetch(url, {
     headers: {
       "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(options?.headers || {}),
     },
     ...options,

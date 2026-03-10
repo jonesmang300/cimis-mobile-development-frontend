@@ -49,7 +49,6 @@ import {
   listOutline,
   settingsOutline,
   peopleOutline,
-  walletOutline,
 } from "ionicons/icons";
 
 import { useAutoLogout } from "./hooks/useAutoLogout";
@@ -63,6 +62,8 @@ import Attendance from "./components/Attendance";
 import GroupIGA from "./components/GroupIGA";
 import MemberIGA from "./components/MemberIGA";
 import Trainings from "./components/Trainings";
+import GroupBeneficiaries from "./components/GroupBeneficiaries";
+import MemberSavings from "./components/MemberSavings";
 
 setupIonicReact();
 
@@ -139,11 +140,17 @@ const App: React.FC = () => {
               />
               <Route exact path="/groups" component={Group} />
               <Route exact path="/groups/savings" component={Savings} />
+              <Route
+                exact
+                path="/groups/savings/member/:sppCode"
+                component={MemberSavings}
+              />
               
 <Route exact path="/groups/trainings" component={Trainings} />
 <Route exact path="/groups/attendance" component={Attendance} />
 <Route exact path="/groups/member-iga" component={MemberIGA} />
 <Route exact path="/groups/group-iga" component={GroupIGA} />
+<Route exact path="/groups/beneficiaries" component={GroupBeneficiaries} />
               
 
               <Route exact path="/">
@@ -165,11 +172,6 @@ const App: React.FC = () => {
               <IonTabButton tab="groups" href="/groups">
                 <IonIcon icon={peopleOutline} />
                 <IonLabel>Groups</IonLabel>
-              </IonTabButton>
-
-              <IonTabButton tab="transactions" href="/wallet">
-                <IonIcon icon={walletOutline} />
-                <IonLabel>Transactions</IonLabel>
               </IonTabButton>
 
               <IonTabButton tab="settings" href="/settings">

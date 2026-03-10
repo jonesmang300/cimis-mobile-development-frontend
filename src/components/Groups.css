@@ -2,6 +2,25 @@
   color: white;
 }
 
+.groups-loading {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.groups-list-card {
+  border-radius: 12px;
+  border: 1px solid var(--ion-color-light);
+  box-shadow: none;
+}
+
+.selected-group-card {
+  margin: 8px 0 12px;
+  border-radius: 12px;
+  border: 1px solid var(--ion-color-light);
+  box-shadow: none;
+}
+
 /* Card styling */
 .group-card {
   margin: 12px 0;
