@@ -70,3 +70,6 @@
   background: var(--ion-background-color);
   border-top: 1px solid var(--ion-color-light);
 }
+.toolbar-title {
+  color: white;
+}
