@@ -4,7 +4,6 @@ import { Capacitor } from "@capacitor/core";
 import {
   getRegions,
   getDistricts,
-  getTAs,
   getVillageClusters,
 } from "../db/sqlite";
 
@@ -93,12 +92,7 @@ export const useLocationFilters = () => {
     const load = async () => {
       setLoadingTas(true);
       try {
-        if (isNative) {
-          const res = await getTAs(district);
-          setTas(res.values || []);
-        } else {
-          setTas(await apiGet<any[]>(`/tas?districtID=${district}`));
-        }
+        setTas(await apiGet<any[]>(`/tas?districtID=${district}`));
       } finally {
         setLoadingTas(false);
       }

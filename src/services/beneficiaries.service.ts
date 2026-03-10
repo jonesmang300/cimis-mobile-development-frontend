@@ -16,6 +16,7 @@ export type Beneficiary = {
   hh_size?: number | null;
 
   groupname?: string;
+  groupCode?: string;
   selected?: number | string | null;
 
   // optional fields from backend
@@ -32,6 +33,7 @@ export type BulkSyncPayload = {
   sex: string | null;
   dob: string | null;
   groupname: string;
+  groupCode: string;
   selected: 1;
   deviceId: string;
 };
@@ -54,6 +56,18 @@ export const fetchBeneficiariesByVC = async (
 
   const rows = await apiGet<Beneficiary[]>(
     `/beneficiaries/filter?villageClusterID=${encodeURIComponent(vc)}`,
+  );
+
+  return Array.isArray(rows) ? rows : [];
+};
+
+export const fetchBeneficiariesByGroupCode = async (
+  groupCode: string,
+): Promise<Beneficiary[]> => {
+  if (!groupCode) return [];
+
+  const rows = await apiGet<Beneficiary[]>(
+    `/beneficiaries/group/${encodeURIComponent(groupCode)}`,
   );
 
   return Array.isArray(rows) ? rows : [];
@@ -92,10 +106,12 @@ export const updateBeneficiary = async (beneficiary: Beneficiary) => {
 export const bulkSyncGroup = async (
   selectedMembers: Beneficiary[],
   groupName: string,
+  groupCode: string,
   deviceId: string,
 ) => {
   const g = (groupName || "").trim();
   if (!g) throw new Error("Group name is required");
+  if (!groupCode?.trim()) throw new Error("Group code is required");
   if (!deviceId?.trim()) throw new Error("DeviceId is required");
 
   const payload: BulkSyncPayload[] = selectedMembers.map((m) => {
@@ -119,10 +135,37 @@ export const bulkSyncGroup = async (
       sex: m.sex ?? null,
       dob: toDateOnly(m.dob),
       groupname: g,
+      groupCode: groupCode.trim(),
       selected: 1,
       deviceId, // ✅ IMPORTANT
     };
   });
 
   return apiPost("/beneficiaries/bulk-sync", payload);
+};
+
+export type CreateGroupPayload = {
+  groupname: string;
+  DateEstablished: string;
+  regionID: string;
+  DistrictID: string;
+  TAID: string;
+  villageClusterID: string;
+  cohort?: string;
+  projectID?: string;
+  programID?: string;
+  userID?: string | null;
+  slgApproved?: string;
+};
+
+export type CreateGroupResponse = {
+  id: string;
+  groupID: string;
+  message?: string;
+};
+
+export const createGroup = async (
+  payload: CreateGroupPayload,
+): Promise<CreateGroupResponse> => {
+  return apiPost<CreateGroupResponse>("/groups", payload);
 };

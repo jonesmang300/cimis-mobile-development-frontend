@@ -1,23 +1,32 @@
 import React, { useState } from "react";
-import { IonContent, IonPage, IonButton, IonImg } from "@ionic/react";
-import { Formik, Form } from "formik";
-import { TextInputField } from "./form";
-import * as Yup from "yup";
+import { IonButton, IonContent, IonImg, IonPage } from "@ionic/react";
+import { Form, Formik } from "formik";
 import { useHistory } from "react-router-dom";
-import { useAuth } from "./context/AuthContext";
-
+import * as Yup from "yup";
+import { apiPost } from "../services/api";
+import { TextInputField } from "./form";
 import { NotificationMessage } from "./notificationMessage";
+import { useAuth } from "./context/AuthContext";
 import "./Login.css";
 
 type MessageType = "success" | "error" | "";
 
-const Login: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
+type LoginResponse = {
+  token: string;
+  user: {
+    id: number | string;
+    username?: string;
+    email?: string;
+    userRole?: string;
+    firstname?: string;
+    lastname?: string;
+  };
+};
+
+const Login: React.FC = () => {
   const history = useHistory();
   const { login } = useAuth();
 
-  /* ===============================
-     MESSAGE STATE
-  =============================== */
   const [messageState, setMessageState] = useState<{
     text: string;
     type: MessageType;
@@ -30,37 +39,39 @@ const Login: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
     setMessageState({ text, type });
   };
 
-  /* ===============================
-     VALIDATION SCHEMA
-  =============================== */
   const schema = Yup.object().shape({
     username: Yup.string().required("Username is required"),
     pin: Yup.string().required("Password is required"),
   });
 
-  /* ===============================
-     LOGIN HANDLER
-  =============================== */
-  const handleLoginSubmit = async (formData: any) => {
-    const { username, pin } = formData;
+  const handleLoginSubmit = async (formData: {
+    username: string;
+    pin: string;
+  }) => {
+    try {
+      const res = await apiPost<LoginResponse>("/users/login", {
+        username: formData.username,
+        password: formData.pin,
+      });
 
-    if (username === "admin" && pin === "admin") {
-      // setMessage("Login successful", "success");
+      if (!res?.token) {
+        throw new Error("No token returned from server");
+      }
 
-      setTimeout(() => {
-        setMessage("", "");
-        login();
-        history.replace("/home");
-      }, 1000);
-    } else {
-      setMessage("Invalid username or password.", "error");
+      login(res.token, res.user || null);
+      setMessage("Login successful", "success");
+      history.replace("/home");
+    } catch (error: any) {
+      setMessage(
+        error?.message || "Invalid username or password.",
+        "error",
+      );
     }
   };
 
   return (
     <IonPage>
       <IonContent className="ion-padding login-content">
-        {/* Notification Messages */}
         {messageState.type && (
           <NotificationMessage
             text={messageState.text}
@@ -68,10 +79,8 @@ const Login: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
           />
         )}
 
-        {/* Logo */}
         <IonImg src="/comsip.jpg" className="login-img" />
 
-        {/* Login Form */}
         <Formik
           initialValues={{ username: "", pin: "" }}
           validationSchema={schema}

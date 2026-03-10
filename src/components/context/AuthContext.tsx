@@ -1,8 +1,18 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
+
+type AuthUser = {
+  id?: number | string;
+  username?: string;
+  email?: string;
+  userRole?: string;
+  firstname?: string;
+  lastname?: string;
+};
 
 type AuthContextType = {
   isLoggedIn: boolean;
-  login: () => void;
+  user: AuthUser | null;
+  login: (token: string, user: AuthUser | null) => void;
   logout: () => void;
 };
 
@@ -12,31 +22,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [user, setUser] = useState<AuthUser | null>(null);
 
-  // 🔁 Restore login on app start
   useEffect(() => {
     const token = localStorage.getItem("token");
+    const rawUser = localStorage.getItem("user");
     setIsLoggedIn(!!token);
+    setUser(rawUser ? (JSON.parse(rawUser) as AuthUser) : null);
   }, []);
 
-  const login = () => {
+  const login = (token: string, nextUser: AuthUser | null) => {
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(nextUser || null));
     setIsLoggedIn(true);
+    setUser(nextUser || null);
   };
 
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setIsLoggedIn(false);
+    setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-// ✅ Custom hook (IMPORTANT)
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

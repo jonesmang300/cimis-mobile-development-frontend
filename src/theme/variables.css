@@ -1,2 +1,29 @@
 /* For information on how to create your own theme, please see:
 http://ionicframework.com/docs/theming/ */
+
+/* Global popup behavior: centered and scrollable */
+ion-modal {
+  --width: min(92vw, 560px);
+  --height: 82vh;
+  --border-radius: 14px;
+}
+
+ion-modal::part(content) {
+  overflow-y: auto;
+}
+
+ion-alert::part(wrapper) {
+  width: min(92vw, 520px);
+}
+
+ion-alert::part(message) {
+  max-height: 45vh;
+  overflow-y: auto;
+  white-space: pre-line;
+  text-align: left;
+}
+
+/* Keep page content visible above bottom tab bar on all screen sizes */
+ion-content::part(scroll) {
+  padding-bottom: calc(84px + env(safe-area-inset-bottom));
+}

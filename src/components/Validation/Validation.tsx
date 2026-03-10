@@ -34,10 +34,12 @@ import { arrowBack } from "ionicons/icons";
 import { getStableDeviceId } from "../../db/sqlite";
 import { useLocationFilters } from "../../hooks/useLocationFilters";
 import { useLocalInfiniteScroll } from "../../hooks/useLocalInfiniteScroll";
+import { useAuth } from "../context/AuthContext";
 
 import {
   Beneficiary,
   bulkSyncGroup,
+  createGroup,
   fetchBeneficiariesByVC,
   updateBeneficiary,
 } from "../../services/beneficiaries.service";
@@ -82,11 +84,20 @@ const cleanHHSize = (val: any) => {
   return n;
 };
 
+const isSelectedValue = (val: Beneficiary["selected"]) => {
+  return String(val ?? "") === "1" || Number(val) === 1;
+};
+
+const toDateOnly = (date: Date) => {
+  return date.toISOString().split("T")[0];
+};
+
 /* ===============================
    COMPONENT
 ================================ */
 const GroupAssignment: React.FC = () => {
   const router = useIonRouter();
+  const { user } = useAuth();
 
   /* ===============================
      FILTERS (SQLite master data)
@@ -252,7 +263,8 @@ const GroupAssignment: React.FC = () => {
 
         if (cancelled) return;
 
-        setMembers(Array.isArray(data) ? data : []);
+        const all = Array.isArray(data) ? data : [];
+        setMembers(all.filter((m) => !isSelectedValue(m.selected)));
       } catch (err) {
         console.error("Load beneficiaries failed:", err);
         if (!cancelled) {
@@ -389,6 +401,10 @@ const GroupAssignment: React.FC = () => {
       setToastMessage("Select at least one beneficiary");
       return;
     }
+    if (!region || !district || !ta || !vc) {
+      setToastMessage("Please select region, district, TA and village cluster");
+      return;
+    }
 
     for (const m of selectedMembers) {
       const sexErr = validateSex(m.sex);
@@ -408,29 +424,46 @@ const GroupAssignment: React.FC = () => {
       setIsSubmitting(true);
 
       const deviceId = await getStableDeviceId();
+      const trimmedGroupName = groupName.trim();
+
+      const groupResult = await createGroup({
+        groupname: trimmedGroupName,
+        DateEstablished: toDateOnly(new Date()),
+        regionID: region,
+        DistrictID: district,
+        TAID: ta,
+        villageClusterID: vc,
+        cohort: "1",
+        projectID: "06",
+        programID: "11",
+        userID: user?.id ? String(user.id) : null,
+        slgApproved: "1",
+      });
+
+      const createdGroupID =
+        String(groupResult?.groupID || groupResult?.id || "").trim();
+
+      if (!createdGroupID) {
+        throw new Error("Failed to generate group ID");
+      }
 
       const payload: Beneficiary[] = selectedMembers.map((m) => ({
         ...m,
-        groupname: groupName.trim(),
+        groupname: trimmedGroupName,
+        groupCode: createdGroupID,
         nat_id: cleanNatId(m.nat_id),
         hh_size: cleanHHSize(m.hh_size),
         selected: 1,
         deviceId,
       }));
 
-      await bulkSyncGroup(payload, groupName.trim(), deviceId);
+      await bulkSyncGroup(payload, trimmedGroupName, createdGroupID, deviceId);
 
       const submittedCodes = new Set(payload.map((p) => p.sppCode));
 
-      setMembers((prev) =>
-        prev.map((m) =>
-          submittedCodes.has(m.sppCode)
-            ? { ...m, selected: 1, groupname: groupName.trim() }
-            : m,
-        ),
-      );
+      setMembers((prev) => prev.filter((m) => !submittedCodes.has(m.sppCode)));
 
-      setToastMessage("Group created & synced");
+      setToastMessage(`Group ${createdGroupID} created & synced`);
       setSelectedMembers([]);
       setGroupName("");
     } catch (err: any) {
@@ -464,15 +497,16 @@ const GroupAssignment: React.FC = () => {
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
-          <IonButtons slot="start">
-            <IonButton onClick={() => router.goBack()}>
-              <IonIcon icon={arrowBack} />
-            </IonButton>
-          </IonButtons>
-          <IonTitle>Group Assignment</IonTitle>
-        </IonToolbar>
-      </IonHeader>
+    <IonToolbar color="success">
+    <IonButtons slot="start">
+      <IonButton onClick={() => router.goBack()} color="light">
+        <IonIcon icon={arrowBack} />
+      </IonButton>
+    </IonButtons>
+
+    <IonTitle style={{ color: "white" }}>Validation</IonTitle>
+  </IonToolbar>
+</IonHeader>
 
       <IonContent fullscreen className="ion-padding validation-page">
         {/* FILTER CARD */}
