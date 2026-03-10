@@ -30,6 +30,7 @@ import "./theme/variables.css";
 /* Components */
 import { Home } from "./components/Home";
 import Transactions from "./components/Validation/Validation";
+import Group from "./components/Groups";
 import Settings from "./components/Settings";
 import Wallet from "./components/Wallet/Wallet";
 import CashBoxDetails from "./components/Wallet/CashBoxDetails";
@@ -38,6 +39,7 @@ import AddTransactionForm from "./components/Validation/AddTransactionsForm";
 import SupportPage from "./components/SupportPage";
 import VerifiedMembers from "./components/Validation/VerifiedMembers";
 import ViewVerifiedMember from "./components/Validation/ViewVerifiedMember";
+import Savings from "./components/Savings";
 
 import { Capacitor } from "@capacitor/core";
 
@@ -57,6 +59,10 @@ import { useAuth } from "./components/context/AuthContext";
 import { initAndSeed } from "./db/sqlite";
 import VerifiedMembersByDevice from "./components/Validation/VerifiedMembersByDevice";
 import GroupMembersSummary from "./components/Validation/GroupMembersSummary";
+import Attendance from "./components/Attendance";
+import GroupIGA from "./components/GroupIGA";
+import MemberIGA from "./components/MemberIGA";
+import Trainings from "./components/Trainings";
 
 setupIonicReact();
 
@@ -115,6 +121,7 @@ const App: React.FC = () => {
                 path="/verified_members"
                 component={VerifiedMembers}
               />
+            
               <Route
                 exact
                 path="/view_verified_member/:sppCode"
@@ -130,6 +137,14 @@ const App: React.FC = () => {
                 path="/group_members_summary"
                 component={GroupMembersSummary}
               />
+              <Route exact path="/groups" component={Group} />
+              <Route exact path="/groups/savings" component={Savings} />
+              
+<Route exact path="/groups/trainings" component={Trainings} />
+<Route exact path="/groups/attendance" component={Attendance} />
+<Route exact path="/groups/member-iga" component={MemberIGA} />
+<Route exact path="/groups/group-iga" component={GroupIGA} />
+              
 
               <Route exact path="/">
                 <Redirect to="/home" />

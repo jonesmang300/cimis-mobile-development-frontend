@@ -19,7 +19,9 @@ import {
   IonToolbar,
   useIonViewWillEnter,
 } from "@ionic/react";
-import { homeOutline, peopleOutline, settingsOutline } from "ionicons/icons";
+
+import { homeOutline, settingsOutline, peopleOutline, checkmarkCircleOutline } from "ionicons/icons";
+
 import { getDashboardCounts } from "../../services/dashboard.service";
 import DashboardStatCard from "./DashboardStatCard";
 import "./Dashboard.css";
@@ -70,9 +72,9 @@ const Dashboard: React.FC = () => {
             </IonItem>
 
             <IonItem button routerLink="/validation">
-              <IonIcon icon={settingsOutline} slot="start" />
-              <IonLabel>Validation</IonLabel>
-            </IonItem>
+  <IonIcon icon={checkmarkCircleOutline} slot="start" />
+  <IonLabel>Validation</IonLabel>
+</IonItem>
 
             <IonItem button routerLink="/group_members_summary">
               <IonIcon icon={peopleOutline} slot="start" />

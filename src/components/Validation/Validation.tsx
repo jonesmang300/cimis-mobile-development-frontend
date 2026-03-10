@@ -464,15 +464,16 @@ const GroupAssignment: React.FC = () => {
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
-          <IonButtons slot="start">
-            <IonButton onClick={() => router.goBack()}>
-              <IonIcon icon={arrowBack} />
-            </IonButton>
-          </IonButtons>
-          <IonTitle>Group Assignment</IonTitle>
-        </IonToolbar>
-      </IonHeader>
+    <IonToolbar color="success">
+    <IonButtons slot="start">
+      <IonButton onClick={() => router.goBack()} color="light">
+        <IonIcon icon={arrowBack} />
+      </IonButton>
+    </IonButtons>
+
+    <IonTitle style={{ color: "white" }}>Validation</IonTitle>
+  </IonToolbar>
+</IonHeader>
 
       <IonContent fullscreen className="ion-padding validation-page">
         {/* FILTER CARD */}
