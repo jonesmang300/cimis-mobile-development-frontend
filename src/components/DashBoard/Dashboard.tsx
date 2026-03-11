@@ -67,7 +67,10 @@ const Dashboard: React.FC = () => {
     if (roleId === 5) {
       return "Your dashboard summary for verified members, groups formed, trainings, meetings, savings, and IGAs.";
     }
-    if (roleId === 1 || roleId === 2) {
+    if (roleId === 2) {
+      return "Regional summary across your assigned regions for verified members, groups, trainings, meetings, savings, and IGAs.";
+    }
+    if (roleId === 1) {
       return "System-wide summary across all groups, trainings, meetings, savings, and IGAs.";
     }
     return "Operational summary for verified members, groups, trainings, meetings, savings, and IGAs.";
@@ -76,7 +79,7 @@ const Dashboard: React.FC = () => {
   const loadOverview = useCallback(async () => {
     try {
       setLoading(true);
-      const nextOverview = await getDashboardOverview();
+      const nextOverview = await getDashboardOverview(roleId);
       setOverview(nextOverview);
     } catch (error) {
       console.error("Dashboard load failed:", error);
@@ -84,7 +87,7 @@ const Dashboard: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [roleId]);
 
   useIonViewWillEnter(() => {
     loadOverview();

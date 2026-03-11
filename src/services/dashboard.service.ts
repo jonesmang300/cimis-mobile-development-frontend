@@ -6,6 +6,7 @@ import { GroupSaving, MemberSaving } from "./savings.service";
 type DashboardGroup = {
   groupID?: string;
   groupname?: string;
+  villageClusterID?: string;
 };
 
 export type DashboardOverview = {
@@ -22,24 +23,13 @@ export type DashboardOverview = {
 const toNumber = (value: string | number | null | undefined) =>
   Number(value || 0) || 0;
 
-export const getDashboardOverview = async (): Promise<DashboardOverview> => {
+export const getDashboardOverview = async (
+  roleId?: number,
+): Promise<DashboardOverview> => {
   const deviceId = await getStableDeviceId();
 
-  const [
-    verifiedTotalRes,
-    verifiedByDeviceRes,
-    groups,
-    trainings,
-    meetings,
-    groupSavings,
-    memberSavings,
-    groupIGAs,
-    memberIGAs,
-  ] = await Promise.all([
-    apiGet<{ total: number | string }>("/beneficiaries/count/selected"),
-    apiGet<{ total: number | string }>(
-      `/beneficiaries/count/selected/device/${encodeURIComponent(deviceId)}`,
-    ),
+  const [groups, trainings, meetings, groupSavings, memberSavings, groupIGAs, memberIGAs] =
+    await Promise.all([
     apiGet<DashboardGroup[]>("/groups"),
     apiGet<GroupTraining[]>("/group-trainings"),
     apiGet<Meeting[]>("/meetings"),
@@ -47,12 +37,59 @@ export const getDashboardOverview = async (): Promise<DashboardOverview> => {
     apiGet<MemberSaving[]>("/member-savings"),
     apiGet<GroupIGA[]>("/group-igas"),
     apiGet<MemberIGA[]>("/member-igas"),
-  ]);
+    ]);
 
   const visibleGroups = Array.isArray(groups) ? groups : [];
   const visibleGroupIds = new Set(
     visibleGroups.map((row) => String(row.groupID || "")).filter(Boolean),
   );
+  const visibleVillageClusters = Array.from(
+    new Set(
+      visibleGroups
+        .map((row) => String(row.villageClusterID || "").trim())
+        .filter(Boolean),
+    ),
+  );
+
+  let totalVerified = 0;
+  let myVerified = 0;
+
+  if (roleId === 2) {
+    const verifiedRows = await Promise.all(
+      visibleVillageClusters.map(async (villageClusterID) => {
+        const [totalRes, deviceRes] = await Promise.all([
+          apiGet<any[]>(
+            `/beneficiaries/verified?villageClusterID=${encodeURIComponent(
+              villageClusterID,
+            )}`,
+          ),
+          apiGet<any[]>(
+            `/beneficiaries/verified/deviceId?villageClusterID=${encodeURIComponent(
+              villageClusterID,
+            )}&deviceId=${encodeURIComponent(deviceId)}`,
+          ),
+        ]);
+
+        return {
+          total: Array.isArray(totalRes) ? totalRes.length : 0,
+          mine: Array.isArray(deviceRes) ? deviceRes.length : 0,
+        };
+      }),
+    );
+
+    totalVerified = verifiedRows.reduce((sum, row) => sum + row.total, 0);
+    myVerified = verifiedRows.reduce((sum, row) => sum + row.mine, 0);
+  } else {
+    const [verifiedTotalRes, verifiedByDeviceRes] = await Promise.all([
+      apiGet<{ total: number | string }>("/beneficiaries/count/selected"),
+      apiGet<{ total: number | string }>(
+        `/beneficiaries/count/selected/device/${encodeURIComponent(deviceId)}`,
+      ),
+    ]);
+
+    totalVerified = toNumber(verifiedTotalRes?.total);
+    myVerified = toNumber(verifiedByDeviceRes?.total);
+  }
 
   const filteredTrainings = (Array.isArray(trainings) ? trainings : []).filter((row) =>
     visibleGroupIds.has(String(row.groupID || "")),
@@ -83,8 +120,8 @@ export const getDashboardOverview = async (): Promise<DashboardOverview> => {
     filteredMemberSavings.reduce((sum, row) => sum + toNumber(row.amount), 0);
 
   return {
-    totalVerified: toNumber(verifiedTotalRes?.total),
-    myVerified: toNumber(verifiedByDeviceRes?.total),
+    totalVerified,
+    myVerified,
     groupsFormed: visibleGroups.length,
     trainings: filteredTrainings.length,
     meetings: filteredMeetings.length,
