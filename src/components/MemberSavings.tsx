@@ -367,34 +367,44 @@ const MemberSavings: React.FC = () => {
                         <p>Amount: {formatAmountDisplay(r.amount)}</p>
                         <p>{savingsTypeNameById[String(r.sType || "")] || "-"}</p>
                       </IonLabel>
-                      <IonButton
+                      <div
                         slot="end"
-                        fill="clear"
-                        size="small"
-                        title="View"
-                        onClick={() => setViewRow(r)}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "2px",
+                          flexShrink: 0,
+                        }}
                       >
-                        <IonIcon icon={eyeOutline} />
-                      </IonButton>
-                      <IonButton
-                        slot="end"
-                        fill="clear"
-                        size="small"
-                        title="Edit"
-                        onClick={() => handleEdit(r)}
-                      >
-                        <IonIcon icon={createOutline} />
-                      </IonButton>
-                      <IonButton
-                        slot="end"
-                        fill="clear"
-                        size="small"
-                        color="danger"
-                        title="Delete"
-                        onClick={() => setDeleteTarget(r)}
-                      >
-                        <IonIcon icon={trashOutline} />
-                      </IonButton>
+                        <IonButton
+                          fill="clear"
+                          size="small"
+                          title="View"
+                          onClick={() => setViewRow(r)}
+                          style={{ margin: 0 }}
+                        >
+                          <IonIcon icon={eyeOutline} />
+                        </IonButton>
+                        <IonButton
+                          fill="clear"
+                          size="small"
+                          title="Edit"
+                          onClick={() => handleEdit(r)}
+                          style={{ margin: 0 }}
+                        >
+                          <IonIcon icon={createOutline} />
+                        </IonButton>
+                        <IonButton
+                          fill="clear"
+                          size="small"
+                          color="danger"
+                          title="Delete"
+                          onClick={() => setDeleteTarget(r)}
+                          style={{ margin: 0 }}
+                        >
+                          <IonIcon icon={trashOutline} />
+                        </IonButton>
+                      </div>
                     </IonItem>
                   );
                 })}
@@ -405,7 +415,7 @@ const MemberSavings: React.FC = () => {
 
         <IonModal isOpen={showAddModal} onDidDismiss={() => setShowAddModal(false)}>
           <IonHeader>
-            <IonToolbar>
+            <IonToolbar color="success">
               <IonTitle>
                 {editingRecID ? "Edit Saving" : "Add Saving"} -{" "}
                 {activeType?.savings_name || activeType?.TypeID || ""}
@@ -455,7 +465,7 @@ const MemberSavings: React.FC = () => {
 
         <IonModal isOpen={!!viewRow} onDidDismiss={() => setViewRow(null)}>
           <IonHeader>
-            <IonToolbar>
+            <IonToolbar color="success">
               <IonTitle>Member Saving Details</IonTitle>
               <IonButtons slot="end">
                 <IonButton onClick={() => setViewRow(null)}>Close</IonButton>
@@ -533,3 +543,4 @@ const MemberSavings: React.FC = () => {
 };
 
 export default MemberSavings;
+

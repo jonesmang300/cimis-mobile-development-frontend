@@ -482,7 +482,7 @@ const GroupIGA: React.FC = () => {
           }}
         >
           <IonHeader>
-            <IonToolbar>
+            <IonToolbar color="success">
               <IonTitle>{editingRow ? "Edit Group IGA" : "Add Group IGA"}</IonTitle>
               <IonButtons slot="end">
                 <IonButton
@@ -634,7 +634,7 @@ const GroupIGA: React.FC = () => {
 
         <IonModal isOpen={!!viewRow} onDidDismiss={() => setViewRow(null)}>
           <IonHeader>
-            <IonToolbar>
+            <IonToolbar color="success">
               <IonTitle>Group IGA Details</IonTitle>
               <IonButtons slot="end">
                 <IonButton onClick={() => setViewRow(null)}>Close</IonButton>
@@ -715,3 +715,4 @@ const GroupIGA: React.FC = () => {
 };
 
 export default GroupIGA;
+

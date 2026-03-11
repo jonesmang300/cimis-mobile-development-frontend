@@ -445,7 +445,7 @@ const Savings: React.FC = () => {
           onDidDismiss={() => setShowAddModal(false)}
         >
           <IonHeader>
-            <IonToolbar>
+            <IonToolbar color="success">
               <IonTitle>
                 {editingRecID ? "Edit Saving" : "Add Saving"} -{" "}
                 {activeType?.savings_name || activeType?.TypeID || ""}
@@ -516,7 +516,7 @@ const Savings: React.FC = () => {
           onDidDismiss={() => setViewRow(null)}
         >
           <IonHeader>
-            <IonToolbar>
+            <IonToolbar color="success">
               <IonTitle>Group Saving Details</IonTitle>
               <IonButtons slot="end">
                 <IonButton onClick={() => setViewRow(null)}>Close</IonButton>
@@ -589,3 +589,4 @@ const Savings: React.FC = () => {
 };
 
 export default Savings;
+

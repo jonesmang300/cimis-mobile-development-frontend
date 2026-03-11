@@ -11,8 +11,8 @@ const WebHome: React.FC = () => {
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
-          <IonTitle>Header Toolbar</IonTitle>
+        <IonToolbar color="success">
+          <IonTitle style={{ color: "white" }}>Header Toolbar</IonTitle>
         </IonToolbar>
       </IonHeader>
     </IonPage>

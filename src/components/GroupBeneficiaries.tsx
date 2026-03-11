@@ -283,7 +283,7 @@ const GroupBeneficiaries: React.FC = () => {
           onDidDismiss={() => setViewMember(null)}
         >
           <IonHeader>
-            <IonToolbar>
+            <IonToolbar color="success">
               <IonTitle>Beneficiary Details</IonTitle>
               <IonButtons slot="end">
                 <IonButton onClick={() => setViewMember(null)}>Close</IonButton>
@@ -329,7 +329,7 @@ const GroupBeneficiaries: React.FC = () => {
           onDidDismiss={() => setEditMember(null)}
         >
           <IonHeader>
-            <IonToolbar>
+            <IonToolbar color="success">
               <IonTitle>Edit Beneficiary</IonTitle>
               <IonButtons slot="end">
                 <IonButton onClick={() => setEditMember(null)}>Close</IonButton>
@@ -356,6 +356,7 @@ const GroupBeneficiaries: React.FC = () => {
               <IonInput
                 type="date"
                 value={editDob}
+                placeholder="Select date"
                 onIonInput={(e) => setEditDob(String(e.detail.value || ""))}
               />
             </IonItem>
@@ -392,3 +393,4 @@ const GroupBeneficiaries: React.FC = () => {
 };
 
 export default GroupBeneficiaries;
+

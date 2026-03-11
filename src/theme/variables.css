@@ -66,3 +66,21 @@ ion-card-subtitle {
   overflow-wrap: anywhere;
   word-break: break-word;
 }
+
+/* Standardize green headers across pages and modals */
+ion-toolbar[color="success"] {
+  --color: #ffffff;
+}
+
+ion-toolbar[color="success"] ion-title {
+  color: #ffffff;
+}
+
+ion-toolbar[color="success"] ion-button {
+  --color: #ffffff;
+  color: #ffffff;
+}
+
+ion-toolbar[color="success"] ion-icon {
+  color: #ffffff;
+}
