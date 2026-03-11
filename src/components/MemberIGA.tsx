@@ -458,7 +458,7 @@ const MemberIGA: React.FC = () => {
           }}
         >
           <IonHeader>
-            <IonToolbar>
+            <IonToolbar color="success">
               <IonTitle>{editingRow ? "Edit Member IGA" : "Add Member IGA"}</IonTitle>
               <IonButtons slot="end">
                 <IonButton
@@ -597,7 +597,7 @@ const MemberIGA: React.FC = () => {
 
         <IonModal isOpen={!!viewRow} onDidDismiss={() => setViewRow(null)}>
           <IonHeader>
-            <IonToolbar>
+            <IonToolbar color="success">
               <IonTitle>View Member IGA</IonTitle>
               <IonButtons slot="end">
                 <IonButton onClick={() => setViewRow(null)}>Close</IonButton>
@@ -674,3 +674,4 @@ const MemberIGA: React.FC = () => {
 };
 
 export default MemberIGA;
+

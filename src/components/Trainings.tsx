@@ -535,7 +535,7 @@ const Trainings: React.FC = () => {
           }}
         >
           <IonHeader>
-            <IonToolbar>
+            <IonToolbar color="success">
               <IonTitle>
                 {editingRow ? "Edit Training" : "Add Training"}
               </IonTitle>
@@ -662,7 +662,7 @@ const Trainings: React.FC = () => {
 
         <IonModal isOpen={!!viewRow} onDidDismiss={() => setViewRow(null)}>
           <IonHeader>
-            <IonToolbar>
+            <IonToolbar color="success">
               <IonTitle>Training Details</IonTitle>
               <IonButtons slot="end">
                 <IonButton onClick={() => setViewRow(null)}>Close</IonButton>
@@ -796,3 +796,4 @@ const Trainings: React.FC = () => {
 };
 
 export default Trainings;
+

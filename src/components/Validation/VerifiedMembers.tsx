@@ -141,13 +141,13 @@ const VerifiedMembers: React.FC = () => {
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
+        <IonToolbar color="success">
           <IonButtons slot="start">
-            <IonButton onClick={() => router.goBack()}>
+            <IonButton onClick={() => router.goBack()} color="light">
               <IonIcon icon={arrowBack} />
             </IonButton>
           </IonButtons>
-          <IonTitle>Verified Members</IonTitle>
+          <IonTitle style={{ color: "white" }}>Verified Members</IonTitle>
         </IonToolbar>
       </IonHeader>
 

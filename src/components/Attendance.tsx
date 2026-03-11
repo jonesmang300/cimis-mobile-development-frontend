@@ -489,7 +489,7 @@ const Attendance: React.FC = () => {
           }}
         >
           <IonHeader>
-            <IonToolbar>
+            <IonToolbar color="success">
               <IonTitle>{editingMeeting ? "Edit Meeting" : "Add Meeting"}</IonTitle>
               <IonButtons slot="end">
                 <IonButton
@@ -564,7 +564,7 @@ const Attendance: React.FC = () => {
           }}
         >
           <IonHeader>
-            <IonToolbar>
+            <IonToolbar color="success">
               <IonTitle>Add Attendance</IonTitle>
               <IonButtons slot="end">
                 <IonButton
@@ -675,3 +675,4 @@ const Attendance: React.FC = () => {
 };
 
 export default Attendance;
+

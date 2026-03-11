@@ -739,7 +739,7 @@ const GroupAssignment: React.FC = () => {
           className="validation-edit-modal"
         >
           <IonHeader>
-            <IonToolbar>
+            <IonToolbar color="success">
               <IonTitle>{modalTitle}</IonTitle>
               <IonButtons slot="end">
                 <IonButton onClick={() => setShowEditModal(false)}>
@@ -775,6 +775,7 @@ const GroupAssignment: React.FC = () => {
                     <IonInput
                       type="date"
                       value={String(editingMember.dob || "").split("T")[0]}
+                      placeholder="Select date"
                       max={getMaxDobISO().split("T")[0]}
                       onIonInput={(e) =>
                         setEditingMember((prev) =>
@@ -864,3 +865,4 @@ const GroupAssignment: React.FC = () => {
 };
 
 export default GroupAssignment;
+

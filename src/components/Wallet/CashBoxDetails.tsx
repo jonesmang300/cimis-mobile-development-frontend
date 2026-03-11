@@ -39,8 +39,8 @@ const CashBoxDetails: React.FC = () => {
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar color="primary">
-          <IonTitle>Cashbox</IonTitle>
+        <IonToolbar color="success">
+          <IonTitle style={{ color: "white" }}>Cashbox</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent>
