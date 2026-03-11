@@ -59,7 +59,6 @@ const Group: React.FC = () => {
       icon: listOutline,
       route: "/groups/attendance",
     },
-    { label: "Member IGA", icon: peopleOutline, route: "/groups/member-iga" },
     { label: "Group IGA", icon: pieChartOutline, route: "/groups/group-iga" },
   ];
 

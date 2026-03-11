@@ -32,7 +32,7 @@
 
 import React from "react";
 import { useField } from "formik";
-import { IonItem, IonLabel, IonDatetime, IonText } from "@ionic/react";
+import { IonInput, IonItem, IonLabel, IonText } from "@ionic/react";
 
 interface DateInputFieldProps {
   name: string;
@@ -51,12 +51,11 @@ const DateInputField: React.FC<DateInputFieldProps> = ({ name, label, id }) => {
   return (
     <IonItem>
       <IonLabel position="stacked">{label}</IonLabel>
-      <IonDatetime
+      <IonInput
         id={id}
+        type="date"
         value={field.value || ""}
         onIonChange={handleChange}
-        presentation="date"
-        showDefaultButtons
       />
       {meta.touched && meta.error && (
         <IonText color="danger">

@@ -41,16 +41,16 @@
   border-radius: 14px;
   border: 1px solid var(--ion-color-light);
   box-shadow: none;
-
-  /* KEY FIX: card scroll */
-  height: calc(100vh - 210px);
+  min-height: 0;
+  max-height: calc(100dvh - 210px);
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* On tablets/laptops, use modal height not full viewport */
 @media (min-width: 768px) {
   .validation-edit-card {
-    height: calc(92vh - 210px);
+    max-height: calc(92vh - 210px);
   }
 }
 

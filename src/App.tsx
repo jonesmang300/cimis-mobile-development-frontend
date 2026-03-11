@@ -62,6 +62,8 @@ import Attendance from "./components/Attendance";
 import GroupIGA from "./components/GroupIGA";
 import MemberIGA from "./components/MemberIGA";
 import Trainings from "./components/Trainings";
+import TrainingParticipants from "./components/TrainingParticipants";
+import ViewMeeting from "./components/ViewMeeting";
 import GroupBeneficiaries from "./components/GroupBeneficiaries";
 import MemberSavings from "./components/MemberSavings";
 
@@ -147,8 +149,14 @@ const App: React.FC = () => {
               />
               
 <Route exact path="/groups/trainings" component={Trainings} />
+<Route
+  exact
+  path="/groups/trainings/attendance/:trainingID"
+  component={TrainingParticipants}
+/>
+<Route exact path="/groups/attendance/view/:meetingID" component={ViewMeeting} />
 <Route exact path="/groups/attendance" component={Attendance} />
-<Route exact path="/groups/member-iga" component={MemberIGA} />
+<Route exact path="/groups/member-iga/:sppCode" component={MemberIGA} />
 <Route exact path="/groups/group-iga" component={GroupIGA} />
 <Route exact path="/groups/beneficiaries" component={GroupBeneficiaries} />
               
