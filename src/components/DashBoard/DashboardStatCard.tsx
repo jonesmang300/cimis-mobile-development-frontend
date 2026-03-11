@@ -1,55 +1,64 @@
-import React from "react";
+import React, { ComponentProps } from "react";
 import {
   IonBadge,
   IonCard,
-  IonCardHeader,
-  IonCardSubtitle,
-  IonCardTitle,
+  IonCardContent,
   IonIcon,
   IonSpinner,
 } from "@ionic/react";
-import type { IconDefinition } from "ionicons/icons";
 
-type BadgeColor = "success" | "warning" | "primary" | "secondary" | "tertiary" | "danger" | "light" | "medium" | "dark";
+type IconDefinition = ComponentProps<typeof IonIcon>["icon"];
 
 interface DashboardStatCardProps {
-  subtitle: string;
+  title: string;
+  helper?: string;
   icon: IconDefinition;
-  routerLink: string;
+  accentClass: string;
+  routerLink?: string;
   loading?: boolean;
   value?: number | string;
-  badgeColor?: BadgeColor;
 }
 
 const DashboardStatCard: React.FC<DashboardStatCardProps> = ({
-  subtitle,
+  title,
+  helper,
   icon,
+  accentClass,
   routerLink,
   loading = false,
   value,
-  badgeColor = "success",
 }) => {
-  const showBadge = value !== undefined && value !== null;
+  const clickableProps = routerLink ? { routerLink, button: true } : {};
 
   return (
-    <IonCard className="green-card" routerLink={routerLink} button>
-      <IonCardHeader>
-        <IonIcon icon={icon} size="large" className="card-icon" />
+    <IonCard className={`dashboard-stat-card ${accentClass}`} {...clickableProps}>
+      <IonCardContent>
+        <div className="dashboard-stat-head">
+          <div className="dashboard-stat-copy">
+            <span className="dashboard-stat-title">{title}</span>
+            {helper ? <span className="dashboard-stat-helper">{helper}</span> : null}
+          </div>
+          <div className="dashboard-stat-icon-wrap">
+            <IonIcon icon={icon} className="dashboard-stat-icon" />
+          </div>
+        </div>
 
-        <IonCardSubtitle>{subtitle}</IonCardSubtitle>
-
-        <IonCardTitle>
+        <div className="dashboard-stat-value">
           {loading ? (
             <IonSpinner name="crescent" />
-          ) : showBadge ? (
-            <IonBadge color={badgeColor}>
-              {typeof value === "number" ? value.toLocaleString() : value}
-            </IonBadge>
+          ) : typeof value === "number" ? (
+            value.toLocaleString()
           ) : (
-            ""
+            value || ""
           )}
-        </IonCardTitle>
-      </IonCardHeader>
+        </div>
+
+        {routerLink ? (
+          <IonBadge className="dashboard-stat-badge" color="light">
+            View
+          </IonBadge>
+        ) : null}
+      </IonCardContent>
     </IonCard>
   );
 };

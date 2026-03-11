@@ -25,6 +25,7 @@ import {
   cashOutline,
   createOutline,
   eyeOutline,
+  pieChartOutline,
 } from "ionicons/icons";
 import {
   Beneficiary,
@@ -193,10 +194,15 @@ const GroupBeneficiaries: React.FC = () => {
         ) : (
           <IonList>
             {rows.map((m) => (
-              <IonItem key={m.sppCode}>
+              <IonItem
+                key={m.sppCode}
+                style={{
+                  "--inner-padding-end": "8px",
+                  "--padding-start": "12px",
+                }}
+              >
                 <IonLabel>
                   <h2>{m.hh_head_name || m.sppCode}</h2>
-                  <p>Beneficiary Code: {m.sppCode || "-"}</p>
                   <p>ML Code: {m.hh_code || "-"}</p>
                 </IonLabel>
                 <IonButton
@@ -205,6 +211,11 @@ const GroupBeneficiaries: React.FC = () => {
                   size="small"
                   title="View"
                   onClick={() => setViewMember(m)}
+                  style={{
+                    margin: 0,
+                    alignSelf: "center",
+                    minHeight: "36px",
+                  }}
                 >
                   <IonIcon icon={eyeOutline} />
                 </IonButton>
@@ -214,6 +225,11 @@ const GroupBeneficiaries: React.FC = () => {
                   size="small"
                   title="Edit"
                   onClick={() => openEdit(m)}
+                  style={{
+                    margin: 0,
+                    alignSelf: "center",
+                    minHeight: "36px",
+                  }}
                 >
                   <IonIcon icon={createOutline} />
                 </IonButton>
@@ -221,7 +237,7 @@ const GroupBeneficiaries: React.FC = () => {
                   slot="end"
                   fill="clear"
                   size="small"
-                  title="Savings"
+                  title="Member Savings"
                   onClick={() =>
                     router.push(
                       `/groups/savings/member/${encodeURIComponent(
@@ -229,8 +245,33 @@ const GroupBeneficiaries: React.FC = () => {
                       )}`,
                     )
                   }
+                  style={{
+                    margin: 0,
+                    alignSelf: "center",
+                    minHeight: "36px",
+                  }}
                 >
                   <IonIcon icon={cashOutline} />
+                </IonButton>
+                <IonButton
+                  slot="end"
+                  fill="clear"
+                  size="small"
+                  title="Member IGA"
+                  onClick={() =>
+                    router.push(
+                      `/groups/member-iga/${encodeURIComponent(
+                        m.sppCode || "",
+                      )}`,
+                    )
+                  }
+                  style={{
+                    margin: 0,
+                    alignSelf: "center",
+                    minHeight: "36px",
+                  }}
+                >
+                  <IonIcon icon={pieChartOutline} />
                 </IonButton>
               </IonItem>
             ))}

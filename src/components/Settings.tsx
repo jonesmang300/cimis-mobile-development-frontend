@@ -14,7 +14,7 @@ import {
   IonRow,
   IonCol,
 } from "@ionic/react";
-import { shieldOutline, logOutOutline, helpOutline } from "ionicons/icons";
+import { logOutOutline, helpOutline } from "ionicons/icons";
 import { useTranslation } from "react-i18next";
 import "./Settings.css";
 import { useHistory } from "react-router-dom";
@@ -69,15 +69,6 @@ const SettingsPage: React.FC = () => {
 
         {/* Group Settings Section */}
         <IonList>
-          <IonItem button routerLink="/group-roles">
-            <IonIcon
-              icon={shieldOutline}
-              slot="start"
-              className="custom-icon"
-            />
-            <IonLabel>{t("groupRoles")}</IonLabel>
-          </IonItem>
-
           <IonItem button routerLink="/support">
             <IonIcon icon={helpOutline} slot="start" className="custom-icon" />
             <IonLabel>{t("support")}</IonLabel>

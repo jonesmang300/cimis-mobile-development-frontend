@@ -9,7 +9,6 @@ import {
   IonCardTitle,
   IonCheckbox,
   IonContent,
-  IonDatetime,
   IonHeader,
   IonIcon,
   IonInfiniteScroll,
@@ -773,23 +772,17 @@ const GroupAssignment: React.FC = () => {
                     <IonLabel position="stacked">
                       Date of Birth (must be 18+) *
                     </IonLabel>
-
-                    <IonDatetime
-                      presentation="date"
-                      value={editingMember.dob || undefined}
-                      max={getMaxDobISO()}
-                      onIonChange={(e) => {
-                        const val = String(e.detail.value || "");
+                    <IonInput
+                      type="date"
+                      value={String(editingMember.dob || "").split("T")[0]}
+                      max={getMaxDobISO().split("T")[0]}
+                      onIonInput={(e) =>
                         setEditingMember((prev) =>
-                          prev ? { ...prev, dob: val } : prev,
-                        );
-
-                        setTimeout(() => {
-                          (
-                            document.activeElement as HTMLElement | null
-                          )?.blur();
-                        }, 50);
-                      }}
+                          prev
+                            ? { ...prev, dob: String(e.detail.value || "") }
+                            : prev,
+                        )
+                      }
                     />
                   </IonItem>
 
