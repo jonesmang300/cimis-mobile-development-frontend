@@ -148,17 +148,42 @@ const GroupIGA: React.FC = () => {
 
     setLoading(true);
     try {
-      const [igaRows, groupRow, categoryRows, igaTypeRows] = await Promise.all([
+      const [
+        igaRowsResult,
+        groupRowResult,
+        categoryRowsResult,
+        igaTypeRowsResult,
+      ] = await Promise.allSettled([
         fetchGroupIGAsByGroupID(selectedGroupID),
         apiGet<GroupMeta>(`/groups/${encodeURIComponent(selectedGroupID)}`),
         apiGet<BusinessCategoryRow[]>("/business-categories"),
         apiGet<IGATypeRow[]>("/iga-types"),
       ]);
 
-      setRows(igaRows);
+      const igaRows =
+        igaRowsResult.status === "fulfilled" ? igaRowsResult.value : [];
+      const groupRow =
+        groupRowResult.status === "fulfilled" ? groupRowResult.value : null;
+      const categoryRows =
+        categoryRowsResult.status === "fulfilled" ? categoryRowsResult.value : [];
+      const igaTypeRows =
+        igaTypeRowsResult.status === "fulfilled" ? igaTypeRowsResult.value : [];
+
+      setRows(Array.isArray(igaRows) ? igaRows : []);
       setGroupMeta(groupRow || null);
       setBusinessCategories(Array.isArray(categoryRows) ? categoryRows : []);
       setIgaTypes(Array.isArray(igaTypeRows) ? igaTypeRows : []);
+
+      const loadFailures = [
+        igaRowsResult,
+        groupRowResult,
+        categoryRowsResult,
+        igaTypeRowsResult,
+      ].filter((result) => result.status === "rejected");
+
+      if (loadFailures.length > 0) {
+        console.error("Group IGA partial load failure:", loadFailures);
+      }
     } catch (error) {
       console.error("Failed to load group IGAs:", error);
       setRows([]);
@@ -206,16 +231,6 @@ const GroupIGA: React.FC = () => {
           String(row.categoryID || "") === String(form.bus_category || ""),
       ),
     [form.bus_category, igaTypes],
-  );
-
-  const totalMales = useMemo(
-    () => rows.reduce((sum, row) => sum + Number(row.no_male || 0), 0),
-    [rows],
-  );
-
-  const totalFemales = useMemo(
-    () => rows.reduce((sum, row) => sum + Number(row.no_female || 0), 0),
-    [rows],
   );
 
   const deleteTargetLabel = useMemo(() => {
@@ -366,18 +381,6 @@ const GroupIGA: React.FC = () => {
               <IonLabel>Total Records</IonLabel>
               <IonBadge slot="end" color="success">
                 {rows.length}
-              </IonBadge>
-            </IonItem>
-            <IonItem lines="none">
-              <IonLabel>Total Males</IonLabel>
-              <IonBadge slot="end" color="success">
-                {totalMales}
-              </IonBadge>
-            </IonItem>
-            <IonItem lines="none">
-              <IonLabel>Total Females</IonLabel>
-              <IonBadge slot="end" color="success">
-                {totalFemales}
               </IonBadge>
             </IonItem>
             <IonItem lines="none">

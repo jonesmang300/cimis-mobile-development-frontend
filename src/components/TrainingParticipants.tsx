@@ -97,11 +97,11 @@ const TrainingParticipants: React.FC = () => {
     setLoading(true);
     try {
       const [
-        trainingRows,
-        beneficiaryRows,
-        trainingTypeRows,
-        facilitatorRows,
-        memberTrainingRows,
+        trainingRowsRaw,
+        beneficiaryRowsRaw,
+        trainingTypeRowsRaw,
+        facilitatorRowsRaw,
+        memberTrainingRowsRaw,
       ] =
         await Promise.all([
           fetchGroupTrainingsByGroupID(selectedGroupID),
@@ -114,6 +114,20 @@ const TrainingParticipants: React.FC = () => {
           }),
         ]);
 
+      const trainingRows = Array.isArray(trainingRowsRaw) ? trainingRowsRaw : [];
+      const beneficiaryRows = Array.isArray(beneficiaryRowsRaw)
+        ? beneficiaryRowsRaw
+        : [];
+      const trainingTypeRows = Array.isArray(trainingTypeRowsRaw)
+        ? trainingTypeRowsRaw
+        : [];
+      const facilitatorRows = Array.isArray(facilitatorRowsRaw)
+        ? facilitatorRowsRaw
+        : [];
+      const memberTrainingRows = Array.isArray(memberTrainingRowsRaw)
+        ? memberTrainingRowsRaw
+        : [];
+
       const foundTraining =
         trainingRows.find(
           (row) => String(row.TrainingID || "") === String(trainingID || ""),
@@ -121,8 +135,8 @@ const TrainingParticipants: React.FC = () => {
 
       setTraining(foundTraining);
       setMembers(beneficiaryRows);
-      setTrainingTypes(Array.isArray(trainingTypeRows) ? trainingTypeRows : []);
-      setFacilitators(Array.isArray(facilitatorRows) ? facilitatorRows : []);
+      setTrainingTypes(trainingTypeRows);
+      setFacilitators(facilitatorRows);
       setMemberTrainings(memberTrainingRows);
       setExistingCodes(
         Array.from(
@@ -186,6 +200,17 @@ const TrainingParticipants: React.FC = () => {
       return searchable.includes(query);
     });
   }, [existingCodes, members, searchQuery]);
+
+  const allVisibleSelected =
+    filteredMembers.length > 0 &&
+    filteredMembers.every((member) =>
+      selectedCodes.includes(String(member.sppCode || "")),
+    );
+
+  const someVisibleSelected =
+    filteredMembers.some((member) =>
+      selectedCodes.includes(String(member.sppCode || "")),
+    ) && !allVisibleSelected;
 
   const handleToggle = (sppCode: string, checked: boolean) => {
     setSelectedCodes((prev) => {
@@ -378,28 +403,55 @@ const TrainingParticipants: React.FC = () => {
                 </IonCardContent>
               </IonCard>
             ) : (
-              <IonList>
-                {filteredMembers.map((member) => {
-                  const sppCode = String(member.sppCode || "");
-                  const checked = selectedCodes.includes(sppCode);
+              <>
+                <IonItem lines="none">
+                  <IonCheckbox
+                    slot="start"
+                    checked={allVisibleSelected}
+                    indeterminate={someVisibleSelected}
+                    onIonChange={(e) => {
+                      const checked = !!e.detail.checked;
+                      const visibleCodes = filteredMembers
+                        .map((member) => String(member.sppCode || ""))
+                        .filter(Boolean);
 
-                  return (
-                    <IonItem key={sppCode}>
-                      <IonCheckbox
-                        slot="start"
-                        checked={checked}
-                        onIonChange={(e) =>
-                          handleToggle(sppCode, !!e.detail.checked)
+                      setSelectedCodes((prev) => {
+                        const next = new Set(prev);
+                        if (checked) {
+                          visibleCodes.forEach((code) => next.add(code));
+                        } else {
+                          visibleCodes.forEach((code) => next.delete(code));
                         }
-                      />
-                      <IonLabel>
-                        <h3>{member.hh_head_name || sppCode}</h3>
-                        <p>ML Code: {member.hh_code || "-"}</p>
-                      </IonLabel>
-                    </IonItem>
-                  );
-                })}
-              </IonList>
+                        return Array.from(next);
+                      });
+                    }}
+                  />
+                  <IonLabel>Select All</IonLabel>
+                </IonItem>
+
+                <IonList>
+                  {filteredMembers.map((member) => {
+                    const sppCode = String(member.sppCode || "");
+                    const checked = selectedCodes.includes(sppCode);
+
+                    return (
+                      <IonItem key={sppCode}>
+                        <IonCheckbox
+                          slot="start"
+                          checked={checked}
+                          onIonChange={(e) =>
+                            handleToggle(sppCode, !!e.detail.checked)
+                          }
+                        />
+                        <IonLabel>
+                          <h3>{member.hh_head_name || sppCode}</h3>
+                          <p>ML Code: {member.hh_code || "-"}</p>
+                        </IonLabel>
+                      </IonItem>
+                    );
+                  })}
+                </IonList>
+              </>
             )}
 
             <IonButton

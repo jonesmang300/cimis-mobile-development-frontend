@@ -1,0 +1,14 @@
+.savings-types-list {
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.savings-type-card {
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom: 8px;
+}
+
+.savings-type-card:last-child {
+  margin-bottom: 0;
+}

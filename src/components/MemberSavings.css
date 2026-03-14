@@ -1,0 +1,14 @@
+.member-savings-types-list {
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.member-savings-type-card {
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom: 8px;
+}
+
+.member-savings-type-card:last-child {
+  margin-bottom: 0;
+}

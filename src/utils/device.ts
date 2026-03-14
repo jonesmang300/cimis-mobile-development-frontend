@@ -1,22 +1,29 @@
 import { Capacitor } from "@capacitor/core";
-import { initAndSeed, getAppMeta, setAppMeta } from "../db/sqlite";
+import { Preferences } from "@capacitor/preferences";
 
+const DEVICE_ID_KEY = "deviceId";
 const isNative = Capacitor.getPlatform() !== "web";
 
+const createDeviceId = () =>
+  "dev_" +
+  Math.random().toString(36).slice(2) +
+  "_" +
+  Date.now().toString(36);
+
 export const getStableDeviceId = async (): Promise<string> => {
-  if (!isNative) return "web";
+  if (!isNative) {
+    const webDeviceId =
+      localStorage.getItem(DEVICE_ID_KEY) || createDeviceId();
 
-  await initAndSeed();
+    localStorage.setItem(DEVICE_ID_KEY, webDeviceId);
+    return webDeviceId;
+  }
 
-  const existing = await getAppMeta("deviceId");
-  if (existing) return existing;
+  const { value } = await Preferences.get({ key: DEVICE_ID_KEY });
+  if (value) return value;
 
-  const newId =
-    "dev_" +
-    Math.random().toString(36).slice(2) +
-    "_" +
-    Date.now().toString(36);
+  const newId = createDeviceId();
+  await Preferences.set({ key: DEVICE_ID_KEY, value: newId });
 
-  await setAppMeta("deviceId", newId);
   return newId;
 };

@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
 import {
-  IonAlert,
   IonBadge,
   IonButton,
   IonButtons,
@@ -24,6 +23,7 @@ import {
   IonToolbar,
   useIonViewWillEnter,
 } from "@ionic/react";
+
 import {
   addCircleOutline,
   arrowBack,
@@ -32,20 +32,28 @@ import {
   trashOutline,
 } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
+
 import {
   Beneficiary,
   fetchBeneficiariesByGroupCode,
 } from "../services/beneficiaries.service";
+
 import { apiGet } from "../services/api";
+
 import {
   createGroupSaving,
   deleteGroupSaving,
   fetchGroupSavingsByGroupID,
+  MemberSaving,
   fetchSavingsTypes,
+  updateGroupSaving,
   GroupSaving,
   SavingsType,
-  updateGroupSaving,
 } from "../services/savings.service";
+
+import "./Savings.css";
+
+/* ---------------- CONSTANTS ---------------- */
 
 const monthOptions = [
   { value: "01", label: "January" },
@@ -63,99 +71,97 @@ const monthOptions = [
 ];
 
 const currentYear = new Date().getFullYear();
+
 const yearOptions = Array.from({ length: 10 }, (_, i) =>
   String(currentYear - 5 + i),
 );
 
+/* ---------------- HELPERS ---------------- */
+
 const formatAmountInput = (value: string | number) => {
-  const digitsOnly = String(value ?? "").replace(/[^\d]/g, "");
-  if (!digitsOnly) return "";
-  return Number(digitsOnly).toLocaleString("en-US");
+  const digits = String(value ?? "").replace(/[^\d]/g, "");
+  if (!digits) return "";
+  return Number(digits).toLocaleString("en-US");
 };
 
 const parseAmount = (value: string | number) => {
-  const digitsOnly = String(value ?? "").replace(/[^\d]/g, "");
-  if (!digitsOnly) return 0;
-  return Number(digitsOnly);
+  const digits = String(value ?? "").replace(/[^\d]/g, "");
+  if (!digits) return 0;
+  return Number(digits);
 };
 
-const formatAmountDisplay = (value: string | number | null | undefined) => {
-  const numericValue = Number(value || 0);
-  if (!Number.isFinite(numericValue)) return "K 0";
-  return `K ${numericValue.toLocaleString("en-US")}`;
+const formatAmountDisplay = (value: any) => {
+  const num = Number(value || 0);
+  if (!Number.isFinite(num)) return "K 0";
+  return `K ${num.toLocaleString("en-US")}`;
 };
 
-const getMonthName = (monthValue: string | number | null | undefined) => {
-  const value = String(monthValue || "").padStart(2, "0");
-  const found = monthOptions.find((m) => m.value === value);
-  return found?.label || "-";
-};
+/* ---------------- COMPONENT ---------------- */
 
 const Savings: React.FC = () => {
   const history = useHistory();
-  const selectedGroupID = localStorage.getItem("selectedGroupID") || "";
-  const selectedGroupName = localStorage.getItem("selectedGroupName") || "";
+
+  const selectedGroupID = localStorage.getItem("selectedGroupID") ?? "";
+  const selectedGroupName = localStorage.getItem("selectedGroupName") ?? "";
 
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+
   const [groupSavings, setGroupSavings] = useState<GroupSaving[]>([]);
+  const [memberSavings, setMemberSavings] = useState<MemberSaving[]>([]);
   const [members, setMembers] = useState<Beneficiary[]>([]);
   const [savingsTypes, setSavingsTypes] = useState<SavingsType[]>([]);
-  const [selectedGroupDistrictID, setSelectedGroupDistrictID] =
-    useState<string>("");
+  const [selectedGroupDistrictID, setSelectedGroupDistrictID] = useState("");
 
-  const [amount, setAmount] = useState<string>("");
-  const [month, setMonth] = useState<string>(
+  const [amount, setAmount] = useState("");
+  const [month, setMonth] = useState(
     String(new Date().getMonth() + 1).padStart(2, "0"),
   );
-  const [year, setYear] = useState<string>(String(new Date().getFullYear()));
+  const [year, setYear] = useState(String(new Date().getFullYear()));
 
   const [editingRecID, setEditingRecID] = useState<number | null>(null);
   const [activeType, setActiveType] = useState<SavingsType | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [viewRow, setViewRow] = useState<GroupSaving | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<GroupSaving | null>(null);
+
+  /* ---------------- LOAD DATA ---------------- */
 
   const load = useCallback(async () => {
-    if (!selectedGroupID) {
-      setGroupSavings([]);
-      setMembers([]);
-      setSavingsTypes([]);
-      return;
-    }
+    if (!selectedGroupID) return;
 
     setLoading(true);
+
     try {
-      const [sRows, mRows, tRows] = await Promise.all([
+      const [sRows, mRows, tRows, groupRow, memberSavingsRows] = await Promise.all([
         fetchGroupSavingsByGroupID(selectedGroupID),
         fetchBeneficiariesByGroupCode(selectedGroupID),
         fetchSavingsTypes(),
+        apiGet<{ DistrictID?: string; districtID?: string }>(
+          `/groups/${encodeURIComponent(selectedGroupID)}`,
+        ),
+        apiGet<MemberSaving[]>("/member-savings"),
       ]);
 
-      try {
-        const groupRow = await apiGet<{
-          DistrictID?: string;
-          districtID?: string;
-        }>(`/groups/${encodeURIComponent(selectedGroupID)}`);
-        setSelectedGroupDistrictID(
-          String(groupRow?.DistrictID || groupRow?.districtID || ""),
-        );
-      } catch {
-        setSelectedGroupDistrictID("");
-      }
+      const group = groupRow ?? {};
 
-      setGroupSavings(sRows);
-      setMembers(mRows);
+      setSelectedGroupDistrictID(
+        String(group?.DistrictID || group?.districtID || ""),
+      );
+
+      setGroupSavings(Array.isArray(sRows) ? sRows : []);
+      setMembers(Array.isArray(mRows) ? mRows : []);
+      const memberSavingsFiltered = (Array.isArray(memberSavingsRows) ? memberSavingsRows : []).filter(
+        (row) => String(row.groupCode || "") === String(selectedGroupID),
+      );
+      setMemberSavings(memberSavingsFiltered);
+
       setSavingsTypes(
-        tRows.length > 0
+        Array.isArray(tRows) && tRows.length
           ? tRows
           : [{ TypeID: "02", savings_name: "Group Savings" }],
       );
     } catch (error) {
-      console.error("Failed to load savings data:", error);
-      setGroupSavings([]);
-      setMembers([]);
-      setSavingsTypes([]);
+      console.error("Failed to load savings:", error);
     } finally {
       setLoading(false);
     }
@@ -165,18 +171,14 @@ const Savings: React.FC = () => {
     load();
   });
 
-  const totalByType = useMemo(() => {
-    const totals: Record<string, number> = {};
-    for (const row of groupSavings) {
-      const typeKey = String(row.sType || "");
-      const amountValue = Number(row.Amount || 0);
-      totals[typeKey] = (totals[typeKey] || 0) + amountValue;
-    }
-    return totals;
-  }, [groupSavings]);
+  /* ---------------- TOTALS ---------------- */
 
   const totalGroupSavings = useMemo(
-    () => groupSavings.reduce((sum, row) => sum + Number(row.Amount || 0), 0),
+    () =>
+      (groupSavings || []).reduce(
+        (sum, row) => sum + Number(row?.Amount || 0),
+        0,
+      ),
     [groupSavings],
   );
 
@@ -188,10 +190,47 @@ const Savings: React.FC = () => {
     return map;
   }, [savingsTypes]);
 
+  const memberSavingsTotalsByCode = useMemo(() => {
+    const totals: Record<string, number> = {};
+    for (const row of memberSavings) {
+      const code = String(row.sppCode || "");
+      if (!code) continue;
+      totals[code] = (totals[code] || 0) + Number(row.amount || 0);
+    }
+    return totals;
+  }, [memberSavings]);
+
+  const membersWithSavings = useMemo(() => {
+    const codesWithSavings = new Set(
+      memberSavings.map((row) => String(row.sppCode || "")).filter(Boolean),
+    );
+    return members.filter((m) => codesWithSavings.has(String(m.sppCode || "")));
+  }, [memberSavings, members]);
+
+  const sortedGroupSavings = useMemo(() => {
+    const toSortableDate = (row: GroupSaving) =>
+      `${String(row?.Yr || "").padStart(4, "0")}-${String(row?.Month || "").padStart(2, "0")}`;
+
+    return [...(groupSavings || [])].sort((a, b) =>
+      toSortableDate(b).localeCompare(toSortableDate(a)),
+    );
+  }, [groupSavings]);
+
+  const totalByType = useMemo(() => {
+    const totals: Record<string, number> = {};
+
+    (groupSavings || []).forEach((row) => {
+      const key = String(row?.sType || "");
+      totals[key] = (totals[key] || 0) + Number(row?.Amount || 0);
+    });
+
+    return totals;
+  }, [groupSavings]);
+
+  /* ---------------- FORM ---------------- */
+
   const resetForm = () => {
     setAmount("");
-    setMonth(String(new Date().getMonth() + 1).padStart(2, "0"));
-    setYear(String(new Date().getFullYear()));
     setEditingRecID(null);
   };
 
@@ -201,21 +240,55 @@ const Savings: React.FC = () => {
     setShowAddModal(true);
   };
 
+  const openEditModalForSaving = (row: GroupSaving) => {
+    const matchingType =
+      savingsTypes.find((t) => String(t.TypeID) === String(row.sType)) ||
+      ({ TypeID: String(row.sType || "02"), savings_name: "Group Savings" } as SavingsType);
+
+    setEditingRecID(Number(row.RecID || 0) || null);
+    setActiveType(matchingType);
+    setAmount(formatAmountInput(row.Amount || 0));
+    setMonth(String(row.Month || "").padStart(2, "0"));
+    setYear(String(row.Yr || ""));
+    setShowAddModal(true);
+  };
+
+  const formatMonthYearLabel = (row: Pick<GroupSaving, "Month" | "Yr">) => {
+    const monthValue = String(row.Month || "").padStart(2, "0");
+    const monthName = monthOptions.find((m) => m.value === monthValue)?.label || monthValue;
+    return `${monthName} ${row.Yr || ""}`.trim();
+  };
+
+  const handleDeleteSaving = async (recID?: number) => {
+    if (!recID) return;
+    try {
+      setSaving(true);
+      await deleteGroupSaving(recID);
+      await load();
+    } catch (error) {
+      console.error("Failed to delete saving record:", error);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleSaveGroupSaving = async () => {
-    if (!selectedGroupID) return;
-    if (!activeType?.TypeID) return;
-    const numericAmount = parseAmount(amount);
-    if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
-      window.alert("Please enter a valid amount greater than 0.");
+    if (!selectedGroupID || !activeType) return;
+
+    const numericAmount = Number(parseAmount(amount));
+
+    if (numericAmount <= 0) {
+      alert("Enter valid amount");
       return;
     }
 
     try {
       setSaving(true);
+
       if (editingRecID) {
         await updateGroupSaving(editingRecID, {
           GroupID: selectedGroupID,
-          DistrictID: selectedGroupDistrictID || undefined,
+          DistrictID: selectedGroupDistrictID,
           Yr: year,
           Month: month,
           Amount: numericAmount,
@@ -224,7 +297,7 @@ const Savings: React.FC = () => {
       } else {
         await createGroupSaving({
           GroupID: selectedGroupID,
-          DistrictID: selectedGroupDistrictID || undefined,
+          DistrictID: selectedGroupDistrictID,
           Yr: year,
           Month: month,
           Amount: numericAmount,
@@ -236,44 +309,13 @@ const Savings: React.FC = () => {
       resetForm();
       await load();
     } catch (error) {
-      console.error("Failed to save group saving:", error);
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Failed to save group saving. Please try again.";
-      window.alert(message);
+      console.error(error);
     } finally {
       setSaving(false);
     }
   };
 
-  const handleEdit = (row: GroupSaving) => {
-    if (!row?.RecID) return;
-    setEditingRecID(row.RecID);
-    setAmount(formatAmountInput(String(row.Amount || "")));
-    setMonth(String(row.Month || ""));
-    setYear(String(row.Yr || ""));
-
-    const selected = savingsTypes.find((t) => String(t.TypeID) === String(row.sType));
-    setActiveType(selected || { TypeID: String(row.sType || ""), savings_name: String(row.sType || "") });
-    setShowAddModal(true);
-  };
-
-  const handleDelete = async (row: GroupSaving) => {
-    if (!row?.RecID) return;
-
-    try {
-      await deleteGroupSaving(row.RecID);
-      if (editingRecID === row.RecID) {
-        setShowAddModal(false);
-        resetForm();
-      }
-      await load();
-      setDeleteTarget(null);
-    } catch (error) {
-      console.error("Failed to delete group saving:", error);
-    }
-  };
+  /* ---------------- UI ---------------- */
 
   return (
     <IonPage>
@@ -284,7 +326,7 @@ const Savings: React.FC = () => {
               <IonIcon icon={arrowBack} />
             </IonButton>
           </IonButtons>
-          <IonTitle style={{ color: "white" }}>Group Savings</IonTitle>
+          <IonTitle>Group Savings</IonTitle>
         </IonToolbar>
       </IonHeader>
 
@@ -300,178 +342,68 @@ const Savings: React.FC = () => {
 
         <IonCard>
           <IonCardHeader>
-            <IonCardTitle>Total Group Savings</IonCardTitle>
+            <IonCardTitle>Total Savings</IonCardTitle>
           </IonCardHeader>
           <IonCardContent>
-            <IonBadge color="success">{formatAmountDisplay(totalGroupSavings)}</IonBadge>
+            <IonBadge color="success">
+              {formatAmountDisplay(totalGroupSavings)}
+            </IonBadge>
           </IonCardContent>
         </IonCard>
 
-        <IonCard>
-          <IonCardHeader>
-            <IonCardTitle>Savings Types</IonCardTitle>
-          </IonCardHeader>
-          <IonCardContent>
-            {loading ? (
-              <IonSpinner name="crescent" />
-            ) : savingsTypes.length === 0 ? (
-              <IonLabel color="medium">No savings types found</IonLabel>
-            ) : (
-              <IonList>
-                {savingsTypes.map((type) => {
-                  const total = totalByType[String(type.TypeID)] || 0;
-                  return (
-                    <IonCard key={type.TypeID}>
-                      <IonCardContent>
-                        <IonItem lines="none">
-                          <IonLabel>
-                            <h3>{type.savings_name || `Type ${type.TypeID}`}</h3>
-                          </IonLabel>
-                          <IonBadge color="success" slot="end">
-                            {formatAmountDisplay(total)}
-                          </IonBadge>
-                          <IonButton
-                            slot="end"
-                            fill="clear"
-                            onClick={() => openAddModalForType(type)}
-                          >
-                            <IonIcon icon={addCircleOutline} />
-                          </IonButton>
-                        </IonItem>
-                      </IonCardContent>
-                    </IonCard>
-                  );
-                })}
-              </IonList>
-            )}
-          </IonCardContent>
-        </IonCard>
+        {loading ? (
+          <IonSpinner name="crescent" />
+        ) : (
+          <IonList>
+            {savingsTypes.map((type) => (
+              <IonItem key={type.TypeID}>
+                <IonLabel>{type.savings_name}</IonLabel>
 
-        <IonCard>
-          <IonCardHeader>
-            <IonCardTitle>
-              Group Savings History{" "}
-              <IonBadge color="success">{groupSavings.length}</IonBadge>
-            </IonCardTitle>
-          </IonCardHeader>
-          <IonCardContent>
-            {loading ? (
-              <IonSpinner name="crescent" />
-            ) : groupSavings.length === 0 ? (
-              <IonLabel color="medium">No group savings found</IonLabel>
-            ) : (
-              <IonList>
-                {groupSavings.map((row) => (
-                  <IonItem key={row.RecID}>
-                    <IonLabel>
-                      <h3>
-                        {row.Yr}/{getMonthName(row.Month)}
-                      </h3>
-                      <p>Amount: {formatAmountDisplay(row.Amount)}</p>
-                      <p>{savingsTypeNameById[String(row.sType || "")] || "-"}</p>
-                    </IonLabel>
-                    <IonButton
-                      slot="end"
-                      fill="clear"
-                      size="small"
-                      title="View"
-                      onClick={() => setViewRow(row)}
-                    >
-                      <IonIcon icon={eyeOutline} />
-                    </IonButton>
-                    <IonButton
-                      slot="end"
-                      fill="clear"
-                      size="small"
-                      title="Edit"
-                      onClick={() => handleEdit(row)}
-                    >
-                      <IonIcon icon={createOutline} />
-                    </IonButton>
-                    <IonButton
-                      slot="end"
-                      fill="clear"
-                      size="small"
-                      color="danger"
-                      title="Delete"
-                      onClick={() => setDeleteTarget(row)}
-                    >
-                      <IonIcon icon={trashOutline} />
-                    </IonButton>
-                  </IonItem>
-                ))}
-              </IonList>
-            )}
-          </IonCardContent>
-        </IonCard>
+                <IonBadge slot="end" color="success">
+                  {formatAmountDisplay(totalByType[type.TypeID] || 0)}
+                </IonBadge>
 
-        <IonCard>
-          <IonCardHeader>
-            <IonCardTitle>
-              Members <IonBadge color="primary">{members.length}</IonBadge>
-            </IonCardTitle>
-          </IonCardHeader>
-          <IonCardContent>
-            {members.length === 0 ? (
-              <IonLabel color="medium">No group members found</IonLabel>
-            ) : (
-              <IonList>
-                {members.map((m) => (
-                  <IonItem
-                    key={m.sppCode}
-                    button
-                    detail
-                    onClick={() =>
-                      history.push(
-                        `/groups/savings/member/${encodeURIComponent(
-                          m.sppCode || "",
-                        )}`,
-                      )
-                    }
-                  >
-                    <IonLabel>
-                      <h3>{m.hh_head_name || m.sppCode}</h3>
-                      <p>{m.sppCode}</p>
-                    </IonLabel>
-                  </IonItem>
-                ))}
-              </IonList>
-            )}
-          </IonCardContent>
-        </IonCard>
+                <IonButton
+                  slot="end"
+                  fill="clear"
+                  onClick={() => openAddModalForType(type)}
+                >
+                  <IonIcon icon={addCircleOutline} />
+                </IonButton>
+              </IonItem>
+            ))}
+          </IonList>
+        )}
 
-        <IonModal
-          isOpen={showAddModal}
-          onDidDismiss={() => setShowAddModal(false)}
-        >
+        <IonModal isOpen={showAddModal}>
           <IonHeader>
             <IonToolbar color="success">
-              <IonTitle>
-                {editingRecID ? "Edit Saving" : "Add Saving"} -{" "}
-                {activeType?.savings_name || activeType?.TypeID || ""}
-              </IonTitle>
+              <IonTitle>{editingRecID ? "Edit Saving" : "Add Saving"}</IonTitle>
               <IonButtons slot="end">
-                <IonButton onClick={() => setShowAddModal(false)}>Close</IonButton>
+                <IonButton onClick={() => setShowAddModal(false)}>
+                  Close
+                </IonButton>
               </IonButtons>
             </IonToolbar>
           </IonHeader>
+
           <IonContent className="ion-padding">
             <IonItem>
               <IonLabel position="stacked">Amount</IonLabel>
               <IonInput
-                type="text"
-                inputMode="numeric"
                 value={amount}
+                inputMode="numeric"
                 onIonInput={(e) =>
-                  setAmount(formatAmountInput(String(e.detail.value || "")))
+                  setAmount(formatAmountInput(String(e.detail?.value ?? "")))
                 }
               />
             </IonItem>
+
             <IonItem>
               <IonLabel position="stacked">Month</IonLabel>
               <IonSelect
                 value={month}
-                onIonChange={(e) => setMonth(String(e.detail.value || ""))}
+                onIonChange={(e) => setMonth(String(e.detail?.value ?? ""))}
               >
                 {monthOptions.map((m) => (
                   <IonSelectOption key={m.value} value={m.value}>
@@ -480,11 +412,12 @@ const Savings: React.FC = () => {
                 ))}
               </IonSelect>
             </IonItem>
+
             <IonItem>
               <IonLabel position="stacked">Year</IonLabel>
               <IonSelect
                 value={year}
-                onIonChange={(e) => setYear(String(e.detail.value || ""))}
+                onIonChange={(e) => setYear(String(e.detail?.value ?? ""))}
               >
                 {yearOptions.map((y) => (
                   <IonSelectOption key={y} value={y}>
@@ -493,28 +426,117 @@ const Savings: React.FC = () => {
                 ))}
               </IonSelect>
             </IonItem>
+
             <IonButton
               expand="block"
               color="success"
               onClick={handleSaveGroupSaving}
-              disabled={saving || !selectedGroupID || !activeType}
-              style={{ marginTop: 12 }}
+              disabled={saving}
             >
-              {saving ? (
-                <IonSpinner name="crescent" />
-              ) : editingRecID ? (
-                "Update Saving"
-              ) : (
-                "Save Saving"
-              )}
+              {saving ? <IonSpinner name="crescent" /> : "Save"}
             </IonButton>
           </IonContent>
         </IonModal>
 
-        <IonModal
-          isOpen={!!viewRow}
-          onDidDismiss={() => setViewRow(null)}
-        >
+        <IonCard>
+          <IonCardHeader>
+            <IonCardTitle>Group Savings History</IonCardTitle>
+          </IonCardHeader>
+          <IonCardContent>
+            {sortedGroupSavings.length === 0 ? (
+              <IonLabel color="medium">No group savings recorded yet.</IonLabel>
+            ) : (
+              <IonList>
+                {sortedGroupSavings.map((row) => (
+                  <IonItem key={row.RecID || `${row.GroupID}-${row.Month}-${row.Yr}-${row.sType}`}>
+                    <IonLabel>
+                      <h3>{savingsTypeNameById[String(row.sType || "")] || "Group Saving"}</h3>
+                      <p>{formatMonthYearLabel(row)}</p>
+                      <p>{formatAmountDisplay(row.Amount)}</p>
+                    </IonLabel>
+                    <div
+                      slot="end"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "2px",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <IonButton
+                        fill="clear"
+                        size="small"
+                        title="View"
+                        onClick={() => setViewRow(row)}
+                        style={{ margin: 0 }}
+                      >
+                        <IonIcon icon={eyeOutline} />
+                      </IonButton>
+                      <IonButton
+                        fill="clear"
+                        size="small"
+                        title="Edit"
+                        onClick={() => openEditModalForSaving(row)}
+                        style={{ margin: 0 }}
+                      >
+                        <IonIcon icon={createOutline} />
+                      </IonButton>
+                      <IonButton
+                        fill="clear"
+                        size="small"
+                        color="danger"
+                        title="Delete"
+                        onClick={() => handleDeleteSaving(row.RecID)}
+                        style={{ margin: 0 }}
+                      >
+                        <IonIcon icon={trashOutline} />
+                      </IonButton>
+                    </div>
+                  </IonItem>
+                ))}
+              </IonList>
+            )}
+          </IonCardContent>
+        </IonCard>
+
+        <IonCard>
+          <IonCardHeader>
+            <IonCardTitle>Member Savings</IonCardTitle>
+          </IonCardHeader>
+          <IonCardContent>
+            {membersWithSavings.length === 0 ? (
+              <IonLabel color="medium">No members found for this group.</IonLabel>
+            ) : (
+              <IonList>
+                {membersWithSavings.map((member) => {
+                  const memberCode = String(member.sppCode || "");
+                  const totalForMember = memberSavingsTotalsByCode[memberCode] || 0;
+
+                  return (
+                  <IonItem
+                    key={memberCode || member.hh_code}
+                    button
+                    onClick={() =>
+                      history.push(
+                        `/groups/savings/member/${encodeURIComponent(memberCode)}`,
+                      )
+                    }
+                  >
+                    <IonLabel>
+                      <h3>{member.hh_head_name || memberCode || "Member"}</h3>
+                      <p>Beneficiary Code: {memberCode || "-"}</p>
+                      <p>ML Code: {member.hh_code || "-"}</p>
+                      <p>Total Savings: {formatAmountDisplay(totalForMember)}</p>
+                    </IonLabel>
+                  </IonItem>
+                  );
+                })}
+              </IonList>
+            )}
+          </IonCardContent>
+        </IonCard>
+
+        <IonModal isOpen={!!viewRow} onDidDismiss={() => setViewRow(null)}>
           <IonHeader>
             <IonToolbar color="success">
               <IonTitle>Group Saving Details</IonTitle>
@@ -526,17 +548,24 @@ const Savings: React.FC = () => {
           <IonContent className="ion-padding">
             <IonItem lines="none">
               <IonLabel>
-                <h3>Group Name</h3>
-                <p>{selectedGroupName || "-"}</p>
+                <h3>Group</h3>
+                <p>{selectedGroupName || selectedGroupID || "-"}</p>
               </IonLabel>
             </IonItem>
             <IonItem lines="none">
               <IonLabel>
-                <h3>Year / Month / Saving Type</h3>
+                <h3>Saving Type</h3>
                 <p>
-                  {viewRow?.Yr || "-"} / {getMonthName(viewRow?.Month)} /{" "}
-                  {savingsTypeNameById[String(viewRow?.sType || "")] || "-"}
+                  {savingsTypeNameById[String(viewRow?.sType || "")] ||
+                    viewRow?.sType ||
+                    "-"}
                 </p>
+              </IonLabel>
+            </IonItem>
+            <IonItem lines="none">
+              <IonLabel>
+                <h3>Month & Year</h3>
+                <p>{viewRow ? formatMonthYearLabel(viewRow) : "-"}</p>
               </IonLabel>
             </IonItem>
             <IonItem lines="none">
@@ -547,46 +576,9 @@ const Savings: React.FC = () => {
             </IonItem>
           </IonContent>
         </IonModal>
-
-        <IonAlert
-          isOpen={!!deleteTarget}
-          header="Delete Group Saving?"
-          message={
-            deleteTarget
-              ? [
-                  `Group: ${selectedGroupName || "-"}`,
-                  `Period: ${deleteTarget.Yr || "-"} / ${getMonthName(
-                    deleteTarget.Month,
-                  )}`,
-                  `Type: ${
-                    savingsTypeNameById[String(deleteTarget.sType || "")] || "-"
-                  }`,
-                  `Amount: ${formatAmountDisplay(deleteTarget.Amount)}`,
-                ].join("\n")
-              : ""
-          }
-          buttons={[
-            {
-              text: "Cancel",
-              role: "cancel",
-              handler: () => setDeleteTarget(null),
-            },
-            {
-              text: "Delete",
-              role: "destructive",
-              handler: () => {
-                if (deleteTarget) {
-                  void handleDelete(deleteTarget);
-                }
-              },
-            },
-          ]}
-          onDidDismiss={() => setDeleteTarget(null)}
-        />
       </IonContent>
     </IonPage>
   );
 };
 
 export default Savings;
-

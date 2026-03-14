@@ -1,15 +1,6 @@
 import { useEffect, useState } from "react";
-import { Capacitor } from "@capacitor/core";
-
-import {
-  getRegions,
-  getDistricts,
-  getVillageClusters,
-} from "../db/sqlite";
 
 import { apiGet } from "../services/api";
-
-const isNative = Capacitor.getPlatform() !== "web";
 
 export const useLocationFilters = () => {
   const [regions, setRegions] = useState<any[]>([]);
@@ -34,12 +25,7 @@ export const useLocationFilters = () => {
     const load = async () => {
       setLoadingRegions(true);
       try {
-        if (isNative) {
-          const res = await getRegions();
-          setRegions(res.values || []);
-        } else {
-          setRegions(await apiGet<any[]>("/regions"));
-        }
+        setRegions(await apiGet<any[]>("/regions"));
       } finally {
         setLoadingRegions(false);
       }
@@ -64,12 +50,7 @@ export const useLocationFilters = () => {
     const load = async () => {
       setLoadingDistricts(true);
       try {
-        if (isNative) {
-          const res = await getDistricts(region);
-          setDistricts(res.values || []);
-        } else {
-          setDistricts(await apiGet<any[]>(`/districts?regionID=${region}`));
-        }
+        setDistricts(await apiGet<any[]>(`/districts?regionID=${region}`));
       } finally {
         setLoadingDistricts(false);
       }
@@ -113,12 +94,7 @@ export const useLocationFilters = () => {
     const load = async () => {
       setLoadingVcs(true);
       try {
-        if (isNative) {
-          const res = await getVillageClusters(ta);
-          setVcs(res.values || []);
-        } else {
-          setVcs(await apiGet<any[]>(`/village-clusters?taID=${ta}`));
-        }
+        setVcs(await apiGet<any[]>(`/village-clusters?taID=${ta}`));
       } finally {
         setLoadingVcs(false);
       }

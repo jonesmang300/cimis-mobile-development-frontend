@@ -11,9 +11,9 @@ import {
   IonList,
   IonMenu,
   IonMenuButton,
+  IonMenuToggle,
   IonPage,
   IonRow,
-  IonSplitPane,
   IonTitle,
   IonToast,
   IonToolbar,
@@ -27,9 +27,9 @@ import {
   peopleOutline,
   pieChartOutline,
   schoolOutline,
-  settingsOutline,
   storefrontOutline,
   listOutline,
+  settingsOutline,
 } from "ionicons/icons";
 import { useAuth } from "../context/AuthContext";
 import { getDashboardOverview, DashboardOverview } from "../../services/dashboard.service";
@@ -94,185 +94,192 @@ const Dashboard: React.FC = () => {
   });
 
   return (
-    <IonSplitPane contentId="main">
-      <IonMenu contentId="main">
+    <>
+      <IonMenu contentId="dashboard-content" side="start">
         <IonHeader>
-          <IonToolbar className="dashboard-toolbar">
+          <IonToolbar>
             <IonTitle>Menu</IonTitle>
           </IonToolbar>
         </IonHeader>
-
         <IonContent>
           <IonList>
-            <IonItem button routerLink="/home">
-              <IonIcon icon={homeOutline} slot="start" />
-              <IonLabel>Home</IonLabel>
-            </IonItem>
-            <IonItem button routerLink="/validation">
-              <IonIcon icon={checkmarkCircleOutline} slot="start" />
-              <IonLabel>Validation</IonLabel>
-            </IonItem>
-            <IonItem button routerLink="/groups">
-              <IonIcon icon={peopleOutline} slot="start" />
-              <IonLabel>Groups</IonLabel>
-            </IonItem>
-            <IonItem button routerLink="/settings">
-              <IonIcon icon={settingsOutline} slot="start" />
-              <IonLabel>Settings</IonLabel>
-            </IonItem>
+            <IonMenuToggle autoHide>
+              <IonItem routerLink="/home" lines="none">
+                <IonIcon icon={homeOutline} slot="start" />
+                <IonLabel>Home</IonLabel>
+              </IonItem>
+            </IonMenuToggle>
+            <IonMenuToggle autoHide>
+              <IonItem routerLink="/validation" lines="none">
+                <IonIcon icon={listOutline} slot="start" />
+                <IonLabel>Formation</IonLabel>
+              </IonItem>
+            </IonMenuToggle>
+            <IonMenuToggle autoHide>
+              <IonItem routerLink="/groups" lines="none">
+                <IonIcon icon={peopleOutline} slot="start" />
+                <IonLabel>Groups</IonLabel>
+              </IonItem>
+            </IonMenuToggle>
+            <IonMenuToggle autoHide>
+              <IonItem routerLink="/settings" lines="none">
+                <IonIcon icon={settingsOutline} slot="start" />
+                <IonLabel>Settings</IonLabel>
+              </IonItem>
+            </IonMenuToggle>
           </IonList>
         </IonContent>
       </IonMenu>
 
-      <IonPage id="main">
+      <IonPage id="dashboard-content">
         <IonHeader>
           <IonToolbar className="dashboard-toolbar">
             <IonButtons slot="start">
-              <IonMenuButton />
+              <IonMenuButton color="light" className="dashboard-menu-button" />
             </IonButtons>
             <IonTitle>Dashboard</IonTitle>
           </IonToolbar>
         </IonHeader>
 
         <IonContent className="dashboard-page ion-padding">
-          <IonToast
-            isOpen={!!toastMessage}
-            message={toastMessage}
-            duration={3000}
-            onDidDismiss={() => setToastMessage("")}
-          />
+        <IonToast
+          isOpen={!!toastMessage}
+          message={toastMessage}
+          duration={3000}
+          onDidDismiss={() => setToastMessage("")}
+        />
 
-          <section className="dashboard-hero">
-            <div className="dashboard-hero-copy">
-              <span className="dashboard-kicker">Operational Overview</span>
-              <h1>{displayName}</h1>
-              <p>{heroCaption}</p>
+        <section className="dashboard-hero">
+          <div className="dashboard-hero-copy">
+            <span className="dashboard-kicker">Operational Overview</span>
+            <h1>{displayName}</h1>
+            <p>{heroCaption}</p>
+          </div>
+          <div className="dashboard-hero-panel">
+            <div className="dashboard-hero-metric">
+              <span>Allocated to Groups</span>
+              <strong>{overview.totalVerified.toLocaleString()}</strong>
             </div>
-            <div className="dashboard-hero-panel">
-              <div className="dashboard-hero-metric">
-                <span>Members Verified</span>
-                <strong>{overview.totalVerified.toLocaleString()}</strong>
-              </div>
-              <div className="dashboard-hero-metric">
-                <span>{groupSummaryLabel}</span>
-                <strong>{overview.groupsFormed.toLocaleString()}</strong>
-              </div>
-              <div className="dashboard-hero-metric">
-                <span>Aggregated Savings</span>
-                <strong>{formatCurrency(overview.aggregatedSavings)}</strong>
-              </div>
+            <div className="dashboard-hero-metric">
+              <span>{groupSummaryLabel}</span>
+              <strong>{overview.groupsFormed.toLocaleString()}</strong>
             </div>
-          </section>
-
-          <section className="dashboard-section">
-            <div className="dashboard-section-head">
-              <h2>Summary Cards</h2>
-              <p>Counts are calculated from the groups visible to your account.</p>
+            <div className="dashboard-hero-metric">
+              <span>Aggregated Savings</span>
+              <strong>{formatCurrency(overview.aggregatedSavings)}</strong>
             </div>
+          </div>
+        </section>
 
-            <IonGrid className="dashboard-grid">
-              <IonRow>
-                <IonCol size="12" sizeMd="6" sizeLg="4">
-                  <DashboardStatCard
-                    title="Members Verified"
-                    helper="Selected beneficiaries"
-                    icon={checkmarkCircleOutline}
-                    routerLink="/verified_members"
-                    loading={loading}
-                    value={overview.totalVerified}
-                    accentClass="accent-verified"
-                  />
-                </IonCol>
+        <section className="dashboard-section">
+          <div className="dashboard-section-head">
+            <h2>Summary Cards</h2>
+            <p>Counts are calculated from the groups visible to your account.</p>
+          </div>
 
-                <IonCol size="12" sizeMd="6" sizeLg="4">
-                  <DashboardStatCard
-                    title={groupSummaryLabel}
-                    helper={roleId === 5 ? "Groups created by you" : "All groups in scope"}
-                    icon={peopleOutline}
-                    routerLink="/groups"
-                    loading={loading}
-                    value={overview.groupsFormed}
-                    accentClass="accent-groups"
-                  />
-                </IonCol>
+          <IonGrid className="dashboard-grid">
+            <IonRow>
+              <IonCol size="12" sizeMd="6" sizeLg="4">
+                <DashboardStatCard
+                  title="Allocated to Groups"
+                  helper="Selected beneficiaries"
+                  icon={checkmarkCircleOutline}
+                  routerLink="/verified_members"
+                  loading={loading}
+                  value={overview.totalVerified}
+                  accentClass="accent-verified"
+                />
+              </IonCol>
 
-                <IonCol size="12" sizeMd="6" sizeLg="4">
-                  <DashboardStatCard
-                    title="Group Trainings"
-                    helper="Recorded training sessions"
-                    icon={schoolOutline}
-                    routerLink="/groups"
-                    loading={loading}
-                    value={overview.trainings}
-                    accentClass="accent-trainings"
-                  />
-                </IonCol>
+              <IonCol size="12" sizeMd="6" sizeLg="4">
+                <DashboardStatCard
+                  title={groupSummaryLabel}
+                  helper={roleId === 5 ? "Groups created by you" : "All groups in scope"}
+                  icon={peopleOutline}
+                  routerLink="/groups?metric=all"
+                  loading={loading}
+                  value={overview.groupsFormed}
+                  accentClass="accent-groups"
+                />
+              </IonCol>
 
-                <IonCol size="12" sizeMd="6" sizeLg="4">
-                  <DashboardStatCard
-                    title="Meetings"
-                    helper="Recorded group meetings"
-                    icon={listOutline}
-                    routerLink="/groups"
-                    loading={loading}
-                    value={overview.meetings}
-                    accentClass="accent-meetings"
-                  />
-                </IonCol>
+              <IonCol size="12" sizeMd="6" sizeLg="4">
+                <DashboardStatCard
+                  title="Group Trainings"
+                  helper="Recorded training sessions"
+                  icon={schoolOutline}
+                  routerLink="/groups?metric=trainings"
+                  loading={loading}
+                  value={overview.trainings}
+                  accentClass="accent-trainings"
+                />
+              </IonCol>
 
-                <IonCol size="12" sizeMd="6" sizeLg="4">
-                  <DashboardStatCard
-                    title="Aggregated Savings"
-                    helper="Group and member savings combined"
-                    icon={cashOutline}
-                    routerLink="/groups"
-                    loading={loading}
-                    value={formatCurrency(overview.aggregatedSavings)}
-                    accentClass="accent-savings"
-                  />
-                </IonCol>
+              <IonCol size="12" sizeMd="6" sizeLg="4">
+                <DashboardStatCard
+                  title="Meetings"
+                  helper="Recorded group meetings"
+                  icon={listOutline}
+                  routerLink="/groups?metric=meetings"
+                  loading={loading}
+                  value={overview.meetings}
+                  accentClass="accent-meetings"
+                />
+              </IonCol>
 
-                <IonCol size="12" sizeMd="6" sizeLg="4">
-                  <DashboardStatCard
-                    title="Group IGAs"
-                    helper="Group IGA records"
-                    icon={barChartOutline}
-                    routerLink="/groups"
-                    loading={loading}
-                    value={overview.groupIGAs}
-                    accentClass="accent-group-iga"
-                  />
-                </IonCol>
+              <IonCol size="12" sizeMd="6" sizeLg="4">
+                <DashboardStatCard
+                  title="Aggregated Savings"
+                  helper="Group and member savings combined"
+                  icon={cashOutline}
+                  routerLink="/groups?metric=savings"
+                  loading={loading}
+                  value={formatCurrency(overview.aggregatedSavings)}
+                  accentClass="accent-savings"
+                />
+              </IonCol>
 
-                <IonCol size="12" sizeMd="6" sizeLg="4">
-                  <DashboardStatCard
-                    title="Member IGAs"
-                    helper="Beneficiary IGA records"
-                    icon={storefrontOutline}
-                    routerLink="/groups/beneficiaries"
-                    loading={loading}
-                    value={overview.memberIGAs}
-                    accentClass="accent-member-iga"
-                  />
-                </IonCol>
+              <IonCol size="12" sizeMd="6" sizeLg="4">
+                <DashboardStatCard
+                  title="Group IGAs"
+                  helper="Group IGA records"
+                  icon={barChartOutline}
+                  routerLink="/groups?metric=group-igas"
+                  loading={loading}
+                  value={overview.groupIGAs}
+                  accentClass="accent-group-iga"
+                />
+              </IonCol>
 
-                <IonCol size="12" sizeMd="6" sizeLg="4">
-                  <DashboardStatCard
-                    title="My Verified Members"
-                    helper="Verified on this device"
-                    icon={pieChartOutline}
-                    routerLink="/verified_members_by_device"
-                    loading={loading}
-                    value={overview.myVerified}
-                    accentClass="accent-device"
-                  />
-                </IonCol>
-              </IonRow>
-            </IonGrid>
-          </section>
-        </IonContent>
+              <IonCol size="12" sizeMd="6" sizeLg="4">
+                <DashboardStatCard
+                  title="Member IGAs"
+                  helper="Beneficiary IGA records"
+                  icon={storefrontOutline}
+                  routerLink="/groups?metric=member-igas"
+                  loading={loading}
+                  value={overview.memberIGAs}
+                  accentClass="accent-member-iga"
+                />
+              </IonCol>
+
+              <IonCol size="12" sizeMd="6" sizeLg="4">
+                <DashboardStatCard
+                  title="My Verified Members"
+                  helper="Verified on this device"
+                  icon={pieChartOutline}
+                  routerLink="/verified_members_by_device"
+                  loading={loading}
+                  value={overview.myVerified}
+                  accentClass="accent-device"
+                />
+              </IonCol>
+            </IonRow>
+          </IonGrid>
+        </section>
+      </IonContent>
       </IonPage>
-    </IonSplitPane>
+    </>
   );
 };
 

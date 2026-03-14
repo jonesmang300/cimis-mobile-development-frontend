@@ -1,6 +1,27 @@
 .dashboard-toolbar {
   --background: linear-gradient(135deg, #4caf50 0%, #43a047 100%);
   --color: #ffffff;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  min-height: 68px;
+  align-items: center;
+}
+
+.dashboard-toolbar ion-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.dashboard-menu-button {
+  width: 48px;
+  height: 48px;
+  --color: #ffffff;
+  --padding-start: 4px;
+  --padding-end: 4px;
+}
+
+.dashboard-menu-button ion-icon {
+  font-size: 28px;
 }
 
 .dashboard-page {
@@ -80,6 +101,7 @@
 
 .dashboard-section-head {
   margin-bottom: 10px;
+  padding: 0 10px;
 }
 
 .dashboard-section-head h2 {
@@ -96,7 +118,7 @@
 }
 
 .dashboard-grid {
-  padding: 0;
+  padding: 0 10px;
 }
 
 .dashboard-stat-card {
