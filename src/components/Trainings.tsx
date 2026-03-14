@@ -130,14 +130,13 @@ const Trainings: React.FC = () => {
     setLoading(true);
     try {
       const [
-        trainingRows,
-        groupRow,
-        trainingTypeRows,
-        facilitatorRows,
-        memberTrainingRows,
-        beneficiaryRows,
-      ] =
-        await Promise.all([
+        trainingRowsResult,
+        groupRowResult,
+        trainingTypeRowsResult,
+        facilitatorRowsResult,
+        memberTrainingRowsResult,
+        beneficiaryRowsResult,
+      ] = await Promise.allSettled([
         fetchGroupTrainingsByGroupID(selectedGroupID),
         apiGet<GroupMeta>(`/groups/${encodeURIComponent(selectedGroupID)}`),
         apiGet<TrainingTypeRow[]>("/training-types"),
@@ -145,12 +144,53 @@ const Trainings: React.FC = () => {
         fetchMemberTrainings({ groupID: selectedGroupID }),
         fetchBeneficiariesByGroupCode(selectedGroupID),
       ]);
-      setRows(trainingRows);
-      setMemberTrainings(memberTrainingRows);
-      setMembers(beneficiaryRows);
+
+      const trainingRows =
+        trainingRowsResult.status === "fulfilled"
+          ? trainingRowsResult.value
+          : [];
+      const groupRow =
+        groupRowResult.status === "fulfilled" ? groupRowResult.value : null;
+      const trainingTypeRows =
+        trainingTypeRowsResult.status === "fulfilled"
+          ? trainingTypeRowsResult.value
+          : [];
+      const facilitatorRows =
+        facilitatorRowsResult.status === "fulfilled"
+          ? facilitatorRowsResult.value
+          : [];
+      const memberTrainingRows =
+        memberTrainingRowsResult.status === "fulfilled"
+          ? memberTrainingRowsResult.value
+          : [];
+      const beneficiaryRows =
+        beneficiaryRowsResult.status === "fulfilled"
+          ? beneficiaryRowsResult.value
+          : [];
+
+      setRows(Array.isArray(trainingRows) ? trainingRows : []);
+      setMemberTrainings(
+        Array.isArray(memberTrainingRows) ? memberTrainingRows : [],
+      );
+      setMembers(Array.isArray(beneficiaryRows) ? beneficiaryRows : []);
       setGroupMeta(groupRow || null);
-      setTrainingTypes(Array.isArray(trainingTypeRows) ? trainingTypeRows : []);
+      setTrainingTypes(
+        Array.isArray(trainingTypeRows) ? trainingTypeRows : [],
+      );
       setFacilitators(Array.isArray(facilitatorRows) ? facilitatorRows : []);
+
+      const loadFailures = [
+        trainingRowsResult,
+        groupRowResult,
+        trainingTypeRowsResult,
+        facilitatorRowsResult,
+        memberTrainingRowsResult,
+        beneficiaryRowsResult,
+      ].filter((result) => result.status === "rejected");
+
+      if (loadFailures.length > 0) {
+        console.error("Trainings partial load failure:", loadFailures);
+      }
     } catch (error) {
       console.error("Failed to load trainings:", error);
       setRows([]);
@@ -178,29 +218,6 @@ const Trainings: React.FC = () => {
     }
     return map;
   }, [members]);
-
-  const totalParticipants = useMemo(
-    () => memberTrainings.length,
-    [memberTrainings],
-  );
-
-  const totalMales = useMemo(
-    () =>
-      memberTrainings.filter((row) => {
-        const member = memberSexBySppCode[String(row.sppCode || "")];
-        return member === "01";
-      }).length,
-    [memberSexBySppCode, memberTrainings],
-  );
-
-  const totalFemales = useMemo(
-    () =>
-      memberTrainings.filter((row) => {
-        const member = memberSexBySppCode[String(row.sppCode || "")];
-        return member === "02";
-      }).length,
-    [memberSexBySppCode, memberTrainings],
-  );
 
   const attendanceCountByTraining = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -398,24 +415,6 @@ const Trainings: React.FC = () => {
               <IonLabel>Total Trainings</IonLabel>
               <IonBadge slot="end" color="success">
                 {rows.length}
-              </IonBadge>
-            </IonItem>
-            <IonItem lines="none">
-              <IonLabel>Total Males</IonLabel>
-              <IonBadge slot="end" color="success">
-                {totalMales}
-              </IonBadge>
-            </IonItem>
-            <IonItem lines="none">
-              <IonLabel>Total Females</IonLabel>
-              <IonBadge slot="end" color="success">
-                {totalFemales}
-              </IonBadge>
-            </IonItem>
-            <IonItem lines="none">
-              <IonLabel>Total Counted Participants</IonLabel>
-              <IonBadge slot="end" color="tertiary">
-                {totalParticipants}
               </IonBadge>
             </IonItem>
           </IonCardContent>

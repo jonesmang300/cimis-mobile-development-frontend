@@ -115,11 +115,33 @@ const Attendance: React.FC = () => {
 
     setLoading(true);
     try {
-      const [meetingRows, allAttendance, groupMembers] = await Promise.all([
-        fetchMeetingsByGroupCode(selectedGroupID),
-        fetchMeetingAttendance(),
-        fetchBeneficiariesByGroupCode(selectedGroupID),
-      ]);
+      const [meetingRowsResult, allAttendanceResult, groupMembersResult] =
+        await Promise.allSettled([
+          fetchMeetingsByGroupCode(selectedGroupID),
+          fetchMeetingAttendance(),
+          fetchBeneficiariesByGroupCode(selectedGroupID),
+        ]);
+
+      const meetingRowsRaw =
+        meetingRowsResult.status === "fulfilled"
+          ? meetingRowsResult.value
+          : [];
+      const allAttendanceRaw =
+        allAttendanceResult.status === "fulfilled"
+          ? allAttendanceResult.value
+          : [];
+      const groupMembersRaw =
+        groupMembersResult.status === "fulfilled"
+          ? groupMembersResult.value
+          : [];
+
+      const meetingRows = Array.isArray(meetingRowsRaw) ? meetingRowsRaw : [];
+      const allAttendance = Array.isArray(allAttendanceRaw)
+        ? allAttendanceRaw
+        : [];
+      const groupMembers = Array.isArray(groupMembersRaw)
+        ? groupMembersRaw
+        : [];
 
       const filteredAttendance = allAttendance.filter(
         (row) => String(row.groupCode || "") === String(selectedGroupID),
@@ -137,6 +159,16 @@ const Attendance: React.FC = () => {
           null
         );
       });
+
+      const loadFailures = [
+        meetingRowsResult,
+        allAttendanceResult,
+        groupMembersResult,
+      ].filter((result) => result.status === "rejected");
+
+      if (loadFailures.length > 0) {
+        console.error("Attendance partial load failure:", loadFailures);
+      }
     } catch (error) {
       console.error("Failed to load meetings and attendance:", error);
       setMeetings([]);
@@ -192,6 +224,17 @@ const Attendance: React.FC = () => {
       return searchable.includes(query);
     });
   }, [attendanceSearch, members, selectedAttendeeCodes]);
+
+  const allVisibleSelected =
+    availableMembers.length > 0 &&
+    availableMembers.every((member) =>
+      selectedCodes.includes(String(member.sppCode || "")),
+    );
+
+  const someVisibleSelected =
+    availableMembers.some((member) =>
+      selectedCodes.includes(String(member.sppCode || "")),
+    ) && !allVisibleSelected;
 
   const openAddMeeting = () => {
     setEditingMeeting(null);
@@ -293,7 +336,7 @@ const Attendance: React.FC = () => {
 
     try {
       setSaving(true);
-      await Promise.all(
+      const results = await Promise.allSettled(
         selectedCodes.map((sppCode) =>
           createMeetingAttendance({
             meetID: Number(selectedMeeting.meetID),
@@ -302,10 +345,21 @@ const Attendance: React.FC = () => {
           }),
         ),
       );
+
+      const failedCount = results.filter(
+        (result) => result.status === "rejected",
+      ).length;
+
       setShowAttendanceModal(false);
       setSelectedCodes([]);
       setAttendanceSearch("");
       await load();
+
+      if (failedCount > 0) {
+        setActionMessage(
+          `${selectedCodes.length - failedCount} attendance record(s) saved. ${failedCount} failed.`,
+        );
+      }
     } catch (error) {
       console.error("Failed to save meeting attendance:", error);
       setActionMessage(
@@ -372,12 +426,6 @@ const Attendance: React.FC = () => {
               <IonLabel>Total Meetings</IonLabel>
               <IonBadge slot="end" color="success">
                 {meetings.length}
-              </IonBadge>
-            </IonItem>
-            <IonItem lines="none">
-              <IonLabel>Group Beneficiaries</IonLabel>
-              <IonBadge slot="end" color="tertiary">
-                {members.length}
               </IonBadge>
             </IonItem>
           </IonCardContent>
@@ -600,29 +648,56 @@ const Attendance: React.FC = () => {
                 </IonLabel>
               </IonItem>
             ) : (
-              <IonList>
-                {availableMembers.map((member) => {
-                  const sppCode = String(member.sppCode || "");
-                  const checked = selectedCodes.includes(sppCode);
+              <>
+                <IonItem lines="none">
+                  <IonCheckbox
+                    slot="start"
+                    checked={allVisibleSelected}
+                    indeterminate={someVisibleSelected}
+                    onIonChange={(e) => {
+                      const checked = !!e.detail.checked;
+                      const visibleCodes = availableMembers
+                        .map((member) => String(member.sppCode || ""))
+                        .filter(Boolean);
 
-                  return (
-                    <IonItem key={sppCode}>
-                      <IonCheckbox
-                        slot="start"
-                        checked={checked}
-                        onIonChange={(e) =>
-                          handleToggleCode(sppCode, !!e.detail.checked)
+                      setSelectedCodes((prev) => {
+                        const next = new Set(prev);
+                        if (checked) {
+                          visibleCodes.forEach((code) => next.add(code));
+                        } else {
+                          visibleCodes.forEach((code) => next.delete(code));
                         }
-                      />
-                      <IonLabel>
-                        <h3>{member.hh_head_name || sppCode}</h3>
-                        <p>Beneficiary Code: {sppCode || "-"}</p>
-                        <p>ML Code: {member.hh_code || "-"}</p>
-                      </IonLabel>
-                    </IonItem>
-                  );
-                })}
-              </IonList>
+                        return Array.from(next);
+                      });
+                    }}
+                  />
+                  <IonLabel>Select All</IonLabel>
+                </IonItem>
+
+                <IonList>
+                  {availableMembers.map((member) => {
+                    const sppCode = String(member.sppCode || "");
+                    const checked = selectedCodes.includes(sppCode);
+
+                    return (
+                      <IonItem key={sppCode}>
+                        <IonCheckbox
+                          slot="start"
+                          checked={checked}
+                          onIonChange={(e) =>
+                            handleToggleCode(sppCode, !!e.detail.checked)
+                          }
+                        />
+                        <IonLabel>
+                          <h3>{member.hh_head_name || sppCode}</h3>
+                          <p>Beneficiary Code: {sppCode || "-"}</p>
+                          <p>ML Code: {member.hh_code || "-"}</p>
+                        </IonLabel>
+                      </IonItem>
+                    );
+                  })}
+                </IonList>
+              </>
             )}
 
             <IonButton

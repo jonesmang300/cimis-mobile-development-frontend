@@ -20,12 +20,13 @@ export const RadioGroupInput: FC<Prop> = ({
   row,
   disabled = false,
 }) => {
-  const { value, handleChange, hasError, errorMessage, setFieldValue } =
-    useFormikField(name);
+  const { value, handleChange, hasError, errorMessage } = useFormikField(name);
 
   useEffect(() => {
-    if (getValue) getValue(value);
-  }, [value]);
+    if (getValue) {
+      getValue(value);
+    }
+  }, [value, getValue]);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", margin: "8px 0" }}>
@@ -35,22 +36,21 @@ export const RadioGroupInput: FC<Prop> = ({
       >
         {label}
       </label>
+
       <IonRadioGroup
         id={name}
         name={name}
         value={value}
-        onIonChange={(e) => {
-          setFieldValue(name, e.detail.value);
-          handleChange(e.detail.value);
-        }}
+        onIonChange={(e) => handleChange(e.detail.value)}
       >
-        {options.map(({ label, value }) => (
-          <IonItem key={value} disabled={disabled}>
-            <IonLabel>{label}</IonLabel>
-            <IonRadio slot="start" value={value} />
+        {options.map((option) => (
+          <IonItem key={option.value} disabled={disabled}>
+            <IonLabel>{option.label}</IonLabel>
+            <IonRadio slot="start" value={option.value} />
           </IonItem>
         ))}
       </IonRadioGroup>
+
       {hasError && (
         <span style={{ color: "red", fontSize: "12px", marginTop: "4px" }}>
           {errorMessage}

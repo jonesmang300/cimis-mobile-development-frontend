@@ -10,11 +10,12 @@ import {
   IonLabel,
   IonIcon,
   IonButton,
+  IonButtons,
   IonGrid,
   IonRow,
   IonCol,
 } from "@ionic/react";
-import { logOutOutline, helpOutline } from "ionicons/icons";
+import { logOutOutline, helpOutline, arrowBack } from "ionicons/icons";
 import { useTranslation } from "react-i18next";
 import "./Settings.css";
 import { useHistory } from "react-router-dom";
@@ -39,13 +40,18 @@ const SettingsPage: React.FC = () => {
       {/* Header */}
       <IonHeader>
         <IonToolbar color="success">
+          <IonButtons slot="start">
+            <IonButton onClick={() => history.goBack()} color="light">
+              <IonIcon icon={arrowBack} />
+            </IonButton>
+          </IonButtons>
           <IonTitle className="title-white">{t("settings")}</IonTitle>
         </IonToolbar>
       </IonHeader>
 
       <IonContent className="ion-padding">
         {/* Account Section */}
-        <IonLabel>{t("account")}</IonLabel>
+        <IonLabel className="section-title">{t("account")}</IonLabel>
         <IonGrid>
           <IonRow>
             <IonCol>
@@ -63,7 +69,7 @@ const SettingsPage: React.FC = () => {
           </IonRow>
         </IonGrid>
 
-        <IonLabel>
+        <IonLabel className="section-title">
           <p>{t("groupSettings")}</p>
         </IonLabel>
 

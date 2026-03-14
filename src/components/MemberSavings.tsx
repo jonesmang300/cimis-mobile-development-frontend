@@ -40,6 +40,7 @@ import {
   SavingsType,
   updateMemberSaving,
 } from "../services/savings.service";
+import "./MemberSavings.css";
 
 type Params = {
   sppCode: string;
@@ -316,11 +317,11 @@ const MemberSavings: React.FC = () => {
             ) : savingsTypes.length === 0 ? (
               <IonLabel color="medium">No savings types found</IonLabel>
             ) : (
-              <IonList>
+              <IonList className="member-savings-types-list">
                 {savingsTypes.map((type) => {
                   const total = totalsByType[String(type.TypeID)] || 0;
                   return (
-                    <IonCard key={type.TypeID}>
+                    <IonCard key={type.TypeID} className="member-savings-type-card">
                       <IonCardContent>
                         <IonItem lines="none">
                           <IonLabel>
@@ -363,7 +364,7 @@ const MemberSavings: React.FC = () => {
                   return (
                     <IonItem key={r.recID}>
                       <IonLabel>
-                        <h3>Transaction Date: {formatDateLong(r.date)}</h3>
+                        <h3>{formatDateLong(r.date)}</h3>
                         <p>Amount: {formatAmountDisplay(r.amount)}</p>
                         <p>{savingsTypeNameById[String(r.sType || "")] || "-"}</p>
                       </IonLabel>

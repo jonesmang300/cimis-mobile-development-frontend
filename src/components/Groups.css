@@ -14,6 +14,13 @@
   box-shadow: none;
 }
 
+.groups-filter-card {
+  margin: 0 0 16px;
+  border-radius: 12px;
+  border: 1px solid var(--ion-color-light);
+  box-shadow: none;
+}
+
 .selected-group-card {
   margin: 8px 0 12px;
   border-radius: 12px;

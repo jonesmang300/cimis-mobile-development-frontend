@@ -1,5 +1,5 @@
 export * from "./FormikForm";
-export * from "./TextFieldInput";
+export * from "./TextInputField";
 export * from "./SelectFormInput";
-export * from"./RadioFieldInput";
+export * from "./RadioFieldInput";
 export * from "./TextAreaField";

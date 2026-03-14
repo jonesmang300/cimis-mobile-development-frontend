@@ -164,22 +164,50 @@ const MemberIGA: React.FC = () => {
 
     setLoading(true);
     try {
-      const [igaRows, groupRow, categoryRows, igaTypeRows, beneficiaryRow] =
-        await Promise.all([
-          fetchMemberIGAsByMember(selectedGroupID, sppCode),
-          apiGet<GroupMeta>(`/groups/${encodeURIComponent(selectedGroupID)}`),
-          apiGet<BusinessCategoryRow[]>("/business-categories"),
-          apiGet<IGATypeRow[]>("/iga-types"),
-          apiGet<BeneficiaryMeta>(
-            `/beneficiaries/${encodeURIComponent(sppCode)}`,
-          ),
-        ]);
+      const [
+        igaRowsResult,
+        groupRowResult,
+        categoryRowsResult,
+        igaTypeRowsResult,
+        beneficiaryRowResult,
+      ] = await Promise.allSettled([
+        fetchMemberIGAsByMember(selectedGroupID, sppCode),
+        apiGet<GroupMeta>(`/groups/${encodeURIComponent(selectedGroupID)}`),
+        apiGet<BusinessCategoryRow[]>("/business-categories"),
+        apiGet<IGATypeRow[]>("/iga-types"),
+        apiGet<BeneficiaryMeta>(`/beneficiaries/${encodeURIComponent(sppCode)}`),
+      ]);
 
-      setRows(igaRows);
+      const igaRows =
+        igaRowsResult.status === "fulfilled" ? igaRowsResult.value : [];
+      const groupRow =
+        groupRowResult.status === "fulfilled" ? groupRowResult.value : null;
+      const categoryRows =
+        categoryRowsResult.status === "fulfilled" ? categoryRowsResult.value : [];
+      const igaTypeRows =
+        igaTypeRowsResult.status === "fulfilled" ? igaTypeRowsResult.value : [];
+      const beneficiaryRow =
+        beneficiaryRowResult.status === "fulfilled"
+          ? beneficiaryRowResult.value
+          : null;
+
+      setRows(Array.isArray(igaRows) ? igaRows : []);
       setGroupMeta(groupRow || null);
       setBusinessCategories(Array.isArray(categoryRows) ? categoryRows : []);
       setIgaTypes(Array.isArray(igaTypeRows) ? igaTypeRows : []);
       setBeneficiaryMeta(beneficiaryRow || null);
+
+      const loadFailures = [
+        igaRowsResult,
+        groupRowResult,
+        categoryRowsResult,
+        igaTypeRowsResult,
+        beneficiaryRowResult,
+      ].filter((result) => result.status === "rejected");
+
+      if (loadFailures.length > 0) {
+        console.error("Member IGA partial load failure:", loadFailures);
+      }
     } catch (error) {
       console.error("Failed to load member IGAs:", error);
       setRows([]);

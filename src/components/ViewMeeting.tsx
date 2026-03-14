@@ -74,11 +74,20 @@ const ViewMeeting: React.FC = () => {
 
     setLoading(true);
     try {
-      const [meetingRows, allAttendance, groupMembers] = await Promise.all([
-        fetchMeetingsByGroupCode(selectedGroupID),
-        fetchMeetingAttendance(),
-        fetchBeneficiariesByGroupCode(selectedGroupID),
-      ]);
+      const [meetingRowsRaw, allAttendanceRaw, groupMembersRaw] =
+        await Promise.all([
+          fetchMeetingsByGroupCode(selectedGroupID),
+          fetchMeetingAttendance(),
+          fetchBeneficiariesByGroupCode(selectedGroupID),
+        ]);
+
+      const meetingRows = Array.isArray(meetingRowsRaw) ? meetingRowsRaw : [];
+      const allAttendance = Array.isArray(allAttendanceRaw)
+        ? allAttendanceRaw
+        : [];
+      const groupMembers = Array.isArray(groupMembersRaw)
+        ? groupMembersRaw
+        : [];
 
       setMeeting(
         meetingRows.find(

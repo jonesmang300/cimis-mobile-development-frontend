@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import { IonButton, IonContent, IonImg, IonPage } from "@ionic/react";
+import { IonButton, IonContent, IonImg, IonPage, IonText } from "@ionic/react";
 import { Form, Formik } from "formik";
 import { useHistory } from "react-router-dom";
 import * as Yup from "yup";
+
 import { apiPost } from "../services/api";
 import { TextInputField } from "./form";
 import { NotificationMessage } from "./notificationMessage";
 import { useAuth } from "./context/AuthContext";
+
 import "./Login.css";
 
 type MessageType = "success" | "error" | "";
@@ -27,27 +29,20 @@ const Login: React.FC = () => {
   const history = useHistory();
   const { login } = useAuth();
 
-  const [messageState, setMessageState] = useState<{
-    text: string;
-    type: MessageType;
-  }>({
+  const [messageState, setMessageState] = useState({
     text: "",
-    type: "",
+    type: "" as MessageType,
   });
-
-  const setMessage = (text: string, type: MessageType) => {
-    setMessageState({ text, type });
-  };
 
   const schema = Yup.object().shape({
     username: Yup.string().required("Username is required"),
     pin: Yup.string().required("Password is required"),
   });
 
-  const handleLoginSubmit = async (formData: {
-    username: string;
-    pin: string;
-  }) => {
+  const handleLoginSubmit = async (
+    formData: { username: string; pin: string },
+    { setSubmitting }: any,
+  ) => {
     try {
       const res = await apiPost<LoginResponse>("/users/login", {
         username: formData.username,
@@ -55,23 +50,34 @@ const Login: React.FC = () => {
       });
 
       if (!res?.token) {
-        throw new Error("No token returned from server");
+        throw new Error("Login failed");
       }
 
       login(res.token, res.user || null);
-      setMessage("Login successful", "success");
+
+      setMessageState({
+        text: "Login successful",
+        type: "success",
+      });
+
       history.replace("/home");
     } catch (error: any) {
-      setMessage(
-        error?.message || "Invalid username or password.",
-        "error",
-      );
+      setMessageState({
+        text: error?.message || "Invalid username or password",
+        type: "error",
+      });
+    } finally {
+      setSubmitting(false);
     }
   };
 
   return (
     <IonPage>
       <IonContent className="ion-padding login-content">
+        <IonText style={{ color: "white", marginBottom: "20px" }}>
+          Login Page Loaded
+        </IonText>
+
         {messageState.type && (
           <NotificationMessage
             text={messageState.text}
@@ -98,7 +104,6 @@ const Login: React.FC = () => {
                 name="username"
                 label="Username"
                 placeholder="Enter username"
-                type="text"
               />
 
               <TextInputField
@@ -116,7 +121,7 @@ const Login: React.FC = () => {
                 style={{ marginTop: "1em" }}
                 disabled={isSubmitting}
               >
-                Log In
+                {isSubmitting ? "Logging in..." : "Log In"}
               </IonButton>
             </Form>
           )}

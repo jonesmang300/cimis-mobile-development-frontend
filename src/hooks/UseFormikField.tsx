@@ -1,36 +1,29 @@
-"use client";
 import { useFormikContext } from "formik";
+
 export const useFormikField = (name: string) => {
-  const {
-    values,
-    handleChange,
-    touched,
-    errors,
-    setFieldValue,
-    validateField,
-    initialValues,
-    handleBlur,
-  } = useFormikContext();
+  const { values, errors, touched, setFieldValue, setFieldTouched } =
+    useFormikContext<any>();
 
-  //@ts-ignore
-  const value = values[name];
+  const value = values?.[name] ?? "";
 
-  //@ts-ignore
-  const hasError = touched[name] && Boolean(errors[name]);
+  const hasError = Boolean(touched?.[name] && errors?.[name]);
 
-  //@ts-ignore
-  const errorMessage = touched[name] && errors[name];
+  const errorMessage =
+    touched?.[name] && typeof errors?.[name] === "string" ? errors[name] : "";
+
+  const handleChange = (value: any) => {
+    setFieldValue(name, value);
+  };
+
+  const handleBlur = () => {
+    setFieldTouched(name, true);
+  };
 
   return {
     value,
-    errorMessage,
     hasError,
+    errorMessage,
     handleChange,
-    setFieldValue,
-    validateField,
-    initialValues,
     handleBlur,
-    values,
-    touched,
   };
 };

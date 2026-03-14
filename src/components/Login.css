@@ -4,6 +4,7 @@
   justify-content: center;
   align-items: center;
   background: linear-gradient(to bottom right, #42a5f5, #64b5f6);
+  min-height: 100vh;
   height: 100%;
 }
 

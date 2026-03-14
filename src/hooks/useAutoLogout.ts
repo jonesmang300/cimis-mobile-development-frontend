@@ -1,34 +1,45 @@
 import { useEffect, useRef } from "react";
-import { useIonRouter } from "@ionic/react";
 
-const INACTIVITY_LIMIT = 30 * 60 * 1000; // 30 minutes
+const INACTIVITY_LIMIT = 30 * 60 * 1000;
+const LAST_ACTIVITY_KEY = "lastActivityAt";
 
 export const useAutoLogout = (isLoggedIn: boolean, onLogout?: () => void) => {
-  const ionRouter = useIonRouter(); // ✅ ADD THIS
   const timeoutRef = useRef<number | null>(null);
-  const lastActivityRef = useRef<number>(Date.now());
+  const lastActivityRef = useRef<number>(
+    Number(localStorage.getItem(LAST_ACTIVITY_KEY) || Date.now()),
+  );
+
+  const clearTimer = () => {
+    if (timeoutRef.current !== null) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  };
+
+  const setLastActivity = (timestamp: number) => {
+    lastActivityRef.current = timestamp;
+    localStorage.setItem(LAST_ACTIVITY_KEY, String(timestamp));
+  };
+
+  const getIdleTime = () => Date.now() - lastActivityRef.current;
 
   const doLogout = () => {
+    clearTimer();
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("refreshToken");
+    localStorage.removeItem(LAST_ACTIVITY_KEY);
 
-    if (onLogout) onLogout();
-
-    ionRouter.push("/login", "root");
+    onLogout?.();
+    window.location.replace("/login");
   };
 
   const resetTimer = () => {
-    lastActivityRef.current = Date.now();
-
-    if (timeoutRef.current !== null) {
-      clearTimeout(timeoutRef.current);
-    }
+    setLastActivity(Date.now());
+    clearTimer();
 
     timeoutRef.current = window.setTimeout(() => {
-      const idleTime = Date.now() - lastActivityRef.current;
-
-      if (idleTime >= INACTIVITY_LIMIT) {
+      if (getIdleTime() >= INACTIVITY_LIMIT) {
         doLogout();
       } else {
         resetTimer();
@@ -37,39 +48,49 @@ export const useAutoLogout = (isLoggedIn: boolean, onLogout?: () => void) => {
   };
 
   useEffect(() => {
-    // ✅ IMPORTANT: do nothing if not logged in
-    if (!isLoggedIn) return;
+    if (!isLoggedIn) {
+      clearTimer();
+      localStorage.removeItem(LAST_ACTIVITY_KEY);
+      return;
+    }
 
-    const events = ["click", "touchstart", "touchmove", "keydown"];
+    const activityEvents = ["click", "touchstart", "touchmove", "keydown"];
 
-    events.forEach((event) => window.addEventListener(event, resetTimer));
+    const handleResume = () => {
+      const storedActivity = Number(
+        localStorage.getItem(LAST_ACTIVITY_KEY) || Date.now(),
+      );
+      lastActivityRef.current = storedActivity;
 
-    const onResume = () => {
-      const idleTime = Date.now() - lastActivityRef.current;
+      if (document.visibilityState === "hidden") {
+        return;
+      }
 
-      if (idleTime >= INACTIVITY_LIMIT) {
+      if (getIdleTime() >= INACTIVITY_LIMIT) {
         doLogout();
       } else {
         resetTimer();
       }
     };
 
-    document.addEventListener("visibilitychange", onResume);
-    window.addEventListener("focus", onResume);
+    activityEvents.forEach((event) =>
+      window.addEventListener(event, resetTimer),
+    );
 
-    resetTimer();
+    document.addEventListener("visibilitychange", handleResume);
+    window.addEventListener("focus", handleResume);
+
+    handleResume();
 
     return () => {
-      events.forEach((event) => window.removeEventListener(event, resetTimer));
-
-      document.removeEventListener("visibilitychange", onResume);
-      window.removeEventListener("focus", onResume);
-
-      if (timeoutRef.current !== null) {
-        clearTimeout(timeoutRef.current);
-      }
+      activityEvents.forEach((event) =>
+        window.removeEventListener(event, resetTimer),
+      );
+      document.removeEventListener("visibilitychange", handleResume);
+      window.removeEventListener("focus", handleResume);
+      clearTimer();
     };
-  }, [isLoggedIn]);
+  }, [isLoggedIn, onLogout]);
 
   return null;
 };

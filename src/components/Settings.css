@@ -29,8 +29,16 @@
   .custom-icon {
     color: #006400; /* Dark green */
   }
-  .title-white {
-    color: white;
-  }
+.title-white {
+  color: white;
+}
+
+.section-title {
+  display: block;
+  margin: 12px 0 8px;
+  padding: 0 8px;
+  font-weight: 700;
+  color: #123524;
+}
   
   

@@ -30,7 +30,7 @@ import {
 } from "@ionic/react";
 import { arrowBack } from "ionicons/icons";
 
-import { getStableDeviceId } from "../../db/sqlite";
+import { getStableDeviceId } from "../../utils/device";
 import { useLocationFilters } from "../../hooks/useLocationFilters";
 import { useLocalInfiniteScroll } from "../../hooks/useLocalInfiniteScroll";
 import { useAuth } from "../context/AuthContext";
@@ -85,6 +85,13 @@ const cleanHHSize = (val: any) => {
 
 const isSelectedValue = (val: Beneficiary["selected"]) => {
   return String(val ?? "") === "1" || Number(val) === 1;
+};
+
+const isAllocatedMember = (member: Beneficiary) => {
+  return (
+    isSelectedValue(member.selected) ||
+    String(member.groupCode || "").trim() !== ""
+  );
 };
 
 const toDateOnly = (date: Date) => {
@@ -263,7 +270,7 @@ const GroupAssignment: React.FC = () => {
         if (cancelled) return;
 
         const all = Array.isArray(data) ? data : [];
-        setMembers(all.filter((m) => !isSelectedValue(m.selected)));
+        setMembers(all);
       } catch (err) {
         console.error("Load beneficiaries failed:", err);
         if (!cancelled) {
@@ -286,6 +293,10 @@ const GroupAssignment: React.FC = () => {
      SELECT MEMBER
   ================================ */
   const toggleMember = (member: Beneficiary) => {
+    if (isAllocatedMember(member)) {
+      return;
+    }
+
     setSelectedMembers((prev) => {
       const exists = prev.some((m) => m.sppCode === member.sppCode);
 
@@ -307,12 +318,15 @@ const GroupAssignment: React.FC = () => {
      SELECT ALL
   ================================ */
   const hasMembers = members.length > 0;
+  const selectableMembers = members.filter((m) => !isAllocatedMember(m));
 
   const allSelected =
-    members.length > 0 && selectedMembers.length === members.length;
+    selectableMembers.length > 0 &&
+    selectedMembers.length === selectableMembers.length;
 
   const someSelected =
-    selectedMembers.length > 0 && selectedMembers.length < members.length;
+    selectedMembers.length > 0 &&
+    selectedMembers.length < selectableMembers.length;
 
   const toggleSelectAll = (checked: boolean) => {
     if (!checked) {
@@ -321,7 +335,7 @@ const GroupAssignment: React.FC = () => {
     }
 
     setSelectedMembers(
-      members.map((m) => ({
+      selectableMembers.map((m) => ({
         ...m,
         groupname: groupName.trim(),
       })),
@@ -503,7 +517,7 @@ const GroupAssignment: React.FC = () => {
       </IonButton>
     </IonButtons>
 
-    <IonTitle style={{ color: "white" }}>Validation</IonTitle>
+    <IonTitle style={{ color: "white" }}>Formation</IonTitle>
   </IonToolbar>
 </IonHeader>
 
@@ -619,7 +633,7 @@ const GroupAssignment: React.FC = () => {
               </IonBadge>
             </IonItem>
 
-            {hasMembers && (
+            {selectableMembers.length > 0 && (
               <IonItem lines="none">
                 <IonCheckbox
                   slot="start"
@@ -647,6 +661,7 @@ const GroupAssignment: React.FC = () => {
                     (x) => x.sppCode === m.sppCode,
                   );
 
+                  const isAllocated = isAllocatedMember(m);
                   const isVerified =
                     String((m as any).selected ?? "") === "1" ||
                     Number((m as any).selected) === 1;
@@ -660,6 +675,7 @@ const GroupAssignment: React.FC = () => {
                       <IonCheckbox
                         slot="start"
                         checked={selected}
+                        disabled={isAllocated}
                         onIonChange={() => toggleMember(m)}
                       />
 
@@ -669,14 +685,18 @@ const GroupAssignment: React.FC = () => {
 
                         <IonBadge
                           color={
-                            incomplete
+                            isAllocated
+                              ? "medium"
+                              : incomplete
                               ? "danger"
                               : isVerified
                                 ? "success"
                                 : "warning"
                           }
                         >
-                          {incomplete
+                          {isAllocated
+                            ? "ALREADY ALLOCATED"
+                            : incomplete
                             ? "REQUIRES EDIT"
                             : isVerified
                               ? "COMPLETE & VERIFIED"
