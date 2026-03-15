@@ -12,3 +12,35 @@
 .savings-type-card:last-child {
   margin-bottom: 0;
 }
+
+.group-savings-types-list {
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.group-savings-type-card {
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom: 8px;
+}
+
+.group-savings-type-card:last-child {
+  margin-bottom: 0;
+}
+
+.member-savings-card {
+  margin: 8px 0;
+}
+
+.member-savings-card-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.member-savings-card-content ion-icon {
+  font-size: 20px;
+  color: var(--ion-color-medium);
+}

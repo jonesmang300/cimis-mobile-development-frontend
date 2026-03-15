@@ -309,7 +309,7 @@ const MemberSavings: React.FC = () => {
 
         <IonCard>
           <IonCardHeader>
-            <IonCardTitle>Savings Types</IonCardTitle>
+            <IonCardTitle>Savings Accounts</IonCardTitle>
           </IonCardHeader>
           <IonCardContent>
             {loading ? (

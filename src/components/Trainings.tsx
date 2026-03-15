@@ -174,9 +174,7 @@ const Trainings: React.FC = () => {
       );
       setMembers(Array.isArray(beneficiaryRows) ? beneficiaryRows : []);
       setGroupMeta(groupRow || null);
-      setTrainingTypes(
-        Array.isArray(trainingTypeRows) ? trainingTypeRows : [],
-      );
+      setTrainingTypes(Array.isArray(trainingTypeRows) ? trainingTypeRows : []);
       setFacilitators(Array.isArray(facilitatorRows) ? facilitatorRows : []);
 
       const loadFailures = [
@@ -229,7 +227,10 @@ const Trainings: React.FC = () => {
   }, [memberTrainings]);
 
   const attendanceStatsByTraining = useMemo(() => {
-    const stats: Record<string, { males: number; females: number; total: number }> = {};
+    const stats: Record<
+      string,
+      { males: number; females: number; total: number }
+    > = {};
 
     for (const row of memberTrainings) {
       const key = String(row.TrainingID || "");
@@ -383,11 +384,6 @@ const Trainings: React.FC = () => {
             </IonButton>
           </IonButtons>
           <IonTitle style={{ color: "white" }}>Trainings</IonTitle>
-          <IonButtons slot="end">
-            <IonButton onClick={openCreateModal} color="light">
-              <IonIcon icon={addCircleOutline} />
-            </IonButton>
-          </IonButtons>
         </IonToolbar>
       </IonHeader>
 
@@ -435,7 +431,9 @@ const Trainings: React.FC = () => {
         ) : (
           <IonList>
             {rows.map((row) => {
-              const stats = attendanceStatsByTraining[String(row.TrainingID || "")] || {
+              const stats = attendanceStatsByTraining[
+                String(row.TrainingID || "")
+              ] || {
                 males: 0,
                 females: 0,
                 total:
@@ -444,7 +442,9 @@ const Trainings: React.FC = () => {
               const total = stats.total;
 
               return (
-                <IonCard key={row.TrainingID || `${row.groupID}-${row.StartDate}`}>
+                <IonCard
+                  key={row.TrainingID || `${row.groupID}-${row.StartDate}`}
+                >
                   <IonCardContent>
                     <IonButton
                       expand="block"
@@ -466,7 +466,9 @@ const Trainings: React.FC = () => {
                         <h2>Training</h2>
                         <p>
                           Training Type:{" "}
-                          {trainingTypeNameById[String(row.TrainingTypeID || "")] ||
+                          {trainingTypeNameById[
+                            String(row.TrainingTypeID || "")
+                          ] ||
                             row.TrainingTypeID ||
                             "-"}
                         </p>
@@ -629,7 +631,8 @@ const Trainings: React.FC = () => {
                 onIonInput={(e) =>
                   setForm((prev) => ({
                     ...prev,
-                    Males: e.detail.value === null ? "" : String(e.detail.value),
+                    Males:
+                      e.detail.value === null ? "" : String(e.detail.value),
                   }))
                 }
               />
@@ -642,7 +645,8 @@ const Trainings: React.FC = () => {
                 onIonInput={(e) =>
                   setForm((prev) => ({
                     ...prev,
-                    Females: e.detail.value === null ? "" : String(e.detail.value),
+                    Females:
+                      e.detail.value === null ? "" : String(e.detail.value),
                   }))
                 }
               />
@@ -654,7 +658,11 @@ const Trainings: React.FC = () => {
               onClick={handleSave}
               disabled={saving}
             >
-              {saving ? "Saving..." : editingRow ? "Update Training" : "Add Training"}
+              {saving
+                ? "Saving..."
+                : editingRow
+                  ? "Update Training"
+                  : "Add Training"}
             </IonButton>
           </IonContent>
         </IonModal>
@@ -682,85 +690,92 @@ const Trainings: React.FC = () => {
                 .map((row) =>
                   members.find(
                     (member) =>
-                      String(member.sppCode || "") === String(row.sppCode || ""),
+                      String(member.sppCode || "") ===
+                      String(row.sppCode || ""),
                   ),
                 )
                 .filter(Boolean);
 
               return (
                 <>
-            <IonItem lines="none">
-              <IonLabel>
-                <h3>Training Type</h3>
-                <p>
-                  {trainingTypeNameById[String(viewRow?.TrainingTypeID || "")] ||
-                    viewRow?.TrainingTypeID ||
-                    "-"}
-                </p>
-              </IonLabel>
-            </IonItem>
-            <IonItem lines="none">
-              <IonLabel>
-                <h3>Start Date</h3>
-                <p>{formatDateLong(viewRow?.StartDate)}</p>
-              </IonLabel>
-            </IonItem>
-            <IonItem lines="none">
-              <IonLabel>
-                <h3>Finish Date</h3>
-                <p>{formatDateLong(viewRow?.FinishDate)}</p>
-              </IonLabel>
-            </IonItem>
-            <IonItem lines="none">
-              <IonLabel>
-                <h3>Trained By</h3>
-                <p>
-                  {facilitatorNameById[String(viewRow?.trainedBy || "")] ||
-                    viewRow?.trainedBy ||
-                    "-"}
-                </p>
-              </IonLabel>
-            </IonItem>
-            <IonItem lines="none">
-              <IonLabel>
-                <h3>Attendance</h3>
-                <p>Males: {stats.males}</p>
-                <p>Females: {stats.females}</p>
-                <p>Total: {stats.total}</p>
-              </IonLabel>
-            </IonItem>
-            <IonItem lines="none">
-              <IonLabel>
-                <h3>Attendance Register:</h3>
-              </IonLabel>
-            </IonItem>
-            {attachedMembers.length === 0 ? (
-              <IonItem lines="none">
-                <IonLabel color="medium">
-                  No members attached to this training yet.
-                </IonLabel>
-              </IonItem>
-            ) : (
-              attachedMembers.map((member, index) => (
-                <IonItem
-                  key={`${member?.sppCode || "member"}-${index}`}
-                  lines="none"
-                >
-                  <IonLabel>
-                    <h3>{member?.hh_head_name || member?.sppCode || "-"}</h3>
-                    <p>ML Code: {member?.hh_code || "-"}</p>
-                    <p>
-                      Sex:{" "}
-                      {String(member?.sex || "") === "01"
-                        ? "Male"
-                        : String(member?.sex || "") === "02"
-                          ? "Female"
-                          : "-"}
-                    </p>
-                  </IonLabel>
-                </IonItem>
-              ))
-            )}
+                  <IonItem lines="none">
+                    <IonLabel>
+                      <h3>Training Type</h3>
+                      <p>
+                        {trainingTypeNameById[
+                          String(viewRow?.TrainingTypeID || "")
+                        ] ||
+                          viewRow?.TrainingTypeID ||
+                          "-"}
+                      </p>
+                    </IonLabel>
+                  </IonItem>
+                  <IonItem lines="none">
+                    <IonLabel>
+                      <h3>Start Date</h3>
+                      <p>{formatDateLong(viewRow?.StartDate)}</p>
+                    </IonLabel>
+                  </IonItem>
+                  <IonItem lines="none">
+                    <IonLabel>
+                      <h3>Finish Date</h3>
+                      <p>{formatDateLong(viewRow?.FinishDate)}</p>
+                    </IonLabel>
+                  </IonItem>
+                  <IonItem lines="none">
+                    <IonLabel>
+                      <h3>Trained By</h3>
+                      <p>
+                        {facilitatorNameById[
+                          String(viewRow?.trainedBy || "")
+                        ] ||
+                          viewRow?.trainedBy ||
+                          "-"}
+                      </p>
+                    </IonLabel>
+                  </IonItem>
+                  <IonItem lines="none">
+                    <IonLabel>
+                      <h3>Attendance</h3>
+                      <p>Males: {stats.males}</p>
+                      <p>Females: {stats.females}</p>
+                      <p>Total: {stats.total}</p>
+                    </IonLabel>
+                  </IonItem>
+                  <IonItem lines="none">
+                    <IonLabel>
+                      <h3>Attendance Register:</h3>
+                    </IonLabel>
+                  </IonItem>
+                  {attachedMembers.length === 0 ? (
+                    <IonItem lines="none">
+                      <IonLabel color="medium">
+                        No members attached to this training yet.
+                      </IonLabel>
+                    </IonItem>
+                  ) : (
+                    attachedMembers.map((member, index) => (
+                      <IonItem
+                        key={`${member?.sppCode || "member"}-${index}`}
+                        lines="none"
+                      >
+                        <IonLabel>
+                          <h3>
+                            {member?.hh_head_name || member?.sppCode || "-"}
+                          </h3>
+                          <p>ML Code: {member?.hh_code || "-"}</p>
+                          <p>
+                            Sex:{" "}
+                            {String(member?.sex || "") === "01"
+                              ? "Male"
+                              : String(member?.sex || "") === "02"
+                                ? "Female"
+                                : "-"}
+                          </p>
+                        </IonLabel>
+                      </IonItem>
+                    ))
+                  )}
                 </>
               );
             })()}
@@ -795,4 +810,3 @@ const Trainings: React.FC = () => {
 };
 
 export default Trainings;
-
