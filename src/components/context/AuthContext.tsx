@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 type AuthUser = {
   id?: number | string;
@@ -18,6 +24,7 @@ type AuthContextType = {
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const INACTIVITY_LIMIT_MS = 30 * 60 * 1000;
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -44,22 +51,59 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, []);
 
-  const login = (token: string, nextUser: AuthUser | null) => {
+  const login = useCallback((token: string, nextUser: AuthUser | null) => {
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(nextUser || null));
 
     setIsLoggedIn(true);
     setUser(nextUser);
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("refreshToken");
 
     setIsLoggedIn(false);
     setUser(null);
-  };
+  }, []);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      return;
+    }
+
+    let inactivityTimer: ReturnType<typeof setTimeout> | null = null;
+    const activityEvents: (keyof DocumentEventMap)[] = [
+      "click",
+      "keydown",
+      "touchstart",
+      "mousemove",
+    ];
+
+    const resetTimer = () => {
+      if (inactivityTimer) {
+        clearTimeout(inactivityTimer);
+      }
+      inactivityTimer = setTimeout(() => {
+        logout();
+      }, INACTIVITY_LIMIT_MS);
+    };
+
+    activityEvents.forEach((eventName) =>
+      document.addEventListener(eventName, resetTimer),
+    );
+    resetTimer();
+
+    return () => {
+      if (inactivityTimer) {
+        clearTimeout(inactivityTimer);
+      }
+      activityEvents.forEach((eventName) =>
+        document.removeEventListener(eventName, resetTimer),
+      );
+    };
+  }, [isLoggedIn, logout]);
 
   return (
     <AuthContext.Provider

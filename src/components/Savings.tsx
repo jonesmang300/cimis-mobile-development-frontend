@@ -29,6 +29,7 @@ import {
   arrowBack,
   createOutline,
   eyeOutline,
+  chevronForward,
   trashOutline,
 } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
@@ -351,29 +352,40 @@ const Savings: React.FC = () => {
           </IonCardContent>
         </IonCard>
 
-        {loading ? (
-          <IonSpinner name="crescent" />
-        ) : (
-          <IonList>
-            {savingsTypes.map((type) => (
-              <IonItem key={type.TypeID}>
-                <IonLabel>{type.savings_name}</IonLabel>
-
-                <IonBadge slot="end" color="success">
-                  {formatAmountDisplay(totalByType[type.TypeID] || 0)}
-                </IonBadge>
-
-                <IonButton
-                  slot="end"
-                  fill="clear"
-                  onClick={() => openAddModalForType(type)}
-                >
-                  <IonIcon icon={addCircleOutline} />
-                </IonButton>
-              </IonItem>
-            ))}
-          </IonList>
-        )}
+        <IonCard>
+          <IonCardHeader>
+            <IonCardTitle>Savings Accounts</IonCardTitle>
+          </IonCardHeader>
+          <IonCardContent>
+            {loading ? (
+              <IonSpinner name="crescent" />
+            ) : (
+              <IonList className="group-savings-types-list">
+                {savingsTypes.map((type) => (
+                  <IonCard key={type.TypeID} className="group-savings-type-card">
+                    <IonCardContent>
+                      <IonItem lines="none">
+                        <IonLabel>
+                          <h3>{type.savings_name}</h3>
+                        </IonLabel>
+                        <IonBadge color="success" slot="end">
+                          {formatAmountDisplay(totalByType[type.TypeID] || 0)}
+                        </IonBadge>
+                        <IonButton
+                          slot="end"
+                          fill="clear"
+                          onClick={() => openAddModalForType(type)}
+                        >
+                          <IonIcon icon={addCircleOutline} />
+                        </IonButton>
+                      </IonItem>
+                    </IonCardContent>
+                  </IonCard>
+                ))}
+              </IonList>
+            )}
+          </IonCardContent>
+        </IonCard>
 
         <IonModal isOpen={showAddModal}>
           <IonHeader>
@@ -513,22 +525,25 @@ const Savings: React.FC = () => {
                   const totalForMember = memberSavingsTotalsByCode[memberCode] || 0;
 
                   return (
-                  <IonItem
-                    key={memberCode || member.hh_code}
-                    button
-                    onClick={() =>
-                      history.push(
-                        `/groups/savings/member/${encodeURIComponent(memberCode)}`,
-                      )
-                    }
-                  >
-                    <IonLabel>
-                      <h3>{member.hh_head_name || memberCode || "Member"}</h3>
-                      <p>Beneficiary Code: {memberCode || "-"}</p>
-                      <p>ML Code: {member.hh_code || "-"}</p>
-                      <p>Total Savings: {formatAmountDisplay(totalForMember)}</p>
-                    </IonLabel>
-                  </IonItem>
+                    <IonCard
+                      key={memberCode || member.hh_code}
+                      button
+                      onClick={() =>
+                        history.push(
+                          `/groups/savings/member/${encodeURIComponent(memberCode)}`,
+                        )
+                      }
+                      className="member-savings-card"
+                    >
+                      <IonCardContent className="member-savings-card-content">
+                        <IonLabel>
+                          <h3>{member.hh_head_name || memberCode || "Member"}</h3>
+                          <p>ML Code: {member.hh_code || "-"}</p>
+                          <p>Total Savings: {formatAmountDisplay(totalForMember)}</p>
+                        </IonLabel>
+                        <IonIcon icon={chevronForward} slot="end" />
+                      </IonCardContent>
+                    </IonCard>
                   );
                 })}
               </IonList>
