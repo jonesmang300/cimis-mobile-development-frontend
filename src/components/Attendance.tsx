@@ -34,6 +34,8 @@ import {
   trashOutline,
 } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
+import { useSelectedGroup } from "../hooks/useSelectedGroup";
+import { useSyncRefresh } from "../hooks/useSyncRefresh";
 import {
   Beneficiary,
   fetchBeneficiariesByGroupCode,
@@ -82,8 +84,8 @@ const formatDateLong = (value: string | null | undefined) => {
 
 const Attendance: React.FC = () => {
   const history = useHistory();
-  const selectedGroupID = localStorage.getItem("selectedGroupID") || "";
-  const selectedGroupName = localStorage.getItem("selectedGroupName") || "";
+  const { selectedGroupID, selectedGroupName, refreshSelectedGroup } =
+    useSelectedGroup();
 
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [members, setMembers] = useState<Beneficiary[]>([]);
@@ -104,8 +106,10 @@ const Attendance: React.FC = () => {
   const [removeAttendanceTarget, setRemoveAttendanceTarget] =
     useState<MeetingAttendance | null>(null);
 
-  const load = useCallback(async () => {
-    if (!selectedGroupID) {
+  const load = useCallback(async (groupIDOverride?: string) => {
+    const activeGroupID = groupIDOverride ?? selectedGroupID;
+
+    if (!activeGroupID) {
       setMeetings([]);
       setMembers([]);
       setAttendanceRows([]);
@@ -117,9 +121,9 @@ const Attendance: React.FC = () => {
     try {
       const [meetingRowsResult, allAttendanceResult, groupMembersResult] =
         await Promise.allSettled([
-          fetchMeetingsByGroupCode(selectedGroupID),
+          fetchMeetingsByGroupCode(activeGroupID),
           fetchMeetingAttendance(),
-          fetchBeneficiariesByGroupCode(selectedGroupID),
+          fetchBeneficiariesByGroupCode(activeGroupID),
         ]);
 
       const meetingRowsRaw =
@@ -144,7 +148,7 @@ const Attendance: React.FC = () => {
         : [];
 
       const filteredAttendance = allAttendance.filter(
-        (row) => String(row.groupCode || "") === String(selectedGroupID),
+        (row) => String(row.groupCode || "") === String(activeGroupID),
       );
 
       setMeetings(meetingRows);
@@ -188,6 +192,11 @@ const Attendance: React.FC = () => {
   useIonViewWillEnter(() => {
     load();
   });
+
+  useSyncRefresh(() => {
+    const latest = refreshSelectedGroup();
+    load(latest.selectedGroupID);
+  }, [refreshSelectedGroup, load]);
 
   const attendanceCountByMeeting = useMemo(() => {
     const counts: Record<string, number> = {};

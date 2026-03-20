@@ -40,8 +40,13 @@ import {
   bulkSyncGroup,
   createGroup,
   fetchBeneficiariesByVC,
+  CreateGroupPayload,
+  saveQueuedServerGroupAssignments,
+  saveOfflineGroupAssignments,
   updateBeneficiary,
 } from "../../services/beneficiaries.service";
+import { subscribeSyncUpdates } from "../../data/sync";
+import MobileDateInput from "../form/MobileDateInput";
 
 import "./Validation.css";
 
@@ -251,43 +256,47 @@ const GroupAssignment: React.FC = () => {
 
   /* ===============================
      LOAD BENEFICIARIES (API)
-  ================================ */
-  useEffect(() => {
+    ================================ */
+  const loadMembers = React.useCallback(async () => {
     if (!vc) return;
-
+    setLoadingBeneficiaries(true);
     let cancelled = false;
 
-    const load = async () => {
-      setLoadingBeneficiaries(true);
+    try {
+      if (infiniteRef.current) {
+        infiniteRef.current.disabled = false;
+      }
 
-      try {
-        if (infiniteRef.current) {
-          infiniteRef.current.disabled = false;
-        }
-
-        const data = await fetchBeneficiariesByVC(vc);
-
-        if (cancelled) return;
-
+      const data = await fetchBeneficiariesByVC(vc);
+      if (!cancelled) {
         const all = Array.isArray(data) ? data : [];
         setMembers(all);
-      } catch (err) {
-        console.error("Load beneficiaries failed:", err);
-        if (!cancelled) {
-          setMembers([]);
-          setToastMessage("Failed to load beneficiaries");
-        }
-      } finally {
-        if (!cancelled) setLoadingBeneficiaries(false);
       }
-    };
-
-    load();
+    } catch (err) {
+      console.error("Load beneficiaries failed:", err);
+      if (!cancelled) {
+        setMembers([]);
+        setToastMessage("Failed to load beneficiaries");
+      }
+    } finally {
+      if (!cancelled) setLoadingBeneficiaries(false);
+    }
 
     return () => {
       cancelled = true;
     };
   }, [vc]);
+
+  useEffect(() => {
+    loadMembers();
+  }, [loadMembers]);
+
+  useEffect(() => {
+    const unsubscribe = subscribeSyncUpdates(() => {
+      loadMembers();
+    });
+    return () => unsubscribe();
+  }, [loadMembers]);
 
   /* ===============================
      SELECT MEMBER
@@ -439,7 +448,7 @@ const GroupAssignment: React.FC = () => {
       const deviceId = await getStableDeviceId();
       const trimmedGroupName = groupName.trim();
 
-      const groupResult = await createGroup({
+      const groupRequest: CreateGroupPayload = {
         groupname: trimmedGroupName,
         DateEstablished: toDateOnly(new Date()),
         regionID: region,
@@ -451,26 +460,68 @@ const GroupAssignment: React.FC = () => {
         programID: "11",
         userID: user?.id ? String(user.id) : null,
         slgApproved: "1",
-      });
+      };
+
+      const groupResult = await createGroup(groupRequest);
 
       const createdGroupID =
         String(groupResult?.groupID || groupResult?.id || "").trim();
+      const offlineClientId = (groupResult as any)?.offlineClientId;
+      const isOfflineQueued = Boolean((groupResult as any)?.offline);
+      const effectiveGroupID = createdGroupID;
 
-      if (!createdGroupID) {
+      if (!effectiveGroupID) {
         throw new Error("Failed to generate group ID");
       }
 
       const payload: Beneficiary[] = selectedMembers.map((m) => ({
         ...m,
         groupname: trimmedGroupName,
-        groupCode: createdGroupID,
+        groupCode: effectiveGroupID,
         nat_id: cleanNatId(m.nat_id),
         hh_size: cleanHHSize(m.hh_size),
         selected: 1,
         deviceId,
       }));
 
-      await bulkSyncGroup(payload, trimmedGroupName, createdGroupID, deviceId);
+      if (isOfflineQueued && offlineClientId) {
+        await saveOfflineGroupAssignments(offlineClientId, payload);
+
+        const submittedCodes = new Set(payload.map((p) => p.sppCode));
+        setMembers((prev) => prev.filter((m) => !submittedCodes.has(m.sppCode)));
+
+        setToastMessage(`Group ${effectiveGroupID} saved offline and will sync automatically`);
+        setSelectedMembers([]);
+        setGroupName("");
+        return;
+      }
+
+      const bulkSyncResult = await bulkSyncGroup(
+        payload,
+        trimmedGroupName,
+        effectiveGroupID,
+        deviceId,
+      );
+
+      if ((bulkSyncResult as any)?._queued) {
+        await saveQueuedServerGroupAssignments(
+          effectiveGroupID,
+          groupRequest,
+          payload,
+          deviceId,
+        );
+
+        const submittedCodes = new Set(payload.map((p) => p.sppCode));
+
+        setMembers((prev) => prev.filter((m) => !submittedCodes.has(m.sppCode)));
+
+        setToastMessage(
+          `Beneficiary assignments for ${effectiveGroupID} were queued and will sync automatically`,
+        );
+        setSelectedMembers([]);
+        setGroupName("");
+        return;
+      }
 
       const submittedCodes = new Set(payload.map((p) => p.sppCode));
 
@@ -792,8 +843,7 @@ const GroupAssignment: React.FC = () => {
                     <IonLabel position="stacked">
                       Date of Birth (must be 18+) *
                     </IonLabel>
-                    <IonInput
-                      type="date"
+                    <MobileDateInput
                       value={String(editingMember.dob || "").split("T")[0]}
                       placeholder="Select date"
                       max={getMaxDobISO().split("T")[0]}

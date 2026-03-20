@@ -33,6 +33,8 @@ import {
   trashOutline,
 } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
+import { useSelectedGroup } from "../hooks/useSelectedGroup";
+import { useSyncRefresh } from "../hooks/useSyncRefresh";
 
 import {
   Beneficiary,
@@ -101,9 +103,8 @@ const formatAmountDisplay = (value: any) => {
 
 const Savings: React.FC = () => {
   const history = useHistory();
-
-  const selectedGroupID = localStorage.getItem("selectedGroupID") ?? "";
-  const selectedGroupName = localStorage.getItem("selectedGroupName") ?? "";
+  const { selectedGroupID, selectedGroupName, refreshSelectedGroup } =
+    useSelectedGroup();
 
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -127,18 +128,19 @@ const Savings: React.FC = () => {
 
   /* ---------------- LOAD DATA ---------------- */
 
-  const load = useCallback(async () => {
-    if (!selectedGroupID) return;
+  const load = useCallback(async (groupIDOverride?: string) => {
+    const activeGroupID = groupIDOverride ?? selectedGroupID;
+    if (!activeGroupID) return;
 
     setLoading(true);
 
     try {
       const [sRows, mRows, tRows, groupRow, memberSavingsRows] = await Promise.all([
-        fetchGroupSavingsByGroupID(selectedGroupID),
-        fetchBeneficiariesByGroupCode(selectedGroupID),
+        fetchGroupSavingsByGroupID(activeGroupID),
+        fetchBeneficiariesByGroupCode(activeGroupID),
         fetchSavingsTypes(),
         apiGet<{ DistrictID?: string; districtID?: string }>(
-          `/groups/${encodeURIComponent(selectedGroupID)}`,
+          `/groups/${encodeURIComponent(activeGroupID)}`,
         ),
         apiGet<MemberSaving[]>("/member-savings"),
       ]);
@@ -152,7 +154,7 @@ const Savings: React.FC = () => {
       setGroupSavings(Array.isArray(sRows) ? sRows : []);
       setMembers(Array.isArray(mRows) ? mRows : []);
       const memberSavingsFiltered = (Array.isArray(memberSavingsRows) ? memberSavingsRows : []).filter(
-        (row) => String(row.groupCode || "") === String(selectedGroupID),
+        (row) => String(row.groupCode || "") === String(activeGroupID),
       );
       setMemberSavings(memberSavingsFiltered);
 
@@ -171,6 +173,11 @@ const Savings: React.FC = () => {
   useIonViewWillEnter(() => {
     load();
   });
+
+  useSyncRefresh(() => {
+    const latest = refreshSelectedGroup();
+    load(latest.selectedGroupID);
+  }, [refreshSelectedGroup, load]);
 
   /* ---------------- TOTALS ---------------- */
 

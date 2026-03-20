@@ -24,9 +24,13 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   build: {
-    target: 'esnext'  // ✅ allow top-level await
+    target: 'esnext',  // ✅ allow top-level await
+    outDir: 'dist',
   },
   esbuild: {
     target: 'esnext'  // ✅ ensure esbuild matches
+  },
+  define: {
+    "import.meta.env.VITE_TARGET": JSON.stringify("mobile"),
   }
 })

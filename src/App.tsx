@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Redirect, Route } from "react-router-dom";
 import {
   IonApp,
@@ -8,6 +8,8 @@ import {
   IonTabButton,
   IonIcon,
   IonLabel,
+  IonToast,
+  IonChip,
   setupIonicReact,
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
@@ -25,6 +27,7 @@ import Group from "./components/Groups";
 import Settings from "./components/Settings";
 import Wallet from "./components/Wallet/Wallet";
 import Login from "./components/Login";
+import NotificationsPage from "./components/NotificationsPage";
 import GroupBeneficiaries from "./components/GroupBeneficiaries";
 import GroupSavings from "./components/Savings";
 import Trainings from "./components/Trainings";
@@ -39,6 +42,7 @@ import ViewVerifiedMember from "./components/Validation/ViewVerifiedMember";
 import GroupMembersSummary from "./components/Validation/GroupMembersSummary";
 import ViewMeeting from "./components/ViewMeeting";
 import SupportPage from "./components/SupportPage";
+import DashboardSummaryDetails from "./components/DashBoard/DashboardSummaryDetails";
 
 import {
   homeOutline,
@@ -48,6 +52,12 @@ import {
 } from "ionicons/icons";
 
 import { useAuth, AuthProvider } from "./components/context/AuthContext";
+import { onNetworkChange } from "./plugins/network";
+import {
+  getFailedOfflineGroupError,
+  startSyncService,
+  subscribeQueueCount,
+} from "./data/sync";
 
 setupIonicReact();
 
@@ -61,6 +71,40 @@ const App: React.FC = () => {
 
 const AppContent: React.FC = () => {
   const { isLoggedIn } = useAuth();
+  const [online, setOnline] = useState<boolean | null>(null);
+  const [queued, setQueued] = useState<number>(0);
+  const [showToast, setShowToast] = useState(false);
+  const [failedSyncCount, setFailedSyncCount] = useState<number>(0);
+  const [failedSyncMessage, setFailedSyncMessage] = useState("");
+  const [failedSyncGroupId, setFailedSyncGroupId] = useState("");
+
+  useEffect(() => {
+    const refreshSyncError = async () => {
+      const failed = await getFailedOfflineGroupError();
+      setFailedSyncCount(failed.count);
+      setFailedSyncMessage(failed.message);
+      setFailedSyncGroupId(failed.groupId);
+    };
+
+    const unsubscribeNet = onNetworkChange((connected) => {
+      setOnline(connected);
+      setShowToast(!connected);
+      refreshSyncError().catch(() => null);
+    });
+
+    const unsubscribeQueue = subscribeQueueCount((count) => {
+      setQueued(count);
+      refreshSyncError().catch(() => null);
+    });
+
+    refreshSyncError().catch(() => null);
+    startSyncService();
+
+    return () => {
+      unsubscribeNet();
+      unsubscribeQueue();
+    };
+  }, []);
 
   return (
     <IonApp>
@@ -73,6 +117,15 @@ const AppContent: React.FC = () => {
         {/* PROTECTED ROUTES */}
         {isLoggedIn && (
           <IonTabs>
+            {(queued > 0 || failedSyncCount > 0) && (
+              <div className="app-sync-status">
+                {queued > 0 && (
+                  <IonChip color="warning" mode="md" className="app-sync-chip">
+                    {`Queued: ${queued} (auto-sync)`}
+                  </IonChip>
+                )}
+              </div>
+            )}
             <IonRouterOutlet>
               {/* MAIN TABS */}
               <Route exact path="/home" component={Home} />
@@ -80,6 +133,12 @@ const AppContent: React.FC = () => {
               <Route exact path="/groups" component={Group} />
               <Route exact path="/settings" component={Settings} />
               <Route exact path="/wallet" component={Wallet} />
+              <Route exact path="/notifications" component={NotificationsPage} />
+              <Route
+                exact
+                path="/dashboard/summary/:metricKey"
+                component={DashboardSummaryDetails}
+              />
 
               {/* GROUP SUB‑ROUTES */}
               <Route
@@ -164,11 +223,33 @@ const AppContent: React.FC = () => {
                 <IonLabel>Settings</IonLabel>
               </IonTabButton>
             </IonTabBar>
+
+            <IonToast
+              isOpen={showToast}
+              onDidDismiss={() => setShowToast(false)}
+              message={
+                online === false
+                  ? `Offline mode. ${queued} change${queued === 1 ? "" : "s"} queued.`
+                  : failedSyncCount > 0
+                  ? failedSyncGroupId
+                    ? `Sync failed for ${failedSyncGroupId}: ${failedSyncMessage || "Unknown error"}`
+                    : `Sync failed: ${failedSyncMessage || "Unknown error"}`
+                  : "Back online, syncing..."
+              }
+              color={online === false ? "warning" : failedSyncCount > 0 ? "danger" : "success"}
+              duration={online === false ? 3000 : failedSyncCount > 0 ? 4000 : 1500}
+              position="top"
+            />
           </IonTabs>
         )}
 
         {/* DEFAULT ROUTE */}
         <Route exact path="/">
+          <Redirect to={isLoggedIn ? "/home" : "/login"} />
+        </Route>
+
+        {/* CATCH-ALL: prevent blank screen on restricted paths */}
+        <Route path="*">
           <Redirect to={isLoggedIn ? "/home" : "/login"} />
         </Route>
       </IonReactRouter>

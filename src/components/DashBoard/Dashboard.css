@@ -7,6 +7,29 @@
   align-items: center;
 }
 
+.dashboard-sync-pill {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+.dashboard-sync-pill .pill-warning,
+.dashboard-sync-pill .pill-ok {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1b1b1b;
+  background: #fcd34d;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+}
+
+.dashboard-sync-pill .pill-ok {
+  color: #0f5132;
+  background: #d1fae5;
+}
+
 .dashboard-toolbar ion-title {
   font-size: 1.25rem;
   font-weight: 800;
@@ -119,6 +142,42 @@
 
 .dashboard-grid {
   padding: 0 10px;
+}
+
+.dashboard-notification-card {
+  margin: 0 10px;
+  border-radius: 22px;
+  border: 1px solid rgba(18, 53, 36, 0.08);
+  box-shadow: 0 12px 28px rgba(19, 43, 32, 0.08);
+  background: linear-gradient(180deg, #ffffff 0%, #eef9f2 100%);
+}
+
+.dashboard-notification-card-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px;
+}
+
+.dashboard-notification-copy h3 {
+  margin: 0;
+  color: #123524;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.dashboard-notification-copy p {
+  margin: 8px 0 0;
+  color: #5d6d63;
+  line-height: 1.5;
+}
+
+.dashboard-notification-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .dashboard-stat-card {
@@ -275,5 +334,10 @@
 
   .dashboard-stat-card ion-card-content {
     min-height: 156px;
+  }
+
+  .dashboard-notification-card-content {
+    flex-direction: column;
+    align-items: stretch;
   }
 }

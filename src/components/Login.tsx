@@ -1,8 +1,16 @@
 import React, { useState } from "react";
-import { IonButton, IonContent, IonImg, IonPage, IonText } from "@ionic/react";
+import {
+  IonButton,
+  IonContent,
+  IonImg,
+  IonPage,
+  IonSpinner,
+  IonText,
+} from "@ionic/react";
 import { Form, Formik } from "formik";
 import { useHistory } from "react-router-dom";
 import * as Yup from "yup";
+import { motion } from "framer-motion";
 
 import { apiPost } from "../services/api";
 import { TextInputField } from "./form";
@@ -12,18 +20,6 @@ import { useAuth } from "./context/AuthContext";
 import "./Login.css";
 
 type MessageType = "success" | "error" | "";
-
-type LoginResponse = {
-  token: string;
-  user: {
-    id: number | string;
-    username?: string;
-    email?: string;
-    userRole?: string;
-    firstname?: string;
-    lastname?: string;
-  };
-};
 
 const Login: React.FC = () => {
   const history = useHistory();
@@ -44,16 +40,51 @@ const Login: React.FC = () => {
     { setSubmitting }: any,
   ) => {
     try {
-      const res = await apiPost<LoginResponse>("/users/login", {
+      // 🌍 OFFLINE LOGIN
+      if (!navigator.onLine) {
+        const saved = localStorage.getItem("offline_user");
+        if (!saved) throw new Error("No offline account found");
+
+        const parsed = JSON.parse(saved);
+
+        if (
+          parsed.username === formData.username &&
+          parsed.password === formData.pin
+        ) {
+          login(parsed.token, parsed.user);
+
+          setMessageState({
+            text: "Offline login successful",
+            type: "success",
+          });
+
+          history.replace("/home");
+          return;
+        } else {
+          throw new Error("Invalid offline credentials");
+        }
+      }
+
+      // 🌐 ONLINE LOGIN
+      const res = await apiPost("/users/login", {
         username: formData.username,
         password: formData.pin,
       });
 
-      if (!res?.token) {
-        throw new Error("Login failed");
-      }
+      if (!res?.token) throw new Error("Login failed");
 
       login(res.token, res.user || null);
+
+      // SAVE FOR OFFLINE USE
+      localStorage.setItem(
+        "offline_user",
+        JSON.stringify({
+          username: formData.username,
+          password: formData.pin,
+          token: res.token,
+          user: res.user,
+        }),
+      );
 
       setMessageState({
         text: "Login successful",
@@ -63,7 +94,7 @@ const Login: React.FC = () => {
       history.replace("/home");
     } catch (error: any) {
       setMessageState({
-        text: error?.message || "Invalid username or password",
+        text: error?.message || "Login failed",
         type: "error",
       });
     } finally {
@@ -73,59 +104,84 @@ const Login: React.FC = () => {
 
   return (
     <IonPage>
-      <IonContent className="ion-padding login-content">
-        <IonText style={{ color: "white", marginBottom: "20px" }}>
-          Login Page Loaded
-        </IonText>
-
-        {messageState.type && (
-          <NotificationMessage
-            text={messageState.text}
-            type={messageState.type}
-          />
-        )}
-
-        <IonImg src="/comsip.jpg" className="login-img" />
-
-        <Formik
-          initialValues={{ username: "", pin: "" }}
-          validationSchema={schema}
-          onSubmit={handleLoginSubmit}
+      <IonContent fullscreen className="login-content">
+        {/* HERO */}
+        <motion.div
+          className="login-hero"
+          initial={{ opacity: 0, y: -40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
         >
-          {({ isSubmitting }) => (
-            <Form>
-              <div className="login-header">
-                <h2>Welcome Back</h2>
-                <p>Please log in to continue</p>
-              </div>
+          <IonImg src="/comsip.jpg" className="login-img" />
+          <div className="brand-stack-inline">
+            <IonText className="brand-kicker">CIMISMOB</IonText>
+            <h1 className="brand-title">Welcome</h1>
+          </div>
+        </motion.div>
 
-              <TextInputField
-                id="username"
-                name="username"
-                label="Username"
-                placeholder="Enter username"
-              />
-
-              <TextInputField
-                id="pin"
-                name="pin"
-                label="Password"
-                type="password"
-                placeholder="Enter password"
-              />
-
-              <IonButton
-                expand="block"
-                color="success"
-                type="submit"
-                style={{ marginTop: "1em" }}
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Logging in..." : "Log In"}
-              </IonButton>
-            </Form>
+        {/* CARD */}
+        <motion.div
+          className="login-card"
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          {messageState.type && (
+            <NotificationMessage
+              text={messageState.text}
+              type={messageState.type}
+            />
           )}
-        </Formik>
+
+          <Formik
+            initialValues={{ username: "", pin: "" }}
+            validationSchema={schema}
+            onSubmit={handleLoginSubmit}
+          >
+            {({ isSubmitting }) => (
+              <Form className="login-form">
+                <TextInputField
+                  id="username"
+                  name="username"
+                  label="Username"
+                  placeholder="Enter username"
+                />
+
+                <TextInputField
+                  id="pin"
+                  name="pin"
+                  label="Password"
+                  type="password"
+                  placeholder="Enter password"
+                />
+
+                <motion.div whileTap={{ scale: 0.97 }}>
+                  <IonButton
+                    expand="block"
+                    type="submit"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <span className="login-button-content">
+                        <IonSpinner
+                          name="crescent"
+                          className="login-button-spinner"
+                        />
+                        <span>Logging in...</span>
+                      </span>
+                    ) : (
+                      "LOG IN"
+                    )}
+                  </IonButton>
+                </motion.div>
+
+                <p className="login-footnote">
+                  Problems signing in? Contact your regional admin.
+                </p>
+              </Form>
+            )}
+          </Formik>
+        </motion.div>
       </IonContent>
     </IonPage>
   );

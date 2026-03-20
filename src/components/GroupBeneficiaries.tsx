@@ -32,6 +32,9 @@ import {
   fetchBeneficiariesByGroupCode,
 } from "../services/beneficiaries.service";
 import { apiPatch } from "../services/api";
+import { subscribeSyncUpdates } from "../data/sync";
+import { useSelectedGroup } from "../hooks/useSelectedGroup";
+import MobileDateInput from "./form/MobileDateInput";
 
 const formatGender = (value: string | null | undefined) => {
   const v = String(value || "").trim();
@@ -63,6 +66,8 @@ const GroupBeneficiaries: React.FC = () => {
   const router = useIonRouter();
   const [rows, setRows] = useState<Beneficiary[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const { selectedGroupID, selectedGroupName, refreshSelectedGroup } =
+    useSelectedGroup();
   const [viewMember, setViewMember] = useState<Beneficiary | null>(null);
   const [editMember, setEditMember] = useState<Beneficiary | null>(null);
   const [savingEdit, setSavingEdit] = useState<boolean>(false);
@@ -71,37 +76,38 @@ const GroupBeneficiaries: React.FC = () => {
   const [editNatId, setEditNatId] = useState<string>("");
   const [actionMessage, setActionMessage] = useState<string>("");
 
-  const selectedGroupID = localStorage.getItem("selectedGroupID") || "";
-  const selectedGroupName = localStorage.getItem("selectedGroupName") || "";
+  const loadBeneficiaries = React.useCallback(async () => {
+    const latestSelectedGroupID =
+      localStorage.getItem("selectedGroupID") || selectedGroupID;
+    if (!latestSelectedGroupID) {
+      setRows([]);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const data = await fetchBeneficiariesByGroupCode(latestSelectedGroupID);
+      setRows(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Failed to load group beneficiaries:", error);
+      setRows([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedGroupID]);
 
   useEffect(() => {
-    let cancelled = false;
+    loadBeneficiaries();
+  }, [loadBeneficiaries]);
 
-    const load = async () => {
-      if (!selectedGroupID) {
-        setRows([]);
-        setLoading(false);
-        return;
-      }
-
-      setLoading(true);
-      try {
-        const data = await fetchBeneficiariesByGroupCode(selectedGroupID);
-        if (!cancelled) setRows(data);
-      } catch (error) {
-        console.error("Failed to load group beneficiaries:", error);
-        if (!cancelled) setRows([]);
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    };
-
-    load();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [selectedGroupID]);
+  useEffect(() => {
+    const unsubscribe = subscribeSyncUpdates(() => {
+      refreshSelectedGroup();
+      loadBeneficiaries();
+    });
+    return () => unsubscribe();
+  }, [loadBeneficiaries, refreshSelectedGroup]);
 
   const openEdit = (member: Beneficiary) => {
     setEditMember(member);
@@ -353,8 +359,7 @@ const GroupBeneficiaries: React.FC = () => {
             </IonItem>
             <IonItem>
               <IonLabel position="stacked">Date of Birth</IonLabel>
-              <IonInput
-                type="date"
+              <MobileDateInput
                 value={editDob}
                 placeholder="Select date"
                 onIonInput={(e) => setEditDob(String(e.detail.value || ""))}

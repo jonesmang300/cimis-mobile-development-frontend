@@ -30,6 +30,9 @@ import {
   trashOutline,
 } from "ionicons/icons";
 import { useHistory, useParams } from "react-router-dom";
+import { useSelectedGroup } from "../hooks/useSelectedGroup";
+import { useSyncRefresh } from "../hooks/useSyncRefresh";
+import MobileDateInput from "./form/MobileDateInput";
 import { apiGet } from "../services/api";
 import {
   createMemberSaving,
@@ -94,8 +97,11 @@ const MemberSavings: React.FC = () => {
   const history = useHistory();
   const { sppCode: sppCodeParam } = useParams<Params>();
   const sppCode = safeDecodeURIComponent(sppCodeParam || "");
-  const groupCode = localStorage.getItem("selectedGroupID") || "";
-  const groupName = localStorage.getItem("selectedGroupName") || "";
+  const {
+    selectedGroupID: groupCode,
+    selectedGroupName: groupName,
+    refreshSelectedGroup,
+  } = useSelectedGroup();
 
   const [rows, setRows] = useState<MemberSaving[]>([]);
   const [savingsTypes, setSavingsTypes] = useState<SavingsType[]>([]);
@@ -115,8 +121,10 @@ const MemberSavings: React.FC = () => {
   const [viewRow, setViewRow] = useState<MemberSaving | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<MemberSaving | null>(null);
 
-  const load = useCallback(async () => {
-    if (!groupCode || !sppCode) {
+  const load = useCallback(async (groupCodeOverride?: string) => {
+    const activeGroupCode = groupCodeOverride ?? groupCode;
+
+    if (!activeGroupCode || !sppCode) {
       setRows([]);
       setSavingsTypes([]);
       return;
@@ -126,7 +134,7 @@ const MemberSavings: React.FC = () => {
     try {
       const [memberRowsResult, typeRowsResult, beneficiaryResult] =
         await Promise.allSettled([
-          fetchMemberSavings(groupCode, sppCode),
+          fetchMemberSavings(activeGroupCode, sppCode),
           fetchSavingsTypes(),
         apiGet<{
           hh_head_name?: string;
@@ -164,6 +172,11 @@ const MemberSavings: React.FC = () => {
   useIonViewWillEnter(() => {
     load();
   });
+
+  useSyncRefresh(() => {
+    const latest = refreshSelectedGroup();
+    load(latest.selectedGroupID);
+  }, [refreshSelectedGroup, load]);
 
   const totalsByType = useMemo(() => {
     const totals: Record<string, number> = {};
@@ -440,8 +453,7 @@ const MemberSavings: React.FC = () => {
             </IonItem>
             <IonItem>
               <IonLabel position="stacked">Transaction Date</IonLabel>
-              <IonInput
-                type="date"
+              <MobileDateInput
                 value={savingDate}
                 onIonInput={(e) => setSavingDate(String(e.detail.value || ""))}
               />

@@ -32,6 +32,9 @@ import {
   trashOutline,
 } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
+import { useSelectedGroup } from "../hooks/useSelectedGroup";
+import { useSyncRefresh } from "../hooks/useSyncRefresh";
+import MobileDateInput from "./form/MobileDateInput";
 import { apiGet } from "../services/api";
 import {
   Beneficiary,
@@ -102,8 +105,8 @@ const formatDateLong = (value: string | null | undefined) => {
 
 const Trainings: React.FC = () => {
   const history = useHistory();
-  const selectedGroupID = localStorage.getItem("selectedGroupID") || "";
-  const selectedGroupName = localStorage.getItem("selectedGroupName") || "";
+  const { selectedGroupID, selectedGroupName, refreshSelectedGroup } =
+    useSelectedGroup();
 
   const [rows, setRows] = useState<GroupTraining[]>([]);
   const [memberTrainings, setMemberTrainings] = useState<MemberTraining[]>([]);
@@ -120,8 +123,10 @@ const Trainings: React.FC = () => {
   const [actionMessage, setActionMessage] = useState<string>("");
   const [form, setForm] = useState<TrainingFormState>(emptyForm);
 
-  const load = useCallback(async () => {
-    if (!selectedGroupID) {
+  const load = useCallback(async (groupIDOverride?: string) => {
+    const activeGroupID = groupIDOverride ?? selectedGroupID;
+
+    if (!activeGroupID) {
       setRows([]);
       setGroupMeta(null);
       return;
@@ -137,12 +142,12 @@ const Trainings: React.FC = () => {
         memberTrainingRowsResult,
         beneficiaryRowsResult,
       ] = await Promise.allSettled([
-        fetchGroupTrainingsByGroupID(selectedGroupID),
-        apiGet<GroupMeta>(`/groups/${encodeURIComponent(selectedGroupID)}`),
+        fetchGroupTrainingsByGroupID(activeGroupID),
+        apiGet<GroupMeta>(`/groups/${encodeURIComponent(activeGroupID)}`),
         apiGet<TrainingTypeRow[]>("/training-types"),
         apiGet<FacilitatorRow[]>("/training-facilitators"),
-        fetchMemberTrainings({ groupID: selectedGroupID }),
-        fetchBeneficiariesByGroupCode(selectedGroupID),
+        fetchMemberTrainings({ groupID: activeGroupID }),
+        fetchBeneficiariesByGroupCode(activeGroupID),
       ]);
 
       const trainingRows =
@@ -208,6 +213,11 @@ const Trainings: React.FC = () => {
   useIonViewWillEnter(() => {
     load();
   });
+
+  useSyncRefresh(() => {
+    const latest = refreshSelectedGroup();
+    load(latest.selectedGroupID);
+  }, [refreshSelectedGroup, load]);
 
   const memberSexBySppCode = useMemo(() => {
     const map: Record<string, string> = {};
@@ -577,8 +587,7 @@ const Trainings: React.FC = () => {
             </IonItem>
             <IonItem>
               <IonLabel position="stacked">Start Date</IonLabel>
-              <IonInput
-                type="date"
+              <MobileDateInput
                 value={form.StartDate}
                 onIonInput={(e) =>
                   setForm((prev) => ({
@@ -590,8 +599,7 @@ const Trainings: React.FC = () => {
             </IonItem>
             <IonItem>
               <IonLabel position="stacked">Finish Date</IonLabel>
-              <IonInput
-                type="date"
+              <MobileDateInput
                 value={form.FinishDate}
                 onIonInput={(e) =>
                   setForm((prev) => ({
