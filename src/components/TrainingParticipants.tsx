@@ -24,6 +24,8 @@ import {
 } from "@ionic/react";
 import { arrowBack } from "ionicons/icons";
 import { useHistory, useParams } from "react-router-dom";
+import { useSelectedGroup } from "../hooks/useSelectedGroup";
+import { useSyncRefresh } from "../hooks/useSyncRefresh";
 import {
   Beneficiary,
   fetchBeneficiariesByGroupCode,
@@ -72,8 +74,8 @@ const formatDateLong = (value: string | null | undefined) => {
 const TrainingParticipants: React.FC = () => {
   const history = useHistory();
   const { trainingID } = useParams<Params>();
-  const selectedGroupID = localStorage.getItem("selectedGroupID") || "";
-  const selectedGroupName = localStorage.getItem("selectedGroupName") || "";
+  const { selectedGroupID, selectedGroupName, refreshSelectedGroup } =
+    useSelectedGroup();
 
   const [training, setTraining] = useState<GroupTraining | null>(null);
   const [members, setMembers] = useState<Beneficiary[]>([]);
@@ -87,8 +89,10 @@ const TrainingParticipants: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [actionMessage, setActionMessage] = useState("");
 
-  const load = useCallback(async () => {
-    if (!selectedGroupID || !trainingID) {
+  const load = useCallback(async (groupIDOverride?: string) => {
+    const activeGroupID = groupIDOverride ?? selectedGroupID;
+
+    if (!activeGroupID || !trainingID) {
       setTraining(null);
       setMembers([]);
       return;
@@ -104,13 +108,13 @@ const TrainingParticipants: React.FC = () => {
         memberTrainingRowsRaw,
       ] =
         await Promise.all([
-          fetchGroupTrainingsByGroupID(selectedGroupID),
-          fetchBeneficiariesByGroupCode(selectedGroupID),
+          fetchGroupTrainingsByGroupID(activeGroupID),
+          fetchBeneficiariesByGroupCode(activeGroupID),
           apiGet<TrainingTypeRow[]>("/training-types"),
           apiGet<FacilitatorRow[]>("/training-facilitators"),
           fetchMemberTrainings({
             trainingID,
-            groupID: selectedGroupID,
+            groupID: activeGroupID,
           }),
         ]);
 
@@ -170,6 +174,11 @@ const TrainingParticipants: React.FC = () => {
   useIonViewWillEnter(() => {
     load();
   });
+
+  useSyncRefresh(() => {
+    const latest = refreshSelectedGroup();
+    load(latest.selectedGroupID);
+  }, [refreshSelectedGroup, load]);
 
   const trainingTypeNameById = useMemo(() => {
     const map: Record<string, string> = {};

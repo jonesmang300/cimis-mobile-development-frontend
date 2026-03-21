@@ -31,6 +31,8 @@ import {
   trashOutline,
 } from "ionicons/icons";
 import { useHistory, useParams } from "react-router-dom";
+import { useSelectedGroup } from "../hooks/useSelectedGroup";
+import { useSyncRefresh } from "../hooks/useSyncRefresh";
 import { apiGet } from "../services/api";
 import {
   createMemberIGA,
@@ -137,8 +139,8 @@ const MemberIGA: React.FC = () => {
   const history = useHistory();
   const { sppCode: sppCodeParam } = useParams<Params>();
   const sppCode = safeDecodeURIComponent(sppCodeParam || "");
-  const selectedGroupID = localStorage.getItem("selectedGroupID") || "";
-  const selectedGroupName = localStorage.getItem("selectedGroupName") || "";
+  const { selectedGroupID, selectedGroupName, refreshSelectedGroup } =
+    useSelectedGroup();
 
   const [rows, setRows] = useState<MemberIGARow[]>([]);
   const [groupMeta, setGroupMeta] = useState<GroupMeta | null>(null);
@@ -154,8 +156,10 @@ const MemberIGA: React.FC = () => {
   const [actionMessage, setActionMessage] = useState("");
   const [form, setForm] = useState<FormState>(emptyForm);
 
-  const load = useCallback(async () => {
-    if (!selectedGroupID || !sppCode) {
+  const load = useCallback(async (groupIDOverride?: string) => {
+    const activeGroupID = groupIDOverride ?? selectedGroupID;
+
+    if (!activeGroupID || !sppCode) {
       setRows([]);
       setGroupMeta(null);
       setBeneficiaryMeta(null);
@@ -171,8 +175,8 @@ const MemberIGA: React.FC = () => {
         igaTypeRowsResult,
         beneficiaryRowResult,
       ] = await Promise.allSettled([
-        fetchMemberIGAsByMember(selectedGroupID, sppCode),
-        apiGet<GroupMeta>(`/groups/${encodeURIComponent(selectedGroupID)}`),
+        fetchMemberIGAsByMember(activeGroupID, sppCode),
+        apiGet<GroupMeta>(`/groups/${encodeURIComponent(activeGroupID)}`),
         apiGet<BusinessCategoryRow[]>("/business-categories"),
         apiGet<IGATypeRow[]>("/iga-types"),
         apiGet<BeneficiaryMeta>(`/beneficiaries/${encodeURIComponent(sppCode)}`),
@@ -226,6 +230,11 @@ const MemberIGA: React.FC = () => {
   useIonViewWillEnter(() => {
     load();
   });
+
+  useSyncRefresh(() => {
+    const latest = refreshSelectedGroup();
+    load(latest.selectedGroupID);
+  }, [refreshSelectedGroup, load]);
 
   const totalInvested = useMemo(
     () => rows.reduce((sum, row) => sum + Number(row.amount_invested || 0), 0),
@@ -370,7 +379,6 @@ const MemberIGA: React.FC = () => {
         <IonItem lines="none">
           <IonLabel>
             <h2>{beneficiaryMeta?.hh_head_name || "Selected Beneficiary"}</h2>
-            <p>{sppCode || "-"}</p>
             <p>ML Code: {beneficiaryMeta?.hh_code || "-"}</p>
             <p>{selectedGroupName || selectedGroupID || "Selected Group"}</p>
           </IonLabel>
@@ -436,10 +444,6 @@ const MemberIGA: React.FC = () => {
                         {businessCategoryNameById[String(row.bus_category || "")] ||
                           row.bus_category ||
                           "-"}
-                      </p>
-                      <p>
-                        IGA Type:{" "}
-                        {igaTypeNameById[String(row.type || "")] || row.type || "-"}
                       </p>
                       <p>Amount Invested: {formatAmountDisplay(row.amount_invested)}</p>
                       <p>

@@ -32,6 +32,8 @@ import {
   trashOutline,
 } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
+import { useSelectedGroup } from "../hooks/useSelectedGroup";
+import { useSyncRefresh } from "../hooks/useSyncRefresh";
 import { apiGet } from "../services/api";
 import {
   createGroupIGA,
@@ -123,8 +125,8 @@ const monthName = (monthValue: string | number | null | undefined) => {
 
 const GroupIGA: React.FC = () => {
   const history = useHistory();
-  const selectedGroupID = localStorage.getItem("selectedGroupID") || "";
-  const selectedGroupName = localStorage.getItem("selectedGroupName") || "";
+  const { selectedGroupID, selectedGroupName, refreshSelectedGroup } =
+    useSelectedGroup();
 
   const [rows, setRows] = useState<GroupIGARow[]>([]);
   const [groupMeta, setGroupMeta] = useState<GroupMeta | null>(null);
@@ -139,8 +141,10 @@ const GroupIGA: React.FC = () => {
   const [actionMessage, setActionMessage] = useState("");
   const [form, setForm] = useState<FormState>(emptyForm);
 
-  const load = useCallback(async () => {
-    if (!selectedGroupID) {
+  const load = useCallback(async (groupIDOverride?: string) => {
+    const activeGroupID = groupIDOverride ?? selectedGroupID;
+
+    if (!activeGroupID) {
       setRows([]);
       setGroupMeta(null);
       return;
@@ -154,8 +158,8 @@ const GroupIGA: React.FC = () => {
         categoryRowsResult,
         igaTypeRowsResult,
       ] = await Promise.allSettled([
-        fetchGroupIGAsByGroupID(selectedGroupID),
-        apiGet<GroupMeta>(`/groups/${encodeURIComponent(selectedGroupID)}`),
+        fetchGroupIGAsByGroupID(activeGroupID),
+        apiGet<GroupMeta>(`/groups/${encodeURIComponent(activeGroupID)}`),
         apiGet<BusinessCategoryRow[]>("/business-categories"),
         apiGet<IGATypeRow[]>("/iga-types"),
       ]);
@@ -201,6 +205,11 @@ const GroupIGA: React.FC = () => {
   useIonViewWillEnter(() => {
     load();
   });
+
+  useSyncRefresh(() => {
+    const latest = refreshSelectedGroup();
+    load(latest.selectedGroupID);
+  }, [refreshSelectedGroup, load]);
 
   const totalInvested = useMemo(
     () => rows.reduce((sum, row) => sum + Number(row.amount_invested || 0), 0),

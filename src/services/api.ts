@@ -1,3 +1,7 @@
+import { getCachedResponse, saveCachedResponse } from "../data/db";
+import { queueOfflineOp } from "../data/sync";
+import { isOnline } from "../plugins/network";
+
 // src/services/api.ts
 
 const BASE_URL = "https://comsip.cloud/api";
@@ -11,14 +15,44 @@ export const apiRequest = async <T = any>(
   endpoint: string,
   options?: RequestInit,
 ): Promise<T> => {
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+  const url = endpoint.startsWith("http")
+    ? endpoint
+    : `${BASE_URL}${endpoint.startsWith("/") ? "" : "/"}${endpoint}`;
+
+  const method = (options?.method || "GET").toUpperCase();
+
+  const online = await isOnline().catch(() => false);
+
+  if (!online && method === "GET") {
+    const cached = await getCachedResponse<T>(url);
+    if (cached !== null) {
+      return cached;
+    }
+  }
+
   try {
-    const token =
-      typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    if (!online && method !== "GET") {
+      await queueOfflineOp(method, url, options?.body, options?.headers as
+        | Record<string, string>
+        | undefined);
 
-    const url = endpoint.startsWith("http")
-      ? endpoint
-      : `${BASE_URL}${endpoint.startsWith("/") ? "" : "/"}${endpoint}`;
+      // Return optimistic payload if we can parse it, else a marker object.
+      if (options?.body && typeof options.body === "string") {
+        try {
+          return {
+            ...JSON.parse(options.body),
+            _queued: true,
+          } as T;
+        } catch {
+          /* fall through */
+        }
+      }
 
+      return { _queued: true } as T;
+    }
     const res = await fetch(url, {
       headers: {
         "Content-Type": "application/json",
@@ -54,9 +88,22 @@ export const apiRequest = async <T = any>(
       throw new Error(`Request failed: ${res.status}`);
     }
 
+    if (method === "GET" && online) {
+      saveCachedResponse(url, data).catch((error) =>
+        console.warn("Unable to cache response", error),
+      );
+    }
+
     return data as T;
   } catch (error) {
     console.error("API request failed:", error);
+
+    if (method === "GET") {
+      const cached = await getCachedResponse<T>(url);
+      if (cached !== null) {
+        return cached;
+      }
+    }
 
     if (error instanceof Error) {
       throw error;
@@ -84,3 +131,6 @@ export const apiPatch = <T = any>(endpoint: string, body: any) =>
     method: "PATCH",
     body: JSON.stringify(body),
   });
+
+export const apiDelete = <T = any>(endpoint: string) =>
+  apiRequest<T>(endpoint, { method: "DELETE" });

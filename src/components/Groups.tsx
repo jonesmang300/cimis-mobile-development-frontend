@@ -38,6 +38,7 @@ import { useLocalInfiniteScroll } from "../hooks/useLocalInfiniteScroll";
 import { useLocationFilters } from "../hooks/useLocationFilters";
 import { GroupTraining, Meeting, GroupIGA, MemberIGA } from "../services/groupOperations.service";
 import { GroupSaving, MemberSaving } from "../services/savings.service";
+import { subscribeSyncUpdates } from "../data/sync";
 import "./Groups.css";
 
 type GroupRow = {
@@ -293,6 +294,15 @@ const Group: React.FC = () => {
 
     return () => {
       cancelled = true;
+    };
+  }, [loadGroups]);
+
+  useEffect(() => {
+    const unsubscribeSync = subscribeSyncUpdates(() => {
+      loadGroups();
+    });
+    return () => {
+      unsubscribeSync();
     };
   }, [loadGroups]);
 

@@ -20,6 +20,8 @@ import {
 } from "@ionic/react";
 import { arrowBack } from "ionicons/icons";
 import { useHistory, useParams } from "react-router-dom";
+import { useSelectedGroup } from "../hooks/useSelectedGroup";
+import { useSyncRefresh } from "../hooks/useSyncRefresh";
 import {
   Beneficiary,
   fetchBeneficiariesByGroupCode,
@@ -56,16 +58,18 @@ const formatDateLong = (value: string | null | undefined) => {
 const ViewMeeting: React.FC = () => {
   const history = useHistory();
   const { meetingID } = useParams<Params>();
-  const selectedGroupID = localStorage.getItem("selectedGroupID") || "";
-  const selectedGroupName = localStorage.getItem("selectedGroupName") || "";
+  const { selectedGroupID, selectedGroupName, refreshSelectedGroup } =
+    useSelectedGroup();
 
   const [meeting, setMeeting] = useState<Meeting | null>(null);
   const [members, setMembers] = useState<Beneficiary[]>([]);
   const [attendanceRows, setAttendanceRows] = useState<MeetingAttendance[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const load = useCallback(async () => {
-    if (!selectedGroupID || !meetingID) {
+  const load = useCallback(async (groupIDOverride?: string) => {
+    const activeGroupID = groupIDOverride ?? selectedGroupID;
+
+    if (!activeGroupID || !meetingID) {
       setMeeting(null);
       setMembers([]);
       setAttendanceRows([]);
@@ -76,9 +80,9 @@ const ViewMeeting: React.FC = () => {
     try {
       const [meetingRowsRaw, allAttendanceRaw, groupMembersRaw] =
         await Promise.all([
-          fetchMeetingsByGroupCode(selectedGroupID),
+          fetchMeetingsByGroupCode(activeGroupID),
           fetchMeetingAttendance(),
-          fetchBeneficiariesByGroupCode(selectedGroupID),
+          fetchBeneficiariesByGroupCode(activeGroupID),
         ]);
 
       const meetingRows = Array.isArray(meetingRowsRaw) ? meetingRowsRaw : [];
@@ -98,7 +102,7 @@ const ViewMeeting: React.FC = () => {
       setAttendanceRows(
         allAttendance.filter(
           (row) =>
-            String(row.groupCode || "") === String(selectedGroupID) &&
+            String(row.groupCode || "") === String(activeGroupID) &&
             String(row.meetID || "") === String(meetingID || ""),
         ),
       );
@@ -115,6 +119,11 @@ const ViewMeeting: React.FC = () => {
   useIonViewWillEnter(() => {
     load();
   });
+
+  useSyncRefresh(() => {
+    const latest = refreshSelectedGroup();
+    load(latest.selectedGroupID);
+  }, [refreshSelectedGroup, load]);
 
   const attachedMembers = useMemo(
     () =>

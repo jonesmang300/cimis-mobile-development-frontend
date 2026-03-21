@@ -1,44 +1,200 @@
-/* Settings.css */
-
-/* Customize Logout Button */
-.logout-button {
-    background-color: #4CAF50; /* Green background */
-    color: white;
-    transition: background-color 0.3s ease, color 0.3s ease; /* Hover transition */
-  }
-  
-  .logout-button:hover {
-    background-color: #45a049; /* Slightly darker green */
-    color: #ffffff; /* Ensure text stays white */
-  }
-  /* Settings.css */
-
-/* Customize Logout Button */
-.logout-button {
-    background-color: #4CAF50; /* Green background */
-    color: white;
-    transition: background-color 0.3s ease, color 0.3s ease; /* Hover transition */
-  }
-  
-  .logout-button:hover {
-    background-color: #45a049; /* Slightly darker green */
-    color: #ffffff; /* Ensure text stays white */
-  }
-  
-  /* Change Icon Color */
-  .custom-icon {
-    color: #006400; /* Dark green */
-  }
-.title-white {
-  color: white;
+.settings-page {
+  --background:
+    radial-gradient(circle at top left, rgba(47, 167, 99, 0.18), transparent 28%),
+    linear-gradient(180deg, #f6fbf7 0%, #eef6f0 52%, #ffffff 100%);
 }
 
-.section-title {
+.settings-hero {
+  margin: 18px 16px 0;
+  padding: 20px 18px;
+  border-radius: 26px;
+  background:
+    linear-gradient(145deg, rgba(12, 72, 41, 0.95), rgba(36, 166, 92, 0.88)),
+    linear-gradient(180deg, #0d4f2d, #2ca45d);
+  color: #fff;
+  box-shadow: 0 22px 40px rgba(16, 84, 49, 0.22);
+}
+
+.settings-hero-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.settings-avatar-shell {
+  width: 68px;
+  height: 68px;
+  border-radius: 22px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(6px);
+}
+
+.settings-avatar-shell ion-icon {
+  font-size: 42px;
+  color: #fff;
+}
+
+.settings-hero-copy {
+  min-width: 0;
+}
+
+.settings-kicker {
+  display: inline-block;
+  margin-bottom: 4px;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+
+.settings-hero-copy h1 {
+  margin: 0;
+  font-size: 1.6rem;
+  line-height: 1.15;
+  font-weight: 800;
+}
+
+.settings-hero-copy p {
+  margin: 6px 0 0;
+  opacity: 0.88;
+  font-size: 0.96rem;
+}
+
+.settings-badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.settings-section {
+  margin: 22px 16px 0;
+}
+
+.settings-section-head h2 {
+  margin: 0;
+  color: #153a28;
+  font-size: 1.12rem;
+  font-weight: 800;
+}
+
+.settings-section-head p {
+  margin: 6px 0 0;
+  color: #627a6c;
+  font-size: 0.95rem;
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.settings-stat-card,
+.settings-panel {
+  margin: 14px 0 0;
+  border-radius: 22px;
+  box-shadow: 0 12px 28px rgba(24, 57, 38, 0.08);
+  border: 1px solid rgba(30, 103, 61, 0.08);
+  overflow: hidden;
+}
+
+.settings-stat-card ion-card-content,
+.settings-panel ion-card-content {
+  padding: 16px;
+}
+
+.settings-stat-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 12px;
+}
+
+.settings-stat-icon ion-icon {
+  font-size: 24px;
+}
+
+.settings-stat-icon.ok {
+  background: rgba(46, 165, 92, 0.12);
+  color: #1d7f46;
+}
+
+.settings-stat-icon.warn {
+  background: rgba(240, 182, 34, 0.14);
+  color: #b88406;
+}
+
+.settings-stat-label {
   display: block;
-  margin: 12px 0 8px;
-  padding: 0 8px;
-  font-weight: 700;
-  color: #123524;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6c8376;
+  margin-bottom: 6px;
 }
-  
-  
+
+.settings-stat-card strong {
+  display: block;
+  font-size: 1.1rem;
+  color: #173726;
+}
+
+.settings-stat-card p {
+  margin: 8px 0 0;
+  color: #667d70;
+  line-height: 1.45;
+}
+
+.settings-panel ion-item {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  --min-height: 68px;
+  --background: transparent;
+}
+
+.settings-list-icon {
+  font-size: 1.2rem;
+  color: #23814a;
+  margin-right: 12px;
+}
+
+.settings-list-icon.danger {
+  color: #c33131;
+}
+
+.settings-chevron {
+  color: #93a89a;
+  font-size: 1rem;
+}
+
+.settings-danger-item {
+  --background: rgba(196, 49, 49, 0.04);
+}
+
+.settings-actions {
+  margin-bottom: 28px;
+}
+
+.settings-actions ion-button + ion-button {
+  margin-top: 12px;
+}
+
+@media (max-width: 640px) {
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-hero {
+    border-radius: 24px;
+  }
+
+  .settings-hero-copy h1 {
+    font-size: 1.45rem;
+  }
+}

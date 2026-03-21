@@ -17,6 +17,7 @@ interface DashboardStatCardProps {
   routerLink?: string;
   loading?: boolean;
   value?: number | string;
+  onClick?: () => void;
 }
 
 const DashboardStatCard: React.FC<DashboardStatCardProps> = ({
@@ -27,8 +28,12 @@ const DashboardStatCard: React.FC<DashboardStatCardProps> = ({
   routerLink,
   loading = false,
   value,
+  onClick,
 }) => {
-  const clickableProps = routerLink ? { routerLink, button: true } : {};
+  const clickableProps =
+    routerLink || onClick
+      ? { button: true, routerLink: routerLink || undefined, onClick }
+      : {};
 
   return (
     <IonCard className={`dashboard-stat-card ${accentClass}`} {...clickableProps}>
@@ -53,11 +58,11 @@ const DashboardStatCard: React.FC<DashboardStatCardProps> = ({
           )}
         </div>
 
-        {routerLink ? (
+        {(routerLink || onClick) && (
           <IonBadge className="dashboard-stat-badge" color="light">
             View
           </IonBadge>
-        ) : null}
+        )}
       </IonCardContent>
     </IonCard>
   );

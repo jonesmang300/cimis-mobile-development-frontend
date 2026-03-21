@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 import {
+  IonBadge,
   IonButtons,
   IonCol,
   IonContent,
@@ -23,17 +24,22 @@ import {
   barChartOutline,
   cashOutline,
   checkmarkCircleOutline,
+  logOutOutline,
   homeOutline,
   peopleOutline,
   pieChartOutline,
   schoolOutline,
   storefrontOutline,
   listOutline,
+  notificationsOutline,
   settingsOutline,
 } from "ionicons/icons";
+import { useHistory } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getDashboardOverview, DashboardOverview } from "../../services/dashboard.service";
 import DashboardStatCard from "./DashboardStatCard";
+import { subscribeQueueCount, subscribeSyncUpdates } from "../../data/sync";
+import { onNetworkChange } from "../../plugins/network";
 import "./Dashboard.css";
 
 const emptyOverview: DashboardOverview = {
@@ -42,6 +48,8 @@ const emptyOverview: DashboardOverview = {
   groupsFormed: 0,
   trainings: 0,
   meetings: 0,
+  aggregatedGroupSavings: 0,
+  aggregatedMemberSavings: 0,
   aggregatedSavings: 0,
   groupIGAs: 0,
   memberIGAs: 0,
@@ -50,11 +58,13 @@ const emptyOverview: DashboardOverview = {
 const formatCurrency = (value: number) => `K ${Number(value || 0).toLocaleString("en-US")}`;
 
 const Dashboard: React.FC = () => {
-  const { user } = useAuth();
+  const history = useHistory();
+  const { user, logout } = useAuth();
   const [overview, setOverview] = useState<DashboardOverview>(emptyOverview);
   const [loading, setLoading] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
-
+  const [queued, setQueued] = useState(0);
+  const [online, setOnline] = useState<boolean | null>(null);
   const roleId = Number(user?.userRole || 0);
   const displayName =
     `${String(user?.firstname || "").trim()} ${String(user?.lastname || "").trim()}`.trim() ||
@@ -93,6 +103,37 @@ const Dashboard: React.FC = () => {
     loadOverview();
   });
 
+  React.useEffect(() => {
+    const unsubscribeQueue = subscribeQueueCount((count) => setQueued(count));
+    const unsubscribeSync = subscribeSyncUpdates(() => {
+      loadOverview();
+    });
+    const unsubscribeNet = onNetworkChange((connected) => setOnline(connected));
+    return () => {
+      unsubscribeQueue();
+      unsubscribeSync();
+      unsubscribeNet();
+    };
+  }, [loadOverview]);
+
+  const openSummary = useCallback(
+    (
+      key:
+        | "verified"
+        | "groups"
+        | "trainings"
+        | "meetings"
+        | "savingsGroup"
+        | "savingsMember"
+        | "groupIGAs"
+        | "memberIGAs"
+        | "myVerified",
+    ) => {
+      history.push(`/dashboard/summary/${key}`);
+    },
+    [history],
+  );
+
   return (
     <>
       <IonMenu contentId="dashboard-content" side="start">
@@ -127,6 +168,25 @@ const Dashboard: React.FC = () => {
                 <IonLabel>Settings</IonLabel>
               </IonItem>
             </IonMenuToggle>
+            <IonMenuToggle autoHide>
+              <IonItem routerLink="/notifications" lines="none">
+                <IonIcon icon={notificationsOutline} slot="start" />
+                <IonLabel>Notifications</IonLabel>
+              </IonItem>
+            </IonMenuToggle>
+            <IonMenuToggle autoHide>
+              <IonItem
+                button
+                lines="none"
+                onClick={() => {
+                  logout();
+                  history.replace("/login");
+                }}
+              >
+                <IonIcon icon={logOutOutline} slot="start" />
+                <IonLabel>Logout</IonLabel>
+              </IonItem>
+            </IonMenuToggle>
           </IonList>
         </IonContent>
       </IonMenu>
@@ -138,6 +198,18 @@ const Dashboard: React.FC = () => {
               <IonMenuButton color="light" className="dashboard-menu-button" />
             </IonButtons>
             <IonTitle>Dashboard</IonTitle>
+            <div className="dashboard-sync-pill" slot="end">
+              {queued > 0 ? (
+                <span className="pill-warning">
+                  {queued} change{queued === 1 ? "" : "s"} queued
+                  {online === false ? " (offline)" : ""}
+                </span>
+              ) : (
+                <span className="pill-ok">
+                  {online === false ? "Offline" : "All changes synced"}
+                </span>
+              )}
+            </div>
           </IonToolbar>
         </IonHeader>
 
@@ -157,7 +229,7 @@ const Dashboard: React.FC = () => {
           </div>
           <div className="dashboard-hero-panel">
             <div className="dashboard-hero-metric">
-              <span>Allocated to Groups</span>
+              <span>Members Allocated to Groups</span>
               <strong>{overview.totalVerified.toLocaleString()}</strong>
             </div>
             <div className="dashboard-hero-metric">
@@ -165,8 +237,12 @@ const Dashboard: React.FC = () => {
               <strong>{overview.groupsFormed.toLocaleString()}</strong>
             </div>
             <div className="dashboard-hero-metric">
-              <span>Aggregated Savings</span>
-              <strong>{formatCurrency(overview.aggregatedSavings)}</strong>
+              <span>Group Savings</span>
+              <strong>{formatCurrency(overview.aggregatedGroupSavings)}</strong>
+            </div>
+            <div className="dashboard-hero-metric">
+              <span>Member Savings</span>
+              <strong>{formatCurrency(overview.aggregatedMemberSavings)}</strong>
             </div>
           </div>
         </section>
@@ -181,13 +257,13 @@ const Dashboard: React.FC = () => {
             <IonRow>
               <IonCol size="12" sizeMd="6" sizeLg="4">
                 <DashboardStatCard
-                  title="Allocated to Groups"
+                  title="Members Allocated to Groups"
                   helper="Selected beneficiaries"
                   icon={checkmarkCircleOutline}
-                  routerLink="/verified_members"
                   loading={loading}
                   value={overview.totalVerified}
                   accentClass="accent-verified"
+                  onClick={() => openSummary("verified")}
                 />
               </IonCol>
 
@@ -196,10 +272,10 @@ const Dashboard: React.FC = () => {
                   title={groupSummaryLabel}
                   helper={roleId === 5 ? "Groups created by you" : "All groups in scope"}
                   icon={peopleOutline}
-                  routerLink="/groups?metric=all"
                   loading={loading}
                   value={overview.groupsFormed}
                   accentClass="accent-groups"
+                  onClick={() => openSummary("groups")}
                 />
               </IonCol>
 
@@ -208,10 +284,10 @@ const Dashboard: React.FC = () => {
                   title="Group Trainings"
                   helper="Recorded training sessions"
                   icon={schoolOutline}
-                  routerLink="/groups?metric=trainings"
                   loading={loading}
                   value={overview.trainings}
                   accentClass="accent-trainings"
+                  onClick={() => openSummary("trainings")}
                 />
               </IonCol>
 
@@ -220,22 +296,34 @@ const Dashboard: React.FC = () => {
                   title="Meetings"
                   helper="Recorded group meetings"
                   icon={listOutline}
-                  routerLink="/groups?metric=meetings"
                   loading={loading}
                   value={overview.meetings}
                   accentClass="accent-meetings"
+                  onClick={() => openSummary("meetings")}
                 />
               </IonCol>
 
               <IonCol size="12" sizeMd="6" sizeLg="4">
                 <DashboardStatCard
-                  title="Aggregated Savings"
-                  helper="Group and member savings combined"
+                  title="Aggregated Group Savings"
+                  helper="All visible group savings"
                   icon={cashOutline}
-                  routerLink="/groups?metric=savings"
                   loading={loading}
-                  value={formatCurrency(overview.aggregatedSavings)}
+                  value={formatCurrency(overview.aggregatedGroupSavings)}
                   accentClass="accent-savings"
+                  onClick={() => openSummary("savingsGroup")}
+                />
+              </IonCol>
+
+              <IonCol size="12" sizeMd="6" sizeLg="4">
+                <DashboardStatCard
+                  title="Aggregated Member Savings"
+                  helper="All visible member savings"
+                  icon={cashOutline}
+                  loading={loading}
+                  value={formatCurrency(overview.aggregatedMemberSavings)}
+                  accentClass="accent-savings"
+                  onClick={() => openSummary("savingsMember")}
                 />
               </IonCol>
 
@@ -244,10 +332,10 @@ const Dashboard: React.FC = () => {
                   title="Group IGAs"
                   helper="Group IGA records"
                   icon={barChartOutline}
-                  routerLink="/groups?metric=group-igas"
                   loading={loading}
                   value={overview.groupIGAs}
                   accentClass="accent-group-iga"
+                  onClick={() => openSummary("groupIGAs")}
                 />
               </IonCol>
 
@@ -256,10 +344,10 @@ const Dashboard: React.FC = () => {
                   title="Member IGAs"
                   helper="Beneficiary IGA records"
                   icon={storefrontOutline}
-                  routerLink="/groups?metric=member-igas"
                   loading={loading}
                   value={overview.memberIGAs}
                   accentClass="accent-member-iga"
+                  onClick={() => openSummary("memberIGAs")}
                 />
               </IonCol>
 
@@ -268,10 +356,10 @@ const Dashboard: React.FC = () => {
                   title="My Verified Members"
                   helper="Verified on this device"
                   icon={pieChartOutline}
-                  routerLink="/verified_members_by_device"
                   loading={loading}
                   value={overview.myVerified}
                   accentClass="accent-device"
+                  onClick={() => openSummary("myVerified")}
                 />
               </IonCol>
             </IonRow>

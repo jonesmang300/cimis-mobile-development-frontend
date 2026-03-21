@@ -32,7 +32,8 @@
 
 import React from "react";
 import { useField } from "formik";
-import { IonInput, IonItem, IonLabel, IonText } from "@ionic/react";
+import { IonItem, IonLabel, IonText } from "@ionic/react";
+import MobileDateInput from "./MobileDateInput";
 
 interface DateInputFieldProps {
   name: string;
@@ -51,9 +52,8 @@ const DateInputField: React.FC<DateInputFieldProps> = ({ name, label, id }) => {
   return (
     <IonItem>
       <IonLabel position="stacked">{label}</IonLabel>
-      <IonInput
+      <MobileDateInput
         id={id}
-        type="date"
         value={field.value || ""}
         onIonChange={handleChange}
       />
