@@ -43,9 +43,27 @@ type UserLocation = {
   id: number;
   userID: number;
   regionID?: string | null;
+  RegionID?: string | null;
+  resolvedRegionID?: string | null;
   districtID?: string | null;
+  DistrictID?: string | null;
+  resolvedDistrictID?: string | null;
   taID?: string | null;
+  TAID?: string | null;
+  taName?: string | null;
+  districtName?: string | null;
+  regionName?: string | null;
 };
+
+const normalizeUserLocation = (row: UserLocation): UserLocation => ({
+  ...row,
+  regionID: String(row.regionID ?? row.RegionID ?? row.resolvedRegionID ?? "").trim() || null,
+  districtID: String(row.districtID ?? row.DistrictID ?? row.resolvedDistrictID ?? "").trim() || null,
+  taID: String(row.taID ?? row.TAID ?? "").trim() || null,
+  taName: String(row.taName ?? "").trim() || null,
+  districtName: String(row.districtName ?? "").trim() || null,
+  regionName: String(row.regionName ?? "").trim() || null,
+});
 
 const UserDetails: React.FC = () => {
   const { id } = useParams<Params>();
@@ -88,27 +106,18 @@ const UserDetails: React.FC = () => {
       setError(null);
 
       try {
-        const [userData, roleData, regionData, extensionData, locationData] =
-          await Promise.all([
-            apiGet<User>(`/users/${id}`),
-            apiGet<Role[]>("/user-roles"),
-            apiGet<Region[]>("/regions"),
-            apiGet<RoleExtension[]>(`/role-extensions?userID=${encodeURIComponent(id)}`),
-            apiGet<UserLocation[]>(`/user-locations?userID=${encodeURIComponent(id)}`),
-          ]);
+        const [userData, roleData, regionData] = await Promise.all([
+          apiGet<User>(`/users/${id}`),
+          apiGet<Role[]>("/user-roles"),
+          apiGet<Region[]>("/regions"),
+        ]);
 
         if (cancelled) return;
 
         setUser(userData);
         setRoles(Array.isArray(roleData) ? roleData : []);
-        setRegions(Array.isArray(regionData) ? regionData : []);
-        setExtensions(Array.isArray(extensionData) ? extensionData : []);
-        setLocations(Array.isArray(locationData) ? locationData : []);
-        setSelectedRegions(
-          (Array.isArray(extensionData) ? extensionData : []).map((row) =>
-            String(row.regionID || "").trim(),
-          ),
-        );
+        const regionRows = Array.isArray(regionData) ? regionData : [];
+        setRegions(regionRows);
         setForm({
           username: String(userData?.username || ""),
           email: String(userData?.email || ""),
@@ -118,7 +127,29 @@ const UserDetails: React.FC = () => {
           newPassword: "",
         });
 
-        const locationRows = Array.isArray(locationData) ? locationData : [];
+        const [extensionResult, locationResult] = await Promise.allSettled([
+          apiGet<RoleExtension[]>(`/role-extensions?userID=${encodeURIComponent(id)}`),
+          apiGet<UserLocation[]>(`/user-locations?userID=${encodeURIComponent(id)}`),
+        ]);
+
+        if (cancelled) return;
+
+        const extensionRows =
+          extensionResult.status === "fulfilled" && Array.isArray(extensionResult.value)
+            ? extensionResult.value
+            : [];
+        const normalizedLocations =
+          locationResult.status === "fulfilled" && Array.isArray(locationResult.value)
+            ? locationResult.value.map(normalizeUserLocation)
+            : [];
+
+        setExtensions(extensionRows);
+        setLocations(normalizedLocations);
+        setSelectedRegions(
+          extensionRows.map((row) => String(row.regionID || "").trim()),
+        );
+
+        const locationRows = normalizedLocations;
         const locationRegionIds = Array.from(
           new Set(
             locationRows
@@ -165,6 +196,10 @@ const UserDetails: React.FC = () => {
 
         setDistrictNameMap(districtMap);
         setTaNameMap(taMap);
+
+        if (extensionResult.status === "rejected" || locationResult.status === "rejected") {
+          setError("User loaded, but some extension or location details could not be loaded.");
+        }
       } catch (e: any) {
         if (!cancelled) setError(e?.message || "Failed to load user");
       } finally {
@@ -293,7 +328,7 @@ const UserDetails: React.FC = () => {
         apiGet<UserLocation[]>(`/user-locations?userID=${encodeURIComponent(String(user.id))}`),
       ]);
       setExtensions(Array.isArray(extensionData) ? extensionData : []);
-      setLocations(Array.isArray(locationData) ? locationData : []);
+      setLocations((Array.isArray(locationData) ? locationData : []).map(normalizeUserLocation));
       setSuccess("User details updated.");
     } catch (e: any) {
       setError(e?.message || "Failed to update user");
@@ -337,10 +372,33 @@ const UserDetails: React.FC = () => {
 
       const createdRows = results
         .filter((result): result is PromiseFulfilledResult<UserLocation> => result.status === "fulfilled")
-        .map((result) => result.value);
+        .map((result) => normalizeUserLocation(result.value));
 
       if (createdRows.length > 0) {
         setLocations((prev) => [...createdRows, ...prev]);
+        setDistrictNameMap((prev) => {
+          const next = { ...prev };
+          const districtName =
+            districts.find(
+              (row) => String(row.DistrictID || "").trim() === String(locationDistrict || "").trim(),
+            )?.DistrictName || locationDistrict;
+          if (locationDistrict) {
+            next[String(locationDistrict).trim()] = districtName;
+          }
+          return next;
+        });
+        setTaNameMap((prev) => {
+          const next = { ...prev };
+          locationTas.forEach((taID) => {
+            const taName =
+              tas.find((row) => String(row.TAID || "").trim() === String(taID || "").trim())?.TAName ||
+              taID;
+            if (taID) {
+              next[String(taID).trim()] = taName;
+            }
+          });
+          return next;
+        });
       }
 
       if (results.some((result) => result.status === "rejected")) {
@@ -388,16 +446,20 @@ const UserDetails: React.FC = () => {
   };
 
   const resolveRegionName = (regionID?: string | null) =>
+    locations.find((row) => String(row.regionID || "").trim() === String(regionID || "").trim() && row.regionName)
+      ?.regionName ||
     regions.find((row) => String(row.regionID || "").trim() === String(regionID || "").trim())?.name ||
     String(regionID || "-");
 
-  const resolveDistrictName = (districtID?: string | null) =>
+  const resolveDistrictName = (districtID?: string | null, location?: UserLocation) =>
+    location?.districtName ||
     districtNameMap[String(districtID || "").trim()] ||
     districts.find((row) => String(row.DistrictID || "").trim() === String(districtID || "").trim())
       ?.DistrictName ||
     String(districtID || "-");
 
-  const resolveTaName = (taID?: string | null) =>
+  const resolveTaName = (taID?: string | null, location?: UserLocation) =>
+    location?.taName ||
     taNameMap[String(taID || "").trim()] ||
     tas.find((row) => String(row.TAID || "").trim() === String(taID || "").trim())?.TAName ||
     String(taID || "-");
@@ -618,9 +680,9 @@ const UserDetails: React.FC = () => {
                 locations.map((location) => (
                   <div key={location.id} className="assignment-card">
                     <div>
-                      <strong>{resolveTaName(location.taID)}</strong>
+                      <strong>{resolveTaName(location.taID, location)}</strong>
                       <div className="muted">
-                        {resolveRegionName(location.regionID)} / {resolveDistrictName(location.districtID)}
+                        {resolveRegionName(location.regionID)} / {resolveDistrictName(location.districtID, location)}
                       </div>
                     </div>
                     <button
