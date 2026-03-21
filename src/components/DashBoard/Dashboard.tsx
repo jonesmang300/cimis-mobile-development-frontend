@@ -24,6 +24,7 @@ import {
   barChartOutline,
   cashOutline,
   checkmarkCircleOutline,
+  logOutOutline,
   homeOutline,
   peopleOutline,
   pieChartOutline,
@@ -58,7 +59,7 @@ const formatCurrency = (value: number) => `K ${Number(value || 0).toLocaleString
 
 const Dashboard: React.FC = () => {
   const history = useHistory();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [overview, setOverview] = useState<DashboardOverview>(emptyOverview);
   const [loading, setLoading] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -173,6 +174,19 @@ const Dashboard: React.FC = () => {
                 <IonLabel>Notifications</IonLabel>
               </IonItem>
             </IonMenuToggle>
+            <IonMenuToggle autoHide>
+              <IonItem
+                button
+                lines="none"
+                onClick={() => {
+                  logout();
+                  history.replace("/login");
+                }}
+              >
+                <IonIcon icon={logOutOutline} slot="start" />
+                <IonLabel>Logout</IonLabel>
+              </IonItem>
+            </IonMenuToggle>
           </IonList>
         </IonContent>
       </IonMenu>
@@ -215,7 +229,7 @@ const Dashboard: React.FC = () => {
           </div>
           <div className="dashboard-hero-panel">
             <div className="dashboard-hero-metric">
-              <span>Allocated to Groups</span>
+              <span>Members Allocated to Groups</span>
               <strong>{overview.totalVerified.toLocaleString()}</strong>
             </div>
             <div className="dashboard-hero-metric">
@@ -243,7 +257,7 @@ const Dashboard: React.FC = () => {
             <IonRow>
               <IonCol size="12" sizeMd="6" sizeLg="4">
                 <DashboardStatCard
-                  title="Allocated to Groups"
+                  title="Members Allocated to Groups"
                   helper="Selected beneficiaries"
                   icon={checkmarkCircleOutline}
                   loading={loading}

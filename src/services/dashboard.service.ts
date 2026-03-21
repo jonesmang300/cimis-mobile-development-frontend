@@ -457,6 +457,14 @@ export const getDashboardMetricItems = async (
         group,
       ]),
     );
+    const groupMetaByName = new Map(
+      visibleGroups.map((group) => [
+        `${String(group.groupname || "").trim().toLowerCase()}::${String(
+          group.villageClusterID || "",
+        ).trim()}`,
+        group,
+      ]),
+    );
 
     const verifiedRows = rows
       .flatMap((groupRows) => (Array.isArray(groupRows) ? groupRows : []))
@@ -482,24 +490,46 @@ export const getDashboardMetricItems = async (
       const resolvedGroupId = String(
         row.groupCode || row.groupID || "",
       ).trim();
-      const meta = groupMetaMap.get(resolvedGroupId);
+      const villageClusterID = String(
+        row.villageClusterID || "",
+      ).trim();
+      const fallbackMeta =
+        groupMetaByName.get(
+          `${String(row.groupname || "").trim().toLowerCase()}::${villageClusterID}`,
+        ) ||
+        visibleGroups.find(
+          (group) =>
+            String(group.groupname || "").trim().toLowerCase() ===
+              String(row.groupname || "").trim().toLowerCase() &&
+            (!villageClusterID ||
+              String(group.villageClusterID || "").trim() === villageClusterID),
+        ) ||
+        null;
+      const meta = groupMetaMap.get(resolvedGroupId) || fallbackMeta;
       const districtID = String(
         row.districtID || meta?.DistrictID || meta?.districtID || "",
       ).trim();
       const taID = String(row.taID || meta?.TAID || meta?.taID || "").trim();
-      const villageClusterID = String(
-        row.villageClusterID || meta?.villageClusterID || "",
+      const resolvedVillageClusterID = String(
+        villageClusterID || meta?.villageClusterID || "",
       ).trim();
       const groupKey =
-        resolvedGroupId || `${row.groupname || "ungrouped"}::${villageClusterID}`;
+        resolvedGroupId ||
+        String(meta?.groupID || "").trim() ||
+        `${row.groupname || "ungrouped"}::${resolvedVillageClusterID}`;
+      const resolvedSubtitle =
+        resolvedGroupId ||
+        String(meta?.groupID || "").trim() ||
+        String(row.groupname || "").trim() ||
+        "No group code";
 
       if (!grouped.has(groupKey)) {
         grouped.set(groupKey, {
           title: String(row.groupname || meta?.groupname || "Verified Group"),
-          subtitle: resolvedGroupId || "No group code",
+          subtitle: resolvedSubtitle,
           districtName: districtMap[districtID] || districtID || "-",
           taName: taMap[taID] || taID || "-",
-          vcName: vcMap[villageClusterID] || villageClusterID || "-",
+          vcName: vcMap[resolvedVillageClusterID] || resolvedVillageClusterID || "-",
           members: [],
         });
       }

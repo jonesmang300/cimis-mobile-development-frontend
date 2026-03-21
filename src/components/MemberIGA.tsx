@@ -379,7 +379,6 @@ const MemberIGA: React.FC = () => {
         <IonItem lines="none">
           <IonLabel>
             <h2>{beneficiaryMeta?.hh_head_name || "Selected Beneficiary"}</h2>
-            <p>{sppCode || "-"}</p>
             <p>ML Code: {beneficiaryMeta?.hh_code || "-"}</p>
             <p>{selectedGroupName || selectedGroupID || "Selected Group"}</p>
           </IonLabel>

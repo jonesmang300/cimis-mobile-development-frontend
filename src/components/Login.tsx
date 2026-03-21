@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   IonButton,
   IonContent,
@@ -6,7 +6,9 @@ import {
   IonPage,
   IonSpinner,
   IonText,
+  IonToast,
 } from "@ionic/react";
+import { App as CapacitorApp } from "@capacitor/app";
 import { Form, Formik } from "formik";
 import { useHistory } from "react-router-dom";
 import * as Yup from "yup";
@@ -14,12 +16,31 @@ import { motion } from "framer-motion";
 
 import { apiPost } from "../services/api";
 import { TextInputField } from "./form";
-import { NotificationMessage } from "./notificationMessage";
 import { useAuth } from "./context/AuthContext";
 
 import "./Login.css";
 
 type MessageType = "success" | "error" | "";
+
+const LOGIN_TIMEOUT_MS = 15000;
+
+const withTimeout = async <T,>(promise: Promise<T>, timeoutMs: number) => {
+  let timeoutHandle: ReturnType<typeof setTimeout> | null = null;
+
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeoutHandle = setTimeout(() => {
+      reject(new Error("Login request timed out. Please try again."));
+    }, timeoutMs);
+  });
+
+  try {
+    return await Promise.race([promise, timeoutPromise]);
+  } finally {
+    if (timeoutHandle) {
+      clearTimeout(timeoutHandle);
+    }
+  }
+};
 
 const Login: React.FC = () => {
   const history = useHistory();
@@ -35,10 +56,22 @@ const Login: React.FC = () => {
     pin: Yup.string().required("Password is required"),
   });
 
+  useEffect(() => {
+    const listener = CapacitorApp.addListener("backButton", () => {
+      history.replace("/login");
+    });
+
+    return () => {
+      listener.then((handle) => handle.remove()).catch(() => null);
+    };
+  }, [history]);
+
   const handleLoginSubmit = async (
     formData: { username: string; pin: string },
     { setSubmitting }: any,
   ) => {
+    setMessageState({ text: "", type: "" });
+
     try {
       // 🌍 OFFLINE LOGIN
       if (!navigator.onLine) {
@@ -66,10 +99,13 @@ const Login: React.FC = () => {
       }
 
       // 🌐 ONLINE LOGIN
-      const res = await apiPost("/users/login", {
-        username: formData.username,
-        password: formData.pin,
-      });
+      const res = await withTimeout(
+        apiPost("/users/login", {
+          username: formData.username,
+          password: formData.pin,
+        }),
+        LOGIN_TIMEOUT_MS,
+      );
 
       if (!res?.token) throw new Error("Login failed");
 
@@ -93,8 +129,12 @@ const Login: React.FC = () => {
 
       history.replace("/home");
     } catch (error: any) {
+      const rawMessage = String(error?.message || "Login failed").trim();
       setMessageState({
-        text: error?.message || "Login failed",
+        text:
+          rawMessage.toLowerCase() === "invalid credentials"
+            ? "Incorrect username or password."
+            : rawMessage,
         type: "error",
       });
     } finally {
@@ -105,6 +145,15 @@ const Login: React.FC = () => {
   return (
     <IonPage>
       <IonContent fullscreen className="login-content">
+        <IonToast
+          isOpen={!!messageState.type}
+          message={messageState.text}
+          color={messageState.type === "success" ? "success" : "danger"}
+          duration={2500}
+          position="top"
+          onDidDismiss={() => setMessageState({ text: "", type: "" })}
+        />
+
         {/* HERO */}
         <motion.div
           className="login-hero"
@@ -126,13 +175,6 @@ const Login: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          {messageState.type && (
-            <NotificationMessage
-              text={messageState.text}
-              type={messageState.type}
-            />
-          )}
-
           <Formik
             initialValues={{ username: "", pin: "" }}
             validationSchema={schema}

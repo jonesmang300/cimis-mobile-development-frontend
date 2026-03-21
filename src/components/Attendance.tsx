@@ -36,6 +36,7 @@ import {
 import { useHistory } from "react-router-dom";
 import { useSelectedGroup } from "../hooks/useSelectedGroup";
 import { useSyncRefresh } from "../hooks/useSyncRefresh";
+import MobileDateInput from "./form/MobileDateInput";
 import {
   Beneficiary,
   fetchBeneficiariesByGroupCode,
@@ -575,8 +576,7 @@ const Attendance: React.FC = () => {
             </IonItem>
             <IonItem>
               <IonLabel position="stacked">Meeting Date</IonLabel>
-              <IonInput
-                type="date"
+              <MobileDateInput
                 value={meetingForm.meetingdate}
                 onIonInput={(e) =>
                   setMeetingForm((prev) => ({
