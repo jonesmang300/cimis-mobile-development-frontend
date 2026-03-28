@@ -20,6 +20,7 @@ import {
   IonLoading,
   IonModal,
   IonPage,
+  IonSearchbar,
   IonSelect,
   IonSelectOption,
   IonSpinner,
@@ -139,7 +140,33 @@ const GroupAssignment: React.FC = () => {
      BENEFICIARIES (API DATA)
   ================================ */
   const [members, setMembers] = useState<Beneficiary[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [submittedMemberCodes, setSubmittedMemberCodes] = useState<Set<string>>(
+    () => new Set(),
+  );
   const [loadingBeneficiaries, setLoadingBeneficiaries] = useState(false);
+  const filteredMembers = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+
+    if (!query) {
+      return members;
+    }
+
+    return members.filter((member) => {
+      const searchable = [
+        member.hh_head_name,
+        member.hh_code,
+        member.sppCode,
+        member.groupname,
+        member.groupCode,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      return searchable.includes(query);
+    });
+  }, [members, searchQuery]);
 
   /* ===============================
      INFINITE SCROLL (REUSABLE)
@@ -149,7 +176,7 @@ const GroupAssignment: React.FC = () => {
     loadMore,
     resetKey,
   } = useLocalInfiniteScroll<Beneficiary>({
-    items: members,
+    items: filteredMembers,
     pageSize: PAGE_SIZE,
   });
 
@@ -247,7 +274,9 @@ const GroupAssignment: React.FC = () => {
   ================================ */
   useEffect(() => {
     setMembers([]);
+    setSearchQuery("");
     setSelectedMembers([]);
+    setSubmittedMemberCodes(new Set());
 
     if (infiniteRef.current) {
       infiniteRef.current.disabled = false;
@@ -270,7 +299,18 @@ const GroupAssignment: React.FC = () => {
       const data = await fetchBeneficiariesByVC(vc);
       if (!cancelled) {
         const all = Array.isArray(data) ? data : [];
-        setMembers(all);
+        const merged = all.map((member) => {
+          if (!submittedMemberCodes.has(String(member.sppCode))) {
+            return member;
+          }
+
+          return {
+            ...member,
+            selected: 1,
+            groupCode: String(member.groupCode || "PENDING_LOCAL_ASSIGNMENT"),
+          };
+        });
+        setMembers(merged);
       }
     } catch (err) {
       console.error("Load beneficiaries failed:", err);
@@ -285,7 +325,7 @@ const GroupAssignment: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [vc]);
+  }, [submittedMemberCodes, vc]);
 
   useEffect(() => {
     loadMembers();
@@ -326,8 +366,7 @@ const GroupAssignment: React.FC = () => {
   /* ===============================
      SELECT ALL
   ================================ */
-  const hasMembers = members.length > 0;
-  const selectableMembers = members.filter((m) => !isAllocatedMember(m));
+  const selectableMembers = filteredMembers.filter((m) => !isAllocatedMember(m));
 
   const allSelected =
     selectableMembers.length > 0 &&
@@ -484,15 +523,35 @@ const GroupAssignment: React.FC = () => {
         deviceId,
       }));
 
+      const applySubmittedMembers = () => {
+        const submittedCodes = new Set(payload.map((p) => p.sppCode));
+
+        setSubmittedMemberCodes((prev) => {
+          const next = new Set(prev);
+          submittedCodes.forEach((code) => next.add(String(code)));
+          return next;
+        });
+        setMembers((prev) =>
+          prev.map((member) =>
+            submittedCodes.has(member.sppCode)
+              ? {
+                  ...member,
+                  selected: 1,
+                  groupCode: effectiveGroupID,
+                  groupname: trimmedGroupName,
+                }
+              : member,
+          ),
+        );
+        setSelectedMembers([]);
+        setGroupName("");
+      };
+
       if (isOfflineQueued && offlineClientId) {
         await saveOfflineGroupAssignments(offlineClientId, payload);
 
-        const submittedCodes = new Set(payload.map((p) => p.sppCode));
-        setMembers((prev) => prev.filter((m) => !submittedCodes.has(m.sppCode)));
-
+        applySubmittedMembers();
         setToastMessage(`Group ${effectiveGroupID} saved offline and will sync automatically`);
-        setSelectedMembers([]);
-        setGroupName("");
         return;
       }
 
@@ -511,25 +570,15 @@ const GroupAssignment: React.FC = () => {
           deviceId,
         );
 
-        const submittedCodes = new Set(payload.map((p) => p.sppCode));
-
-        setMembers((prev) => prev.filter((m) => !submittedCodes.has(m.sppCode)));
-
+        applySubmittedMembers();
         setToastMessage(
           `Beneficiary assignments for ${effectiveGroupID} were queued and will sync automatically`,
         );
-        setSelectedMembers([]);
-        setGroupName("");
         return;
       }
 
-      const submittedCodes = new Set(payload.map((p) => p.sppCode));
-
-      setMembers((prev) => prev.filter((m) => !submittedCodes.has(m.sppCode)));
-
+      applySubmittedMembers();
       setToastMessage(`Group ${createdGroupID} created & synced`);
-      setSelectedMembers([]);
-      setGroupName("");
     } catch (err: any) {
       console.error("Sync failed:", err);
 
@@ -683,6 +732,13 @@ const GroupAssignment: React.FC = () => {
                 {selectedCount}
               </IonBadge>
             </IonItem>
+
+            <IonSearchbar
+              value={searchQuery}
+              debounce={200}
+              placeholder="Search beneficiaries"
+              onIonInput={(e) => setSearchQuery(String(e.detail.value || ""))}
+            />
 
             {selectableMembers.length > 0 && (
               <IonItem lines="none">

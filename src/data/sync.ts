@@ -17,6 +17,8 @@ import {
   updateOfflineGroupStatus,
 } from "./db";
 import { isOnline, onNetworkChange } from "../plugins/network";
+import { API_BASE_URL, buildApiUrl as buildRequestUrl } from "../config/api";
+import { IS_WEB_TARGET } from "../config/runtime";
 
 type QueueListener = (count: number) => void;
 const queueListeners = new Set<QueueListener>();
@@ -40,10 +42,10 @@ export type SyncQueueItem = {
   errorMessage?: string;
 };
 
-const BASE_URL = "https://comsip.cloud/api";
 let flushing = false;
 
 const getQueueCount = async () => {
+  if (IS_WEB_TARGET) return 0;
   const [pendingOps, offlineGroups] = await Promise.all([
     countPendingOps(),
     countOfflineGroups(),
@@ -137,11 +139,6 @@ const toDateOnly = (value: string | null | undefined) => {
   return parsed.toISOString().slice(0, 10);
 };
 
-const buildRequestUrl = (endpoint: string) =>
-  endpoint.startsWith("http")
-    ? endpoint
-    : `${BASE_URL}${endpoint.startsWith("/") ? "" : "/"}${endpoint}`;
-
 const buildAuthHeaders = () => {
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
@@ -233,7 +230,7 @@ const syncOfflineGroupRecord = async (group: OfflineGroupRecord) => {
     throw new Error("No valid members found for sync");
   }
 
-  const formationRes = await fetch(`${BASE_URL}/groups/sync-with-beneficiaries`, {
+  const formationRes = await fetch(`${API_BASE_URL}/groups/sync-with-beneficiaries`, {
     method: "POST",
     headers,
     body: JSON.stringify({
@@ -308,7 +305,7 @@ const syncOfflineGroups = async (groupsArg?: OfflineGroupRecord[]) => {
 };
 
 const getPendingOpDetail = (op: PendingOp) => {
-  const endpoint = op.endpoint.replace(BASE_URL, "");
+  const endpoint = op.endpoint.replace(API_BASE_URL, "");
   return `${op.method} ${endpoint}`;
 };
 
@@ -320,6 +317,7 @@ const getOfflineGroupTitle = (group: OfflineGroupRecord) => {
 };
 
 export const listSyncQueueItems = async (): Promise<SyncQueueItem[]> => {
+  if (IS_WEB_TARGET) return [];
   const [pendingOps, offlineGroups] = await Promise.all([
     listPendingOps(),
     listOfflineGroups(),
@@ -359,6 +357,13 @@ export const listSyncQueueItems = async (): Promise<SyncQueueItem[]> => {
 };
 
 export const getFailedOfflineGroupError = async () => {
+  if (IS_WEB_TARGET) {
+    return {
+      count: 0,
+      message: "",
+      groupId: "",
+    };
+  }
   const failedGroups = await listFailedOfflineGroups();
   const latest = failedGroups[0];
 
@@ -372,6 +377,12 @@ export const getFailedOfflineGroupError = async () => {
 };
 
 export const syncSelectedQueueItems = async (itemIds: string[]) => {
+  if (IS_WEB_TARGET) {
+    return {
+      syncedCount: 0,
+      failed: [],
+    };
+  }
   const online = await isOnline().catch(() => false);
   if (!online) {
     throw new Error("Device is offline");
@@ -442,6 +453,7 @@ export const syncSelectedQueueItems = async (itemIds: string[]) => {
 };
 
 export const flushQueue = async (): Promise<void> => {
+  if (IS_WEB_TARGET) return;
   if (flushing) return;
   flushing = true;
   let changed = false;
@@ -474,6 +486,7 @@ let started = false;
 let intervalId: any = null;
 
 export const startSyncService = () => {
+  if (IS_WEB_TARGET) return;
   if (started) return;
   started = true;
 
@@ -513,6 +526,7 @@ export const queueOfflineOp = async (
   body?: any,
   headers?: Record<string, string>,
 ) => {
+  if (IS_WEB_TARGET) return;
   await enqueueOp(method, endpoint, body, headers);
   await notifyQueue();
 };

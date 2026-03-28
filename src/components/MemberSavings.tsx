@@ -33,12 +33,13 @@ import { useHistory, useParams } from "react-router-dom";
 import { useSelectedGroup } from "../hooks/useSelectedGroup";
 import { useSyncRefresh } from "../hooks/useSyncRefresh";
 import MobileDateInput from "./form/MobileDateInput";
-import { apiGet } from "../services/api";
+import { fetchBeneficiariesByGroupCode } from "../services/beneficiaries.service";
 import {
   createMemberSaving,
   deleteMemberSaving,
   fetchMemberSavings,
   fetchSavingsTypes,
+  getDefaultMemberSavingsTypes,
   MemberSaving,
   SavingsType,
   updateMemberSaving,
@@ -47,6 +48,12 @@ import "./MemberSavings.css";
 
 type Params = {
   sppCode: string;
+};
+
+type BeneficiarySummary = {
+  sppCode?: string;
+  hh_head_name?: string;
+  hh_code?: string;
 };
 
 const safeDecodeURIComponent = (value: string) => {
@@ -104,7 +111,9 @@ const MemberSavings: React.FC = () => {
   } = useSelectedGroup();
 
   const [rows, setRows] = useState<MemberSaving[]>([]);
-  const [savingsTypes, setSavingsTypes] = useState<SavingsType[]>([]);
+  const [savingsTypes, setSavingsTypes] = useState<SavingsType[]>(
+    getDefaultMemberSavingsTypes(),
+  );
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -136,32 +145,33 @@ const MemberSavings: React.FC = () => {
         await Promise.allSettled([
           fetchMemberSavings(activeGroupCode, sppCode),
           fetchSavingsTypes(),
-        apiGet<{
-          hh_head_name?: string;
-          hh_code?: string;
-          dob?: string;
-        }>(`/beneficiaries/${encodeURIComponent(sppCode)}`),
-      ]);
+          fetchBeneficiariesByGroupCode(activeGroupCode),
+        ]);
 
       const memberRows =
         memberRowsResult.status === "fulfilled" ? memberRowsResult.value : [];
       const typeRows =
         typeRowsResult.status === "fulfilled" ? typeRowsResult.value : [];
-      const beneficiary =
-        beneficiaryResult.status === "fulfilled" ? beneficiaryResult.value : {};
+      const beneficiaryRows =
+        beneficiaryResult.status === "fulfilled" ? beneficiaryResult.value : [];
+      const beneficiary: BeneficiarySummary = Array.isArray(beneficiaryRows)
+        ? beneficiaryRows.find(
+            (row) => String(row.sppCode || "").trim() === String(sppCode || "").trim(),
+          ) || {}
+        : {};
 
       setRows(memberRows);
       setSavingsTypes(
         typeRows.length > 0
           ? typeRows
-          : [{ TypeID: "00", savings_name: "Member Savings" }],
+          : getDefaultMemberSavingsTypes(),
       );
       setMemberName(String(beneficiary?.hh_head_name || ""));
       setMemberMlCode(String(beneficiary?.hh_code || ""));
     } catch (error) {
       console.error("Failed to load member savings:", error);
       setRows([]);
-      setSavingsTypes([{ TypeID: "00", savings_name: "Member Savings" }]);
+      setSavingsTypes(getDefaultMemberSavingsTypes());
       setMemberName("");
       setMemberMlCode("");
     } finally {

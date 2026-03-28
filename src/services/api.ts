@@ -1,12 +1,10 @@
-import { getCachedResponse, saveCachedResponse } from "../data/db";
+import { getCachedResponse, mutateCachedResponse, saveCachedResponse } from "../data/db";
 import { queueOfflineOp } from "../data/sync";
 import { isOnline } from "../plugins/network";
+import { buildApiUrl } from "../config/api";
+import { IS_WEB_TARGET } from "../config/runtime";
 
 // src/services/api.ts
-
-const BASE_URL = "https://comsip.cloud/api";
-// const BASE_URL = "https://api-development-j6pl.onrender.com/api";
-// const BASE_URL = "http://localhost:3000/api";
 
 /* ===============================
    GENERAL REQUEST (SAFE)
@@ -18,18 +16,56 @@ export const apiRequest = async <T = any>(
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-  const url = endpoint.startsWith("http")
-    ? endpoint
-    : `${BASE_URL}${endpoint.startsWith("/") ? "" : "/"}${endpoint}`;
+  const url = buildApiUrl(endpoint);
 
   const method = (options?.method || "GET").toUpperCase();
+
+  if (IS_WEB_TARGET) {
+    const res = await fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(options?.headers || {}),
+      },
+      ...options,
+    });
+
+    const contentType = res.headers.get("content-type") || "";
+    let data: any = null;
+
+    try {
+      data = contentType.includes("application/json")
+        ? await res.json()
+        : await res.text();
+    } catch {
+      data = null;
+    }
+
+    if (!res.ok) {
+      if (typeof data === "object" && data?.message) {
+        throw new Error(data.message);
+      }
+
+      if (typeof data === "string" && data.trim() !== "") {
+        throw new Error(data);
+      }
+
+      throw new Error(`Request failed: ${res.status}`);
+    }
+
+    return data as T;
+  }
 
   const online = await isOnline().catch(() => false);
 
   if (!online && method === "GET") {
-    const cached = await getCachedResponse<T>(url);
-    if (cached !== null) {
-      return cached;
+    try {
+      const cached = await getCachedResponse<T>(url);
+      if (cached !== null) {
+        return cached;
+      }
+    } catch (cacheError) {
+      console.warn("Unable to read cached GET response", cacheError);
     }
   }
 
@@ -99,9 +135,13 @@ export const apiRequest = async <T = any>(
     console.error("API request failed:", error);
 
     if (method === "GET") {
-      const cached = await getCachedResponse<T>(url);
-      if (cached !== null) {
-        return cached;
+      try {
+        const cached = await getCachedResponse<T>(url);
+        if (cached !== null) {
+          return cached;
+        }
+      } catch (cacheError) {
+        console.warn("Unable to read cached fallback response", cacheError);
       }
     }
 
@@ -134,3 +174,21 @@ export const apiPatch = <T = any>(endpoint: string, body: any) =>
 
 export const apiDelete = <T = any>(endpoint: string) =>
   apiRequest<T>(endpoint, { method: "DELETE" });
+
+export const updateCachedCollection = async <T>(
+  endpoint: string,
+  mutate: (items: T[]) => T[],
+) => {
+  if (IS_WEB_TARGET) {
+    return mutate([]);
+  }
+  const url = buildApiUrl(endpoint);
+  try {
+    return await mutateCachedResponse<T[]>(url, (current) =>
+      mutate(Array.isArray(current) ? current : []),
+    );
+  } catch (error) {
+    console.warn("Unable to update cached collection", error);
+    return mutate([]);
+  }
+};

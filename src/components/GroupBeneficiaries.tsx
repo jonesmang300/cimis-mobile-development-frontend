@@ -30,8 +30,8 @@ import {
 import {
   Beneficiary,
   fetchBeneficiariesByGroupCode,
+  updateBeneficiary,
 } from "../services/beneficiaries.service";
-import { apiPatch } from "../services/api";
 import { subscribeSyncUpdates } from "../data/sync";
 import { useSelectedGroup } from "../hooks/useSelectedGroup";
 import MobileDateInput from "./form/MobileDateInput";
@@ -74,24 +74,33 @@ const GroupBeneficiaries: React.FC = () => {
   const [editSex, setEditSex] = useState<string>("");
   const [editDob, setEditDob] = useState<string>("");
   const [editNatId, setEditNatId] = useState<string>("");
+  const [editHouseholdSize, setEditHouseholdSize] = useState<string>("");
   const [actionMessage, setActionMessage] = useState<string>("");
+  const [loadError, setLoadError] = useState<string>("");
 
   const loadBeneficiaries = React.useCallback(async () => {
     const latestSelectedGroupID =
       localStorage.getItem("selectedGroupID") || selectedGroupID;
     if (!latestSelectedGroupID) {
       setRows([]);
+      setLoadError("Select a group first, then open Beneficiaries.");
       setLoading(false);
       return;
     }
 
     setLoading(true);
+    setLoadError("");
     try {
       const data = await fetchBeneficiariesByGroupCode(latestSelectedGroupID);
       setRows(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Failed to load group beneficiaries:", error);
       setRows([]);
+      setLoadError(
+        error instanceof Error
+          ? error.message
+          : "Failed to load beneficiaries for the selected group.",
+      );
     } finally {
       setLoading(false);
     }
@@ -114,6 +123,11 @@ const GroupBeneficiaries: React.FC = () => {
     setEditSex(String(member.sex || ""));
     setEditDob(toDateInputValue(member.dob));
     setEditNatId(String(member.nat_id || ""));
+    setEditHouseholdSize(
+      member.hh_size === null || member.hh_size === undefined
+        ? ""
+        : String(member.hh_size),
+    );
   };
 
   const handleSaveEdit = async () => {
@@ -121,10 +135,24 @@ const GroupBeneficiaries: React.FC = () => {
 
     try {
       setSavingEdit(true);
-      await apiPatch(`/beneficiaries/${encodeURIComponent(editMember.sppCode)}`, {
+      const householdSizeValue = editHouseholdSize.trim();
+      const hh_size =
+        householdSizeValue === ""
+          ? null
+          : Number.isNaN(Number(householdSizeValue))
+            ? null
+            : Number(householdSizeValue);
+
+      if (householdSizeValue !== "" && hh_size === null) {
+        throw new Error("Enter a valid household size.");
+      }
+
+      await updateBeneficiary({
+        ...editMember,
         sex: editSex || null,
         dob: editDob || null,
         nat_id: editNatId.trim() || null,
+        hh_size,
       });
 
       setRows((prev) =>
@@ -135,6 +163,7 @@ const GroupBeneficiaries: React.FC = () => {
                 sex: editSex || null,
                 dob: editDob || null,
                 nat_id: editNatId.trim() || null,
+                hh_size,
               }
             : m,
         ),
@@ -148,6 +177,7 @@ const GroupBeneficiaries: React.FC = () => {
                 sex: editSex || null,
                 dob: editDob || null,
                 nat_id: editNatId.trim() || null,
+                hh_size,
               }
             : prev,
         );
@@ -188,6 +218,12 @@ const GroupBeneficiaries: React.FC = () => {
             {rows.length}
           </IonBadge>
         </IonItem>
+
+        {!!loadError && (
+          <IonItem lines="none">
+            <IonLabel color="danger">{loadError}</IonLabel>
+          </IonItem>
+        )}
 
         {loading ? (
           <div style={{ textAlign: "center", paddingTop: 24 }}>
@@ -327,6 +363,12 @@ const GroupBeneficiaries: React.FC = () => {
                 <p>{viewMember?.hh_code || "-"}</p>
               </IonLabel>
             </IonItem>
+            <IonItem lines="none">
+              <IonLabel>
+                <h3>Household Size</h3>
+                <p>{viewMember?.hh_size ?? "-"}</p>
+              </IonLabel>
+            </IonItem>
           </IonContent>
         </IonModal>
 
@@ -370,6 +412,18 @@ const GroupBeneficiaries: React.FC = () => {
               <IonInput
                 value={editNatId}
                 onIonInput={(e) => setEditNatId(String(e.detail.value || ""))}
+              />
+            </IonItem>
+            <IonItem>
+              <IonLabel position="stacked">Household Size</IonLabel>
+              <IonInput
+                inputmode="numeric"
+                value={editHouseholdSize}
+                onIonInput={(e) =>
+                  setEditHouseholdSize(
+                    String(e.detail.value || "").replace(/[^\d]/g, ""),
+                  )
+                }
               />
             </IonItem>
 

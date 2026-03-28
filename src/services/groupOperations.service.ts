@@ -1,4 +1,4 @@
-import { apiGet, apiPatch, apiPost } from "./api";
+import { apiGet, apiPatch, apiPost, updateCachedCollection } from "./api";
 
 export type GroupTraining = {
   TrainingID?: number;
@@ -62,6 +62,26 @@ export type MemberIGA = {
   iyear?: string;
 };
 
+const prependCachedItem = <T>(items: T[], item: T) => [item, ...items];
+
+const updateCachedItem = <T extends Record<string, any>>(
+  items: T[],
+  idField: keyof T,
+  idValue: string | number,
+  patch: Partial<T>,
+) =>
+  items.map((item) =>
+    String(item[idField] ?? "") === String(idValue)
+      ? { ...item, ...patch }
+      : item,
+  );
+
+const removeCachedItem = <T extends Record<string, any>>(
+  items: T[],
+  idField: keyof T,
+  idValue: string | number,
+) => items.filter((item) => String(item[idField] ?? "") !== String(idValue));
+
 export const fetchGroupTrainingsByGroupID = async (
   groupID: string,
 ): Promise<GroupTraining[]> => {
@@ -87,7 +107,16 @@ export const createGroupTraining = async (
       | "Females"
     >
   >,
-) => apiPost("/group-trainings", payload);
+) => {
+  const created = await apiPost<GroupTraining & { id?: number }>("/group-trainings", payload);
+  await updateCachedCollection<GroupTraining>("/group-trainings", (items) =>
+    prependCachedItem(items, {
+      ...payload,
+      TrainingID: created?.TrainingID ?? created?.id ?? undefined,
+    }),
+  );
+  return created;
+};
 
 export const updateGroupTraining = async (
   trainingID: number,
@@ -96,13 +125,23 @@ export const updateGroupTraining = async (
   apiPatch(
     `/group-trainings/${encodeURIComponent(String(trainingID))}`,
     payload,
-  );
+  ).then(async (result) => {
+    await updateCachedCollection<GroupTraining>("/group-trainings", (items) =>
+      updateCachedItem(items, "TrainingID", trainingID, payload),
+    );
+    return result;
+  });
 
 export const deleteGroupTraining = async (trainingID: number) =>
   apiPatch(
     `/group-trainings/${encodeURIComponent(String(trainingID))}/delete`,
     {},
-  );
+  ).then(async (result) => {
+    await updateCachedCollection<GroupTraining>("/group-trainings", (items) =>
+      removeCachedItem(items, "TrainingID", trainingID),
+    );
+    return result;
+  });
 
 export const fetchMeetingsByGroupCode = async (
   groupCode: string,
@@ -116,15 +155,39 @@ export const fetchMeetingsByGroupCode = async (
 
 export const createMeeting = async (
   payload: Required<Pick<Meeting, "purpose" | "meetingdate" | "minutes" | "groupCode">>,
-) => apiPost("/meetings", payload);
+) => {
+  const created = await apiPost<Meeting & { id?: number }>("/meetings", payload);
+  await updateCachedCollection<Meeting>("/meetings", (items) =>
+    prependCachedItem(items, {
+      ...payload,
+      meetID: created?.meetID ?? created?.id ?? undefined,
+    }),
+  );
+  return created;
+};
 
 export const updateMeeting = async (
   meetingID: number,
   payload: Partial<Meeting>,
-) => apiPatch(`/meetings/${encodeURIComponent(String(meetingID))}`, payload);
+) =>
+  apiPatch(`/meetings/${encodeURIComponent(String(meetingID))}`, payload).then(
+    async (result) => {
+      await updateCachedCollection<Meeting>("/meetings", (items) =>
+        updateCachedItem(items, "meetID", meetingID, payload),
+      );
+      return result;
+    },
+  );
 
 export const deleteMeeting = async (meetingID: number) =>
-  apiPatch(`/meetings/${encodeURIComponent(String(meetingID))}/delete`, {});
+  apiPatch(`/meetings/${encodeURIComponent(String(meetingID))}/delete`, {}).then(
+    async (result) => {
+      await updateCachedCollection<Meeting>("/meetings", (items) =>
+        removeCachedItem(items, "meetID", meetingID),
+      );
+      return result;
+    },
+  );
 
 export const fetchMeetingAttendance = async (): Promise<MeetingAttendance[]> => {
   const rows = await apiGet<MeetingAttendance[]>("/meeting-attendance");
@@ -133,13 +196,30 @@ export const fetchMeetingAttendance = async (): Promise<MeetingAttendance[]> => 
 
 export const createMeetingAttendance = async (
   payload: Required<Pick<MeetingAttendance, "meetID" | "groupCode" | "sppCode">>,
-) => apiPost("/meeting-attendance", payload);
+) => {
+  const created = await apiPost<MeetingAttendance & { id?: number }>(
+    "/meeting-attendance",
+    payload,
+  );
+  await updateCachedCollection<MeetingAttendance>("/meeting-attendance", (items) =>
+    prependCachedItem(items, {
+      ...payload,
+      id: created?.id ?? undefined,
+    }),
+  );
+  return created;
+};
 
 export const deleteMeetingAttendance = async (attendanceID: number) =>
   apiPatch(
     `/meeting-attendance/${encodeURIComponent(String(attendanceID))}/delete`,
     {},
-  );
+  ).then(async (result) => {
+    await updateCachedCollection<MeetingAttendance>("/meeting-attendance", (items) =>
+      removeCachedItem(items, "id", attendanceID),
+    );
+    return result;
+  });
 
 export const fetchMemberTrainings = async (params?: {
   trainingID?: string | number;
@@ -167,15 +247,19 @@ export const fetchMemberTrainings = async (params?: {
 
 export const createMemberTraining = async (
   payload: Required<
-    Pick<
-      MemberTraining,
-      | "groupID"
-      | "sppCode"
-      | "TrainingID"
-      | "attendance"
-    >
+    Pick<MemberTraining, "groupID" | "sppCode" | "TrainingID" | "attendance">
   >,
-) => apiPost("/member-trainings", payload);
+) => {
+  const created = await apiPost<MemberTraining & { id?: number }>("/member-trainings", payload);
+  const endpoint = `/member-trainings?groupID=${encodeURIComponent(String(payload.groupID || ""))}`;
+  await updateCachedCollection<MemberTraining>(endpoint, (items) =>
+    prependCachedItem(items, {
+      ...payload,
+      RecordID: created?.RecordID ?? created?.id ?? undefined,
+    }),
+  );
+  return created;
+};
 
 export const fetchGroupIGAsByGroupID = async (
   groupID: string,
@@ -202,15 +286,39 @@ export const createGroupIGA = async (
       | "iyear"
     >
   >,
-) => apiPost("/group-igas", payload);
+) => {
+  const created = await apiPost<GroupIGA & { id?: number }>("/group-igas", payload);
+  await updateCachedCollection<GroupIGA>("/group-igas", (items) =>
+    prependCachedItem(items, {
+      ...payload,
+      recID: created?.recID ?? created?.id ?? undefined,
+    }),
+  );
+  return created;
+};
 
 export const updateGroupIGA = async (
   recID: number,
   payload: Partial<GroupIGA>,
-) => apiPatch(`/group-igas/${encodeURIComponent(String(recID))}`, payload);
+) =>
+  apiPatch(`/group-igas/${encodeURIComponent(String(recID))}`, payload).then(
+    async (result) => {
+      await updateCachedCollection<GroupIGA>("/group-igas", (items) =>
+        updateCachedItem(items, "recID", recID, payload),
+      );
+      return result;
+    },
+  );
 
 export const deleteGroupIGA = async (recID: number) =>
-  apiPatch(`/group-igas/${encodeURIComponent(String(recID))}/delete`, {});
+  apiPatch(`/group-igas/${encodeURIComponent(String(recID))}/delete`, {}).then(
+    async (result) => {
+      await updateCachedCollection<GroupIGA>("/group-igas", (items) =>
+        removeCachedItem(items, "recID", recID),
+      );
+      return result;
+    },
+  );
 
 export const fetchMemberIGAs = async (): Promise<MemberIGA[]> => {
   const rows = await apiGet<MemberIGA[]>("/member-igas");
@@ -244,12 +352,36 @@ export const createMemberIGA = async (
       | "iyear"
     >
   >,
-) => apiPost("/member-igas", payload);
+) => {
+  const created = await apiPost<MemberIGA & { id?: number }>("/member-igas", payload);
+  await updateCachedCollection<MemberIGA>("/member-igas", (items) =>
+    prependCachedItem(items, {
+      ...payload,
+      recID: created?.recID ?? created?.id ?? undefined,
+    }),
+  );
+  return created;
+};
 
 export const updateMemberIGA = async (
   recID: number,
   payload: Partial<MemberIGA>,
-) => apiPatch(`/member-igas/${encodeURIComponent(String(recID))}`, payload);
+) =>
+  apiPatch(`/member-igas/${encodeURIComponent(String(recID))}`, payload).then(
+    async (result) => {
+      await updateCachedCollection<MemberIGA>("/member-igas", (items) =>
+        updateCachedItem(items, "recID", recID, payload),
+      );
+      return result;
+    },
+  );
 
 export const deleteMemberIGA = async (recID: number) =>
-  apiPatch(`/member-igas/${encodeURIComponent(String(recID))}/delete`, {});
+  apiPatch(`/member-igas/${encodeURIComponent(String(recID))}/delete`, {}).then(
+    async (result) => {
+      await updateCachedCollection<MemberIGA>("/member-igas", (items) =>
+        removeCachedItem(items, "recID", recID),
+      );
+      return result;
+    },
+  );

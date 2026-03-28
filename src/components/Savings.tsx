@@ -49,6 +49,7 @@ import {
   fetchGroupSavingsByGroupID,
   MemberSaving,
   fetchSavingsTypes,
+  getDefaultGroupSavingsTypes,
   updateGroupSaving,
   GroupSaving,
   SavingsType,
@@ -112,7 +113,9 @@ const Savings: React.FC = () => {
   const [groupSavings, setGroupSavings] = useState<GroupSaving[]>([]);
   const [memberSavings, setMemberSavings] = useState<MemberSaving[]>([]);
   const [members, setMembers] = useState<Beneficiary[]>([]);
-  const [savingsTypes, setSavingsTypes] = useState<SavingsType[]>([]);
+  const [savingsTypes, setSavingsTypes] = useState<SavingsType[]>(
+    getDefaultGroupSavingsTypes(),
+  );
   const [selectedGroupDistrictID, setSelectedGroupDistrictID] = useState("");
 
   const [amount, setAmount] = useState("");
@@ -135,7 +138,13 @@ const Savings: React.FC = () => {
     setLoading(true);
 
     try {
-      const [sRows, mRows, tRows, groupRow, memberSavingsRows] = await Promise.all([
+      const [
+        sRowsResult,
+        mRowsResult,
+        tRowsResult,
+        groupRowResult,
+        memberSavingsRowsResult,
+      ] = await Promise.allSettled([
         fetchGroupSavingsByGroupID(activeGroupID),
         fetchBeneficiariesByGroupCode(activeGroupID),
         fetchSavingsTypes(),
@@ -145,7 +154,17 @@ const Savings: React.FC = () => {
         apiGet<MemberSaving[]>("/member-savings"),
       ]);
 
-      const group = groupRow ?? {};
+      const sRows = sRowsResult.status === "fulfilled" ? sRowsResult.value : [];
+      const mRows = mRowsResult.status === "fulfilled" ? mRowsResult.value : [];
+      const tRows = tRowsResult.status === "fulfilled" ? tRowsResult.value : [];
+      const group =
+        groupRowResult.status === "fulfilled" && groupRowResult.value
+          ? groupRowResult.value
+          : {};
+      const memberSavingsRows =
+        memberSavingsRowsResult.status === "fulfilled"
+          ? memberSavingsRowsResult.value
+          : [];
 
       setSelectedGroupDistrictID(
         String(group?.DistrictID || group?.districtID || ""),
@@ -161,10 +180,26 @@ const Savings: React.FC = () => {
       setSavingsTypes(
         Array.isArray(tRows) && tRows.length
           ? tRows
-          : [{ TypeID: "02", savings_name: "Group Savings" }],
+          : getDefaultGroupSavingsTypes(),
       );
+
+      const failures = [
+        sRowsResult,
+        mRowsResult,
+        tRowsResult,
+        groupRowResult,
+        memberSavingsRowsResult,
+      ].filter((result) => result.status === "rejected");
+
+      if (failures.length > 0) {
+        console.error("Savings partial load failure:", failures);
+      }
     } catch (error) {
       console.error("Failed to load savings:", error);
+      setGroupSavings([]);
+      setMembers([]);
+      setMemberSavings([]);
+      setSavingsTypes(getDefaultGroupSavingsTypes());
     } finally {
       setLoading(false);
     }

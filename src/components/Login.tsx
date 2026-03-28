@@ -10,7 +10,7 @@ import {
 } from "@ionic/react";
 import { App as CapacitorApp } from "@capacitor/app";
 import { Form, Formik } from "formik";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import * as Yup from "yup";
 import { motion } from "framer-motion";
 
@@ -44,6 +44,7 @@ const withTimeout = async <T,>(promise: Promise<T>, timeoutMs: number) => {
 
 const Login: React.FC = () => {
   const history = useHistory();
+  const location = useLocation();
   const { login } = useAuth();
 
   const [messageState, setMessageState] = useState({
@@ -57,14 +58,35 @@ const Login: React.FC = () => {
   });
 
   useEffect(() => {
+    if (location.pathname !== "/login") {
+      return;
+    }
+
+    const keepOnLogin = () => {
+      if (history.location.pathname !== "/login") {
+        history.replace("/login");
+      } else {
+        window.history.pushState({ loginGuard: true }, "", window.location.href);
+      }
+    };
+
+    window.history.pushState({ loginGuard: true }, "", window.location.href);
+
     const listener = CapacitorApp.addListener("backButton", () => {
-      history.replace("/login");
+      keepOnLogin();
     });
 
+    const handlePopState = () => {
+      keepOnLogin();
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
     return () => {
+      window.removeEventListener("popstate", handlePopState);
       listener.then((handle) => handle.remove()).catch(() => null);
     };
-  }, [history]);
+  }, [history, location.pathname]);
 
   const handleLoginSubmit = async (
     formData: { username: string; pin: string },

@@ -1,10 +1,13 @@
+import { App } from "@capacitor/app";
 import { useEffect, useRef } from "react";
 
 const INACTIVITY_LIMIT = 30 * 60 * 1000;
 const LAST_ACTIVITY_KEY = "lastActivityAt";
+type AppListenerHandle = { remove: () => Promise<void> };
 
 export const useAutoLogout = (isLoggedIn: boolean, onLogout?: () => void) => {
   const timeoutRef = useRef<number | null>(null);
+  const logoutStartedRef = useRef(false);
   const lastActivityRef = useRef<number>(
     Number(localStorage.getItem(LAST_ACTIVITY_KEY) || Date.now()),
   );
@@ -24,6 +27,11 @@ export const useAutoLogout = (isLoggedIn: boolean, onLogout?: () => void) => {
   const getIdleTime = () => Date.now() - lastActivityRef.current;
 
   const doLogout = () => {
+    if (logoutStartedRef.current) {
+      return;
+    }
+
+    logoutStartedRef.current = true;
     clearTimer();
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -31,30 +39,44 @@ export const useAutoLogout = (isLoggedIn: boolean, onLogout?: () => void) => {
     localStorage.removeItem(LAST_ACTIVITY_KEY);
 
     onLogout?.();
-    window.location.replace("/login");
   };
 
-  const resetTimer = () => {
-    setLastActivity(Date.now());
+  const scheduleTimer = () => {
     clearTimer();
+
+    const remaining = Math.max(0, INACTIVITY_LIMIT - getIdleTime());
 
     timeoutRef.current = window.setTimeout(() => {
       if (getIdleTime() >= INACTIVITY_LIMIT) {
         doLogout();
       } else {
-        resetTimer();
+        scheduleTimer();
       }
-    }, INACTIVITY_LIMIT);
+    }, remaining);
+  };
+
+  const resetTimer = () => {
+    setLastActivity(Date.now());
+    scheduleTimer();
   };
 
   useEffect(() => {
     if (!isLoggedIn) {
+      logoutStartedRef.current = false;
       clearTimer();
       localStorage.removeItem(LAST_ACTIVITY_KEY);
       return;
     }
 
-    const activityEvents = ["click", "touchstart", "touchmove", "keydown"];
+    logoutStartedRef.current = false;
+
+    const activityEvents = [
+      "click",
+      "keydown",
+      "mousedown",
+      "pointerdown",
+      "touchstart",
+    ] as const;
 
     const handleResume = () => {
       const storedActivity = Number(
@@ -69,7 +91,19 @@ export const useAutoLogout = (isLoggedIn: boolean, onLogout?: () => void) => {
       if (getIdleTime() >= INACTIVITY_LIMIT) {
         doLogout();
       } else {
-        resetTimer();
+        scheduleTimer();
+      }
+    };
+
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === LAST_ACTIVITY_KEY) {
+        lastActivityRef.current = Number(event.newValue || Date.now());
+        scheduleTimer();
+        return;
+      }
+
+      if (event.key === "token" && !event.newValue) {
+        doLogout();
       }
     };
 
@@ -79,6 +113,21 @@ export const useAutoLogout = (isLoggedIn: boolean, onLogout?: () => void) => {
 
     document.addEventListener("visibilitychange", handleResume);
     window.addEventListener("focus", handleResume);
+    window.addEventListener("storage", handleStorage);
+
+    let appStateListener: AppListenerHandle | undefined;
+    App.addListener("appStateChange", ({ isActive }) => {
+      if (!isActive) {
+        clearTimer();
+        return;
+      }
+
+      handleResume();
+    })
+      .then((listener) => {
+        appStateListener = listener;
+      })
+      .catch(() => null);
 
     handleResume();
 
@@ -88,6 +137,8 @@ export const useAutoLogout = (isLoggedIn: boolean, onLogout?: () => void) => {
       );
       document.removeEventListener("visibilitychange", handleResume);
       window.removeEventListener("focus", handleResume);
+      window.removeEventListener("storage", handleStorage);
+      appStateListener?.remove().catch(() => null);
       clearTimer();
     };
   }, [isLoggedIn, onLogout]);

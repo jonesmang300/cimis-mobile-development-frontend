@@ -34,6 +34,7 @@ import { useHistory, useParams } from "react-router-dom";
 import { useSelectedGroup } from "../hooks/useSelectedGroup";
 import { useSyncRefresh } from "../hooks/useSyncRefresh";
 import { apiGet } from "../services/api";
+import { fetchBeneficiariesByGroupCode } from "../services/beneficiaries.service";
 import {
   createMemberIGA,
   deleteMemberIGA,
@@ -66,6 +67,7 @@ type IGATypeRow = {
 type BeneficiaryMeta = {
   hh_head_name?: string;
   hh_code?: string;
+  sppCode?: string;
 };
 
 type FormState = {
@@ -194,12 +196,23 @@ const MemberIGA: React.FC = () => {
         beneficiaryRowResult.status === "fulfilled"
           ? beneficiaryRowResult.value
           : null;
+      let fallbackBeneficiaryRow: BeneficiaryMeta | null = null;
+      if (!beneficiaryRow) {
+        try {
+          fallbackBeneficiaryRow =
+            (await fetchBeneficiariesByGroupCode(activeGroupID)).find(
+              (row) => String(row.sppCode || "") === String(sppCode),
+            ) || null;
+        } catch (fallbackError) {
+          console.error("Failed to load fallback beneficiary for member IGA:", fallbackError);
+        }
+      }
 
       setRows(Array.isArray(igaRows) ? igaRows : []);
       setGroupMeta(groupRow || null);
       setBusinessCategories(Array.isArray(categoryRows) ? categoryRows : []);
       setIgaTypes(Array.isArray(igaTypeRows) ? igaTypeRows : []);
-      setBeneficiaryMeta(beneficiaryRow || null);
+      setBeneficiaryMeta(beneficiaryRow || fallbackBeneficiaryRow || null);
 
       const loadFailures = [
         igaRowsResult,
@@ -508,11 +521,19 @@ const MemberIGA: React.FC = () => {
           <IonContent className="ion-padding">
             <IonItem>
               <IonLabel position="stacked">Beneficiary Name</IonLabel>
-              <IonInput value={beneficiaryMeta?.hh_head_name || "-"} readonly />
+              <IonLabel style={{ color: "var(--ion-text-color)" }}>
+                <h2 style={{ margin: "8px 0 0" }}>
+                  {beneficiaryMeta?.hh_head_name || "-"}
+                </h2>
+              </IonLabel>
             </IonItem>
             <IonItem>
               <IonLabel position="stacked">ML Code</IonLabel>
-              <IonInput value={beneficiaryMeta?.hh_code || "-"} readonly />
+              <IonLabel style={{ color: "var(--ion-text-color)" }}>
+                <h2 style={{ margin: "8px 0 0" }}>
+                  {beneficiaryMeta?.hh_code || "-"}
+                </h2>
+              </IonLabel>
             </IonItem>
             <IonItem>
               <IonLabel position="stacked">Business Category</IonLabel>

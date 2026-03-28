@@ -1,4 +1,4 @@
-import { apiGet, apiPatch, apiPost } from "./api";
+import { apiGet, apiPatch, apiPost, updateCachedCollection } from "./api";
 
 export type GroupSaving = {
   RecID?: number;
@@ -24,6 +24,62 @@ export type SavingsType = {
   savings_name?: string;
   description?: string;
 };
+
+const DEFAULT_GROUP_SAVINGS_TYPE: SavingsType = {
+  TypeID: "02",
+  savings_name: "Group Savings",
+};
+
+const DEFAULT_MEMBER_SAVINGS_TYPE: SavingsType = {
+  TypeID: "00",
+  savings_name: "Member Savings",
+};
+
+const mergeUniqueSavingsTypes = (types: SavingsType[]) => {
+  const seen = new Set<string>();
+  const merged: SavingsType[] = [];
+
+  for (const type of types) {
+    const key = String(type?.TypeID || "").trim();
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    merged.push({
+      TypeID: key,
+      savings_name: String(type?.savings_name || key),
+      description: type?.description,
+    });
+  }
+
+  return merged;
+};
+
+export const getDefaultGroupSavingsTypes = (): SavingsType[] => [
+  DEFAULT_GROUP_SAVINGS_TYPE,
+];
+
+export const getDefaultMemberSavingsTypes = (): SavingsType[] => [
+  DEFAULT_MEMBER_SAVINGS_TYPE,
+];
+
+const prependCachedItem = <T>(items: T[], item: T) => [item, ...items];
+
+const updateCachedItem = <T extends Record<string, any>>(
+  items: T[],
+  idField: keyof T,
+  idValue: string | number,
+  patch: Partial<T>,
+) =>
+  items.map((item) =>
+    String(item[idField] ?? "") === String(idValue)
+      ? { ...item, ...patch }
+      : item,
+  );
+
+const removeCachedItem = <T extends Record<string, any>>(
+  items: T[],
+  idField: keyof T,
+  idValue: string | number,
+) => items.filter((item) => String(item[idField] ?? "") !== String(idValue));
 
 /* ---------------- GROUP SAVINGS ---------------- */
 
@@ -53,7 +109,14 @@ export const createGroupSaving = async (payload: {
   sType: string;
 }) => {
   try {
-    return await apiPost("/group-savings", payload);
+    const created = await apiPost<GroupSaving & { id?: number }>("/group-savings", payload);
+    await updateCachedCollection<GroupSaving>("/group-savings", (items) =>
+      prependCachedItem(items, {
+        ...payload,
+        RecID: created?.RecID ?? created?.id ?? undefined,
+      }),
+    );
+    return created;
   } catch (error) {
     console.error("createGroupSaving error:", error);
     throw error;
@@ -72,10 +135,14 @@ export const updateGroupSaving = async (
   }>,
 ) => {
   try {
-    return await apiPatch(
+    const result = await apiPatch(
       `/group-savings/${encodeURIComponent(String(recID))}`,
       payload,
     );
+    await updateCachedCollection<GroupSaving>("/group-savings", (items) =>
+      updateCachedItem(items, "RecID", recID, payload),
+    );
+    return result;
   } catch (error) {
     console.error("updateGroupSaving error:", error);
     throw error;
@@ -84,10 +151,14 @@ export const updateGroupSaving = async (
 
 export const deleteGroupSaving = async (recID: number) => {
   try {
-    return await apiPatch(
+    const result = await apiPatch(
       `/group-savings/${encodeURIComponent(String(recID))}/delete`,
       {},
     );
+    await updateCachedCollection<GroupSaving>("/group-savings", (items) =>
+      removeCachedItem(items, "RecID", recID),
+    );
+    return result;
   } catch (error) {
     console.error("deleteGroupSaving error:", error);
     throw error;
@@ -99,10 +170,18 @@ export const deleteGroupSaving = async (recID: number) => {
 export const fetchSavingsTypes = async (): Promise<SavingsType[]> => {
   try {
     const rows = await apiGet<SavingsType[]>("/savings-types");
-    return Array.isArray(rows) ? rows : [];
+    const safeRows = Array.isArray(rows) ? rows : [];
+    return mergeUniqueSavingsTypes([
+      ...safeRows,
+      DEFAULT_GROUP_SAVINGS_TYPE,
+      DEFAULT_MEMBER_SAVINGS_TYPE,
+    ]);
   } catch (error) {
     console.error("fetchSavingsTypes error:", error);
-    return [];
+    return mergeUniqueSavingsTypes([
+      DEFAULT_GROUP_SAVINGS_TYPE,
+      DEFAULT_MEMBER_SAVINGS_TYPE,
+    ]);
   }
 };
 
@@ -138,7 +217,14 @@ export const createMemberSaving = async (payload: {
   sType: string;
 }) => {
   try {
-    return await apiPost("/member-savings", payload);
+    const created = await apiPost<MemberSaving & { id?: number }>("/member-savings", payload);
+    await updateCachedCollection<MemberSaving>("/member-savings", (items) =>
+      prependCachedItem(items, {
+        ...payload,
+        recID: created?.recID ?? created?.id ?? undefined,
+      }),
+    );
+    return created;
   } catch (error) {
     console.error("createMemberSaving error:", error);
     throw error;
@@ -156,10 +242,14 @@ export const updateMemberSaving = async (
   }>,
 ) => {
   try {
-    return await apiPatch(
+    const result = await apiPatch(
       `/member-savings/${encodeURIComponent(String(recID))}`,
       payload,
     );
+    await updateCachedCollection<MemberSaving>("/member-savings", (items) =>
+      updateCachedItem(items, "recID", recID, payload),
+    );
+    return result;
   } catch (error) {
     console.error("updateMemberSaving error:", error);
     throw error;
@@ -168,10 +258,14 @@ export const updateMemberSaving = async (
 
 export const deleteMemberSaving = async (recID: number) => {
   try {
-    return await apiPatch(
+    const result = await apiPatch(
       `/member-savings/${encodeURIComponent(String(recID))}/delete`,
       {},
     );
+    await updateCachedCollection<MemberSaving>("/member-savings", (items) =>
+      removeCachedItem(items, "recID", recID),
+    );
+    return result;
   } catch (error) {
     console.error("deleteMemberSaving error:", error);
     throw error;

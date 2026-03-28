@@ -1,4 +1,4 @@
-import { apiGet, apiPost, apiPatch } from "./api";
+import { apiGet, apiPost, apiPatch, updateCachedCollection } from "./api";
 import { isOnline } from "../plugins/network";
 import { getStableDeviceId } from "../utils/device";
 import {
@@ -84,7 +84,23 @@ export const createGroup = async (
     return createGroupOffline(payload);
   }
 
-  return apiPost<CreateGroupResponse>("/groups", payload);
+  const created = await apiPost<CreateGroupResponse>("/groups", payload);
+  const groupID = String(created?.groupID || created?.id || "").trim();
+
+  if (groupID) {
+    await updateCachedCollection<any>("/groups", (items) =>
+      upsertByKey(
+        items,
+        {
+          ...payload,
+          groupID,
+        },
+        "groupID",
+      ),
+    );
+  }
+
+  return created;
 };
 
 /* ===============================
@@ -131,6 +147,21 @@ export type BulkSyncGroupResult = {
   _queued?: boolean;
   message?: string;
   count?: number;
+};
+
+const upsertByKey = <T extends Record<string, any>>(
+  items: T[],
+  nextItem: T,
+  key: keyof T,
+) => {
+  const nextKey = String(nextItem[key] ?? "").trim();
+  if (!nextKey) return items;
+
+  const filtered = items.filter(
+    (item) => String(item[key] ?? "").trim() !== nextKey,
+  );
+
+  return [nextItem, ...filtered];
 };
 
 /* ===============================
@@ -203,7 +234,7 @@ export const fetchBeneficiariesByGroupCode = async (
 
   try {
     const rows = await apiGet<Beneficiary[]>(
-      `/beneficiaries/group/${encodeURIComponent(groupCode)}`,
+      `/beneficiaries/group?groupCode=${encodeURIComponent(groupCode)}`,
     );
 
     const safe = Array.isArray(rows) ? rows : [];
@@ -252,12 +283,45 @@ export const updateBeneficiary = async (beneficiary: Beneficiary) => {
         ? null
         : Number(sizeStr);
 
-  return apiPatch(`/beneficiaries/${encodeURIComponent(beneficiary.sppCode)}`, {
+  const patchPayload = {
     sex: beneficiary.sex || null,
     dob: toDateOnly(beneficiary.dob),
     nat_id,
     hh_size,
-  });
+  };
+
+  const result = await apiPatch(
+    `/beneficiaries/${encodeURIComponent(beneficiary.sppCode)}`,
+    patchPayload,
+  );
+
+  const mutateItems = (items: Beneficiary[]) =>
+    items.map((item) =>
+      String(item.sppCode || "").trim() === String(beneficiary.sppCode || "").trim()
+        ? {
+            ...item,
+            ...patchPayload,
+          }
+        : item,
+    );
+
+  const vc = String(beneficiary.villageClusterID || "").trim();
+  if (vc) {
+    await updateCachedCollection<Beneficiary>(
+      `/beneficiaries/filter?villageClusterID=${encodeURIComponent(vc)}`,
+      mutateItems,
+    );
+  }
+
+  const groupCode = String(beneficiary.groupCode || beneficiary.groupID || "").trim();
+  if (groupCode) {
+    await updateCachedCollection<Beneficiary>(
+      `/beneficiaries/group?groupCode=${encodeURIComponent(groupCode)}`,
+      mutateItems,
+    );
+  }
+
+  return result;
 };
 
 /* ===============================
@@ -312,7 +376,21 @@ export const bulkSyncGroup = async (
     };
   }
 
-  return apiPost<BulkSyncGroupResult>("/beneficiaries/bulk-sync", payload);
+  const result = await apiPost<BulkSyncGroupResult>("/beneficiaries/bulk-sync", payload);
+
+  await updateCachedCollection<Beneficiary>(
+    `/beneficiaries/group?groupCode=${encodeURIComponent(groupCode.trim())}`,
+    (items) =>
+      payload.map((member) => ({
+        ...items.find(
+          (item) => String(item.sppCode || "").trim() === String(member.sppCode || "").trim(),
+        ),
+        ...member,
+        groupID: member.groupCode,
+      })),
+  );
+
+  return result;
 };
 
 export const saveQueuedServerGroupAssignments = async (

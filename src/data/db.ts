@@ -5,6 +5,7 @@ import {
   SQLiteDBConnection,
 } from "@capacitor-community/sqlite";
 import { defineCustomElements as jeepSqlite } from "jeep-sqlite/loader";
+import { IS_WEB_TARGET } from "../config/runtime";
 
 const DB_NAME = "offline-cache";
 
@@ -34,6 +35,7 @@ const ensureWebStore = async () => {
   if (!customElements.get("jeep-sqlite")) {
     await jeepSqlite(window);
     const el = document.createElement("jeep-sqlite");
+    el.setAttribute("wasmPath", "/assets");
     document.body.appendChild(el);
     await customElements.whenDefined("jeep-sqlite");
   }
@@ -136,6 +138,7 @@ const ensureConnection = async (): Promise<SQLiteDBConnection> => {
 ================================ */
 
 export const getCachedResponse = async <T>(endpoint: string): Promise<T | null> => {
+  if (IS_WEB_TARGET) return null;
   const db = await ensureConnection();
   const res = await db.query("SELECT payload FROM http_cache WHERE endpoint = ?", [endpoint]);
   const value = res.values?.[0]?.payload;
@@ -144,11 +147,25 @@ export const getCachedResponse = async <T>(endpoint: string): Promise<T | null> 
 };
 
 export const saveCachedResponse = async <T>(endpoint: string, payload: T) => {
+  if (IS_WEB_TARGET) return;
   const db = await ensureConnection();
   await db.run(
     "INSERT OR REPLACE INTO http_cache(endpoint,payload,updated_at) VALUES (?,?,?)",
     [endpoint, JSON.stringify(payload), Date.now()],
   );
+};
+
+export const mutateCachedResponse = async <T>(
+  endpoint: string,
+  mutate: (current: T | null) => T,
+) => {
+  if (IS_WEB_TARGET) {
+    return mutate(null);
+  }
+  const current = await getCachedResponse<T>(endpoint);
+  const next = mutate(current);
+  await saveCachedResponse(endpoint, next);
+  return next;
 };
 
 /* ===============================
@@ -170,6 +187,7 @@ export const enqueueOp = async (
   body?: any,
   headers?: Record<string, string>,
 ) => {
+  if (IS_WEB_TARGET) return;
   const db = await ensureConnection();
   const serializedBody =
     body == null ? null : typeof body === "string" ? body : JSON.stringify(body);
@@ -187,17 +205,20 @@ export const enqueueOp = async (
 };
 
 export const listPendingOps = async (): Promise<PendingOp[]> => {
+  if (IS_WEB_TARGET) return [];
   const db = await ensureConnection();
   const res = await db.query("SELECT * FROM pending_ops ORDER BY id ASC");
   return (res.values as PendingOp[]) ?? [];
 };
 
 export const deletePendingOp = async (id: number) => {
+  if (IS_WEB_TARGET) return;
   const db = await ensureConnection();
   await db.run("DELETE FROM pending_ops WHERE id = ?", [id]);
 };
 
 export const countPendingOps = async (): Promise<number> => {
+  if (IS_WEB_TARGET) return 0;
   const db = await ensureConnection();
   const res = await db.query("SELECT COUNT(*) as count FROM pending_ops");
   return res.values?.[0]?.count ?? 0;
@@ -214,6 +235,7 @@ export const saveOfflineGroup = async (
   status = "pending",
   serverGroupId?: string | null,
 ) => {
+  if (IS_WEB_TARGET) return;
   const db = await ensureConnection();
 
   const now = Date.now();
@@ -244,6 +266,7 @@ export const saveOfflineGroupMembers = async (
   members: any[],
   groupCode?: string,
 ) => {
+  if (IS_WEB_TARGET) return;
   const db = await ensureConnection();
 
   if (!members.length) return;
@@ -290,6 +313,7 @@ export const saveOfflineGroupMembers = async (
 ================================ */
 
 export const listOfflineMembersByGroupId = async (groupId: string) => {
+  if (IS_WEB_TARGET) return [];
   const db = await ensureConnection();
 
   const result = await db.query(
@@ -321,6 +345,7 @@ export const listOfflineMembersByGroupId = async (groupId: string) => {
 };
 
 export const listOfflineGroupMembers = async (clientId: string) => {
+  if (IS_WEB_TARGET) return [];
   const db = await ensureConnection();
   const res = await db.query(
     "SELECT member_payload FROM offline_group_members WHERE client_id=? ORDER BY id ASC",
@@ -337,6 +362,7 @@ export const listOfflineGroupMembers = async (clientId: string) => {
 ================================ */
 
 export const listOfflineAssignments = async () => {
+  if (IS_WEB_TARGET) return [];
   const db = await ensureConnection();
 
   const result = await db.query(
@@ -373,6 +399,7 @@ export const listOfflineAssignments = async () => {
 export const listOfflineGroups = async (
   statuses: string[] = ["pending", "failed", "creating"],
 ) => {
+  if (IS_WEB_TARGET) return [];
   const db = await ensureConnection();
   const placeholders = statuses.map(() => "?").join(",");
   const res = await db.query(
@@ -383,6 +410,7 @@ export const listOfflineGroups = async (
 };
 
 export const countOfflineGroups = async (statuses: string[] = ["pending", "failed"]) => {
+  if (IS_WEB_TARGET) return 0;
   const db = await ensureConnection();
   const placeholders = statuses.map(() => "?").join(",");
   const res = await db.query(
@@ -393,6 +421,7 @@ export const countOfflineGroups = async (statuses: string[] = ["pending", "faile
 };
 
 export const markOfflineGroupSynced = async (clientId: string, serverGroupId: string) => {
+  if (IS_WEB_TARGET) return;
   const db = await ensureConnection();
   const now = Date.now();
   await db.run(
@@ -406,6 +435,7 @@ export const markOfflineGroupFailed = async (
   serverGroupId?: string,
   lastError?: string | null,
 ) => {
+  if (IS_WEB_TARGET) return;
   const db = await ensureConnection();
   const now = Date.now();
   await db.run(
@@ -420,6 +450,7 @@ export const markOfflineGroupFailed = async (
 };
 
 export const markOfflineGroupCreating = async (clientId: string) => {
+  if (IS_WEB_TARGET) return;
   const db = await ensureConnection();
   const now = Date.now();
   await db.run(
@@ -432,6 +463,7 @@ export const updateOfflineGroupStatus = async (
   clientId: string,
   status: string,
 ): Promise<void> => {
+  if (IS_WEB_TARGET) return;
   const db = await ensureConnection();
   const now = Date.now();
   await db.run(
@@ -444,6 +476,7 @@ export const setOfflineGroupServerId = async (
   clientId: string,
   serverGroupId: string,
 ): Promise<void> => {
+  if (IS_WEB_TARGET) return;
   const db = await ensureConnection();
   const now = Date.now();
   await db.run(
@@ -457,6 +490,7 @@ export const setOfflineGroupServerId = async (
 };
 
 export const replaceOfflineGroupMembers = async (clientId: string, members: any[]) => {
+  if (IS_WEB_TARGET) return;
   const db = await ensureConnection();
   await db.run("DELETE FROM offline_group_members WHERE client_id=?", [clientId]);
 
@@ -484,6 +518,7 @@ export type OfflineGroupRecord = {
 };
 
 export const listFailedOfflineGroups = async (): Promise<OfflineGroupRecord[]> => {
+  if (IS_WEB_TARGET) return [];
   const db = await ensureConnection();
   const res = await db.query(
     `SELECT *

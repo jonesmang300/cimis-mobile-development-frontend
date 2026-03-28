@@ -17,6 +17,7 @@ export const useLocationFilters = () => {
   const [loadingDistricts, setLoadingDistricts] = useState(false);
   const [loadingTas, setLoadingTas] = useState(false);
   const [loadingVcs, setLoadingVcs] = useState(false);
+  const [filterError, setFilterError] = useState("");
 
   /* ===============================
      REGIONS
@@ -24,8 +25,15 @@ export const useLocationFilters = () => {
   useEffect(() => {
     const load = async () => {
       setLoadingRegions(true);
+      setFilterError("");
       try {
         setRegions(await apiGet<any[]>("/regions"));
+      } catch (error) {
+        console.error("Failed to load regions:", error);
+        setRegions([]);
+        setFilterError(
+          error instanceof Error ? error.message : "Failed to load regions",
+        );
       } finally {
         setLoadingRegions(false);
       }
@@ -49,8 +57,15 @@ export const useLocationFilters = () => {
 
     const load = async () => {
       setLoadingDistricts(true);
+      setFilterError("");
       try {
         setDistricts(await apiGet<any[]>(`/districts?regionID=${region}`));
+      } catch (error) {
+        console.error("Failed to load districts:", error);
+        setDistricts([]);
+        setFilterError(
+          error instanceof Error ? error.message : "Failed to load districts",
+        );
       } finally {
         setLoadingDistricts(false);
       }
@@ -72,8 +87,15 @@ export const useLocationFilters = () => {
 
     const load = async () => {
       setLoadingTas(true);
+      setFilterError("");
       try {
         setTas(await apiGet<any[]>(`/tas?districtID=${district}`));
+      } catch (error) {
+        console.error("Failed to load TAs:", error);
+        setTas([]);
+        setFilterError(
+          error instanceof Error ? error.message : "Failed to load TAs",
+        );
       } finally {
         setLoadingTas(false);
       }
@@ -93,8 +115,17 @@ export const useLocationFilters = () => {
 
     const load = async () => {
       setLoadingVcs(true);
+      setFilterError("");
       try {
         setVcs(await apiGet<any[]>(`/village-clusters?taID=${ta}`));
+      } catch (error) {
+        console.error("Failed to load village clusters:", error);
+        setVcs([]);
+        setFilterError(
+          error instanceof Error
+            ? error.message
+            : "Failed to load village clusters",
+        );
       } finally {
         setLoadingVcs(false);
       }
@@ -123,6 +154,7 @@ export const useLocationFilters = () => {
     loadingDistricts,
     loadingTas,
     loadingVcs,
+    filterError,
 
     isFilterLoading:
       loadingRegions || loadingDistricts || loadingTas || loadingVcs,

@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import { useAutoLogout } from "../../hooks/useAutoLogout";
 
 type AuthUser = {
   id?: number | string;
@@ -24,7 +25,6 @@ type AuthContextType = {
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-const INACTIVITY_LIMIT_MS = 30 * 60 * 1000;
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -68,42 +68,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setUser(null);
   }, []);
 
-  useEffect(() => {
-    if (!isLoggedIn) {
-      return;
-    }
-
-    let inactivityTimer: ReturnType<typeof setTimeout> | null = null;
-    const activityEvents: (keyof DocumentEventMap)[] = [
-      "click",
-      "keydown",
-      "touchstart",
-      "mousemove",
-    ];
-
-    const resetTimer = () => {
-      if (inactivityTimer) {
-        clearTimeout(inactivityTimer);
-      }
-      inactivityTimer = setTimeout(() => {
-        logout();
-      }, INACTIVITY_LIMIT_MS);
-    };
-
-    activityEvents.forEach((eventName) =>
-      document.addEventListener(eventName, resetTimer),
-    );
-    resetTimer();
-
-    return () => {
-      if (inactivityTimer) {
-        clearTimeout(inactivityTimer);
-      }
-      activityEvents.forEach((eventName) =>
-        document.removeEventListener(eventName, resetTimer),
-      );
-    };
-  }, [isLoggedIn, logout]);
+  useAutoLogout(isLoggedIn, logout);
 
   return (
     <AuthContext.Provider
