@@ -36,6 +36,10 @@ import { subscribeSyncUpdates } from "../data/sync";
 import { useSelectedGroup } from "../hooks/useSelectedGroup";
 import MobileDateInput from "./form/MobileDateInput";
 
+const MAX_NAT_ID = 8;
+const MAX_HH_SIZE = 100;
+const MIN_AGE_YEARS = 18;
+
 const formatGender = (value: string | null | undefined) => {
   const v = String(value || "").trim();
   if (v === "01") return "Male";
@@ -60,6 +64,57 @@ const toDateInputValue = (value: string | null | undefined) => {
   const raw = String(value || "").trim();
   if (!raw) return "";
   return raw.includes("T") ? raw.split("T")[0] : raw;
+};
+
+const validateSex = (sex: string | null | undefined) => {
+  const value = String(sex || "").trim();
+  if (!value) return "Gender is required.";
+  if (value !== "01" && value !== "02") return "Invalid gender selected.";
+  return "";
+};
+
+const validateDOB18Plus = (dob: string | null | undefined) => {
+  const value = String(dob || "").trim();
+  if (!value) return "Date of birth is required.";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Invalid date of birth.";
+
+  const today = new Date();
+  const minDate = new Date(
+    today.getFullYear() - MIN_AGE_YEARS,
+    today.getMonth(),
+    today.getDate(),
+  );
+
+  if (date > minDate) {
+    return `Beneficiary must be at least ${MIN_AGE_YEARS} years old.`;
+  }
+
+  return "";
+};
+
+const validateNationalID = (natId: string | null | undefined) => {
+  const value = String(natId || "").trim();
+  if (!value) return "";
+  if (value.length > MAX_NAT_ID) {
+    return `National ID must not exceed ${MAX_NAT_ID} characters.`;
+  }
+  if (value.includes("T") && value.includes("-")) {
+    return "National ID looks like a date. Please enter a valid ID.";
+  }
+  return "";
+};
+
+const validateHouseholdSize = (value: string | number | null | undefined) => {
+  if (value === null || value === undefined || value === "") return "";
+  const num = Number(value);
+  if (Number.isNaN(num)) return "Household size must be a number.";
+  if (num < 0) return "Household size cannot be negative.";
+  if (num > MAX_HH_SIZE) {
+    return `Household size cannot exceed ${MAX_HH_SIZE}.`;
+  }
+  return "";
 };
 
 const GroupBeneficiaries: React.FC = () => {
@@ -135,7 +190,28 @@ const GroupBeneficiaries: React.FC = () => {
 
     try {
       setSavingEdit(true);
+      const sexError = validateSex(editSex);
+      if (sexError) {
+        throw new Error(sexError);
+      }
+
+      const dobError = validateDOB18Plus(editDob);
+      if (dobError) {
+        throw new Error(dobError);
+      }
+
+      const natIdValue = editNatId.trim();
+      const natIdError = validateNationalID(natIdValue);
+      if (natIdError) {
+        throw new Error(natIdError);
+      }
+
       const householdSizeValue = editHouseholdSize.trim();
+      const householdSizeError = validateHouseholdSize(householdSizeValue);
+      if (householdSizeError) {
+        throw new Error(householdSizeError);
+      }
+
       const hh_size =
         householdSizeValue === ""
           ? null
@@ -151,7 +227,7 @@ const GroupBeneficiaries: React.FC = () => {
         ...editMember,
         sex: editSex || null,
         dob: editDob || null,
-        nat_id: editNatId.trim() || null,
+        nat_id: natIdValue || null,
         hh_size,
       });
 
@@ -162,7 +238,7 @@ const GroupBeneficiaries: React.FC = () => {
                 ...m,
                 sex: editSex || null,
                 dob: editDob || null,
-                nat_id: editNatId.trim() || null,
+                nat_id: natIdValue || null,
                 hh_size,
               }
             : m,
@@ -176,7 +252,7 @@ const GroupBeneficiaries: React.FC = () => {
                 ...prev,
                 sex: editSex || null,
                 dob: editDob || null,
-                nat_id: editNatId.trim() || null,
+                nat_id: natIdValue || null,
                 hh_size,
               }
             : prev,
