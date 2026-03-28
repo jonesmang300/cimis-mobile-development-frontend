@@ -283,6 +283,12 @@ const GroupAssignment: React.FC = () => {
     }
   }, [vc]);
 
+  useEffect(() => {
+    if (infiniteRef.current) {
+      infiniteRef.current.disabled = false;
+    }
+  }, [members, searchQuery]);
+
   /* ===============================
      LOAD BENEFICIARIES (API)
     ================================ */

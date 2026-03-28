@@ -32,43 +32,35 @@
 
 /* IonContent in modal */
 .validation-modal {
-  --padding-bottom: 0px;
+  --padding-bottom: calc(118px + var(--ion-safe-area-bottom));
 }
 
-/* scrollable card */
 .validation-edit-card {
   margin: 0;
   border-radius: 14px;
   border: 1px solid var(--ion-color-light);
   box-shadow: none;
-  min-height: 0;
-  max-height: calc(100dvh - 210px);
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* On tablets/laptops, use modal height not full viewport */
-@media (min-width: 768px) {
-  .validation-edit-card {
-    max-height: calc(92vh - 210px);
-  }
 }
 
 .validation-edit-card-content {
-  padding-bottom: 20px;
+  padding-bottom: 28px;
 }
 
 .validation-edit-spacer {
-  height: 30px;
+  height: 72px;
 }
 
 /* sticky footer button */
 .validation-edit-footer {
   position: sticky;
   bottom: 0;
-  padding: 14px 16px calc(14px + var(--ion-safe-area-bottom)) 16px;
+  padding: 14px 16px calc(22px + var(--ion-safe-area-bottom)) 16px;
   background: var(--ion-background-color);
   border-top: 1px solid var(--ion-color-light);
+}
+
+.validation-edit-footer ion-button {
+  margin-bottom: 8px;
 }
 .toolbar-title {
   color: white;

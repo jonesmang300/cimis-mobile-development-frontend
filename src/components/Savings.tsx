@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   IonBadge,
   IonButton,
@@ -208,6 +208,10 @@ const Savings: React.FC = () => {
   useIonViewWillEnter(() => {
     load();
   });
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   useSyncRefresh(() => {
     const latest = refreshSelectedGroup();

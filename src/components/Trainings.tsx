@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   IonAlert,
   IonBadge,
@@ -213,6 +213,10 @@ const Trainings: React.FC = () => {
   useIonViewWillEnter(() => {
     load();
   });
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   useSyncRefresh(() => {
     const latest = refreshSelectedGroup();

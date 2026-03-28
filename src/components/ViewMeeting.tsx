@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   IonButton,
   IonButtons,
@@ -119,6 +119,10 @@ const ViewMeeting: React.FC = () => {
   useIonViewWillEnter(() => {
     load();
   });
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   useSyncRefresh(() => {
     const latest = refreshSelectedGroup();
