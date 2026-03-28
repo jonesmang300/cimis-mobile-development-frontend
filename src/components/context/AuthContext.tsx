@@ -7,6 +7,8 @@ import React, {
 } from "react";
 import { useAutoLogout } from "../../hooks/useAutoLogout";
 
+const LAST_ACTIVITY_KEY = "lastActivityAt";
+
 type AuthUser = {
   id?: number | string;
   username?: string;
@@ -54,6 +56,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const login = useCallback((token: string, nextUser: AuthUser | null) => {
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(nextUser || null));
+    localStorage.setItem(LAST_ACTIVITY_KEY, String(Date.now()));
 
     setIsLoggedIn(true);
     setUser(nextUser);
@@ -63,6 +66,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("refreshToken");
+    localStorage.removeItem(LAST_ACTIVITY_KEY);
 
     setIsLoggedIn(false);
     setUser(null);

@@ -2,20 +2,36 @@ import { App } from "@capacitor/app";
 import { useEffect, useRef } from "react";
 
 const INACTIVITY_LIMIT = 30 * 60 * 1000;
+const IDLE_CHECK_INTERVAL = 30 * 1000;
 const LAST_ACTIVITY_KEY = "lastActivityAt";
 type AppListenerHandle = { remove: () => Promise<void> };
 
 export const useAutoLogout = (isLoggedIn: boolean, onLogout?: () => void) => {
   const timeoutRef = useRef<number | null>(null);
+  const intervalRef = useRef<number | null>(null);
   const logoutStartedRef = useRef(false);
-  const lastActivityRef = useRef<number>(
-    Number(localStorage.getItem(LAST_ACTIVITY_KEY) || Date.now()),
-  );
+  const parseStoredActivity = () => {
+    const raw = Number(localStorage.getItem(LAST_ACTIVITY_KEY) || Date.now());
+
+    if (!Number.isFinite(raw) || raw <= 0) {
+      return Date.now();
+    }
+
+    return raw;
+  };
+  const lastActivityRef = useRef<number>(parseStoredActivity());
 
   const clearTimer = () => {
     if (timeoutRef.current !== null) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
+    }
+  };
+
+  const clearIntervalTimer = () => {
+    if (intervalRef.current !== null) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
     }
   };
 
@@ -33,6 +49,7 @@ export const useAutoLogout = (isLoggedIn: boolean, onLogout?: () => void) => {
 
     logoutStartedRef.current = true;
     clearTimer();
+    clearIntervalTimer();
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("refreshToken");
@@ -55,6 +72,16 @@ export const useAutoLogout = (isLoggedIn: boolean, onLogout?: () => void) => {
     }, remaining);
   };
 
+  const startIdleWatcher = () => {
+    clearIntervalTimer();
+
+    intervalRef.current = window.setInterval(() => {
+      if (getIdleTime() >= INACTIVITY_LIMIT) {
+        doLogout();
+      }
+    }, IDLE_CHECK_INTERVAL);
+  };
+
   const resetTimer = () => {
     setLastActivity(Date.now());
     scheduleTimer();
@@ -64,6 +91,7 @@ export const useAutoLogout = (isLoggedIn: boolean, onLogout?: () => void) => {
     if (!isLoggedIn) {
       logoutStartedRef.current = false;
       clearTimer();
+      clearIntervalTimer();
       localStorage.removeItem(LAST_ACTIVITY_KEY);
       return;
     }
@@ -74,15 +102,16 @@ export const useAutoLogout = (isLoggedIn: boolean, onLogout?: () => void) => {
       "click",
       "keydown",
       "mousedown",
+      "mousemove",
       "pointerdown",
+      "scroll",
       "touchstart",
+      "touchmove",
+      "wheel",
     ] as const;
 
     const handleResume = () => {
-      const storedActivity = Number(
-        localStorage.getItem(LAST_ACTIVITY_KEY) || Date.now(),
-      );
-      lastActivityRef.current = storedActivity;
+      lastActivityRef.current = parseStoredActivity();
 
       if (document.visibilityState === "hidden") {
         return;
@@ -92,13 +121,15 @@ export const useAutoLogout = (isLoggedIn: boolean, onLogout?: () => void) => {
         doLogout();
       } else {
         scheduleTimer();
+        startIdleWatcher();
       }
     };
 
     const handleStorage = (event: StorageEvent) => {
       if (event.key === LAST_ACTIVITY_KEY) {
-        lastActivityRef.current = Number(event.newValue || Date.now());
+        lastActivityRef.current = parseStoredActivity();
         scheduleTimer();
+        startIdleWatcher();
         return;
       }
 
@@ -108,7 +139,7 @@ export const useAutoLogout = (isLoggedIn: boolean, onLogout?: () => void) => {
     };
 
     activityEvents.forEach((event) =>
-      window.addEventListener(event, resetTimer),
+      window.addEventListener(event, resetTimer, { passive: true }),
     );
 
     document.addEventListener("visibilitychange", handleResume);
@@ -119,6 +150,7 @@ export const useAutoLogout = (isLoggedIn: boolean, onLogout?: () => void) => {
     App.addListener("appStateChange", ({ isActive }) => {
       if (!isActive) {
         clearTimer();
+        clearIntervalTimer();
         return;
       }
 
@@ -140,6 +172,7 @@ export const useAutoLogout = (isLoggedIn: boolean, onLogout?: () => void) => {
       window.removeEventListener("storage", handleStorage);
       appStateListener?.remove().catch(() => null);
       clearTimer();
+      clearIntervalTimer();
     };
   }, [isLoggedIn, onLogout]);
 
