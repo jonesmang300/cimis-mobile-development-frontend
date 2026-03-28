@@ -1,3 +1,7 @@
+html {
+  color-scheme: light;
+}
+
 html,
 body,
 #root {
@@ -16,9 +20,49 @@ body {
 }
 
 .web-app-root {
+  color-scheme: light;
+  --ion-background-color: #f7faf8;
+  --ion-background-color-rgb: 247, 250, 248;
+  --ion-text-color: #0f172a;
+  --ion-text-color-rgb: 15, 23, 42;
+  --ion-item-background: #ffffff;
+  --ion-card-background: #ffffff;
+  --ion-toolbar-background: #f8fafc;
+  --ion-border-color: #dbe4ee;
+  --ion-color-light: #f1f5f9;
+  --ion-color-light-rgb: 241, 245, 249;
   background: transparent;
   min-height: 100vh;
   overflow: visible;
+}
+
+.web-app-root,
+.web-app-root *,
+.web-app-root *::before,
+.web-app-root *::after {
+  box-sizing: border-box;
+}
+
+.web-app-root ion-content,
+.web-app-root ion-card,
+.web-app-root ion-item,
+.web-app-root ion-list,
+.web-app-root ion-modal,
+.web-app-root ion-toolbar {
+  --background: #ffffff;
+  --color: #0f172a;
+}
+
+.web-app-root input,
+.web-app-root select,
+.web-app-root textarea {
+  color: #0f172a;
+  background-color: #ffffff;
+}
+
+.web-app-root input::placeholder,
+.web-app-root textarea::placeholder {
+  color: #64748b;
 }
 
 .web-login {
@@ -215,7 +259,7 @@ body {
 }
 
 .web-layout {
-  height: 100vh;
+  min-height: 100vh;
   display: grid;
   grid-template-columns: 300px minmax(0, 1fr);
   overflow: visible;
@@ -354,7 +398,7 @@ body {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh;
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
@@ -436,6 +480,7 @@ body {
 
 .web-content {
   min-width: 0;
+  width: 100%;
   padding: 24px 28px 40px;
   overflow: visible;
   flex: 1 1 auto;
@@ -1060,6 +1105,8 @@ body {
     top: 0;
     transform: translateX(-100%);
     width: min(320px, calc(100vw - 28px));
+    max-height: 100dvh;
+    overflow-y: auto;
     z-index: 20;
     transition: transform 0.2s ease;
   }
@@ -1120,13 +1167,33 @@ body {
     flex-direction: column;
   }
 
+  .web-topbar__left,
   .web-topbar__right {
     width: 100%;
+  }
+
+  .web-topbar__right {
+    width: 100%;
+  }
+
+  .web-content {
+    padding: 14px 12px 24px;
   }
 
   .web-sync-chip {
     width: 100%;
     justify-content: center;
+  }
+
+  .card,
+  .modal-card {
+    padding: 16px;
+  }
+
+  .table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
   }
 
   .toolbar-row,
