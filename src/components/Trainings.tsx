@@ -17,6 +17,7 @@ import {
   IonList,
   IonModal,
   IonPage,
+  IonSearchbar,
   IonSelect,
   IonSelectOption,
   IonSpinner,
@@ -123,6 +124,7 @@ const Trainings: React.FC = () => {
   const [deleteTarget, setDeleteTarget] = useState<GroupTraining | null>(null);
   const [actionMessage, setActionMessage] = useState<string>("");
   const [form, setForm] = useState<TrainingFormState>(emptyForm);
+  const [listSearch, setListSearch] = useState("");
 
   const load = useCallback(async (groupIDOverride?: string) => {
     const activeGroupID = groupIDOverride ?? selectedGroupID;
@@ -283,6 +285,28 @@ const Trainings: React.FC = () => {
     return map;
   }, [facilitators]);
 
+  const filteredRows = useMemo(() => {
+    const query = listSearch.trim().toLowerCase();
+    if (!query) return rows;
+
+    return rows.filter((row) => {
+      const trainingType = String(
+        trainingTypeNameById[String(row.TrainingTypeID || "")] ||
+          row.TrainingTypeID ||
+          "",
+      ).toLowerCase();
+      const facilitator = String(
+        facilitatorNameById[String(row.trainedBy || "")] || row.trainedBy || "",
+      ).toLowerCase();
+      const startDate = String(formatDateLong(row.StartDate)).toLowerCase();
+      const finishDate = String(formatDateLong(row.FinishDate)).toLowerCase();
+
+      return [trainingType, facilitator, startDate, finishDate].some((value) =>
+        value.includes(query),
+      );
+    });
+  }, [facilitatorNameById, listSearch, rows, trainingTypeNameById]);
+
   const openCreateModal = () => {
     setEditingRow(null);
     setForm(emptyForm);
@@ -431,21 +455,29 @@ const Trainings: React.FC = () => {
           </IonCardContent>
         </IonCard>
 
+        <IonSearchbar
+          value={listSearch}
+          onIonInput={(e) => setListSearch(String(e.detail.value || ""))}
+          placeholder="Search trainings"
+        />
+
         {loading ? (
           <div style={{ textAlign: "center", paddingTop: 24 }}>
             <IonSpinner name="crescent" />
           </div>
-        ) : rows.length === 0 ? (
+        ) : filteredRows.length === 0 ? (
           <IonCard>
             <IonCardContent>
               <IonLabel color="medium">
-                No trainings found for the selected group.
+                {listSearch.trim()
+                  ? "No trainings match your search."
+                  : "No trainings found for the selected group."}
               </IonLabel>
             </IonCardContent>
           </IonCard>
         ) : (
           <IonList>
-            {rows.map((row) => {
+            {filteredRows.map((row) => {
               const stats = attendanceStatsByTraining[
                 String(row.TrainingID || "")
               ] || {
@@ -461,20 +493,26 @@ const Trainings: React.FC = () => {
                   key={row.TrainingID || `${row.groupID}-${row.StartDate}`}
                 >
                   <IonCardContent>
-                    <IonButton
-                      expand="block"
-                      color="success"
-                      onClick={() =>
-                        history.push(
-                          `/groups/trainings/attendance/${encodeURIComponent(
-                            String(row.TrainingID || ""),
-                          )}`,
-                        )
+                  <IonButton
+                    expand="block"
+                    color="success"
+                    onClick={() => {
+                      if (!row.TrainingID) {
+                        setActionMessage("Training not found.");
+                        return;
                       }
-                    >
-                      <IonIcon icon={addCircleOutline} slot="start" />
-                      Add Attendance
-                    </IonButton>
+
+                      history.push({
+                        pathname: `/groups/trainings/attendance/${encodeURIComponent(
+                          String(row.TrainingID || ""),
+                        )}`,
+                        state: { training: row },
+                      });
+                    }}
+                  >
+                    <IonIcon icon={addCircleOutline} slot="start" />
+                    Add Attendance
+                  </IonButton>
 
                     <IonItem lines="none">
                       <IonLabel>

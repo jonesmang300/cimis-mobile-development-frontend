@@ -9,7 +9,7 @@ export const useLocalInfiniteScroll = <T>({
   items,
   pageSize = 20,
 }: UseLocalInfiniteScrollOptions<T>) => {
-  const [visible, setVisible] = useState<T[]>([]);
+  const [visibleCount, setVisibleCount] = useState(pageSize);
   const itemsRef = useRef<T[]>(items);
 
   useEffect(() => {
@@ -20,20 +20,21 @@ export const useLocalInfiniteScroll = <T>({
    * Reset visible items whenever list changes
    */
   useEffect(() => {
-    setVisible(items.slice(0, pageSize));
+    setVisibleCount(pageSize);
   }, [items, pageSize]);
+
+  const visible = useMemo(
+    () => items.slice(0, visibleCount),
+    [items, visibleCount],
+  );
 
   /**
    * Ionic load more handler
    */
   const loadMore = async (ev: CustomEvent<void>) => {
-    const currentVisible = visible.length;
-    const next = currentVisible + pageSize;
+    const next = Math.min(visibleCount + pageSize, itemsRef.current.length);
 
-    const all = itemsRef.current;
-    const nextItems = all.slice(0, next);
-
-    setVisible(nextItems);
+    setVisibleCount(next);
 
     // IMPORTANT: complete after UI updates
     requestAnimationFrame(() => {
@@ -41,7 +42,7 @@ export const useLocalInfiniteScroll = <T>({
 
       target.complete();
 
-      if (nextItems.length >= all.length) {
+      if (next >= itemsRef.current.length) {
         target.disabled = true;
       }
     });
@@ -56,7 +57,7 @@ export const useLocalInfiniteScroll = <T>({
 
   return {
     visible,
-    setVisible,
+    visibleCount,
     loadMore,
     resetKey,
   };

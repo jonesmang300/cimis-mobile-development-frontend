@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   IonAlert,
-  IonBadge,
   IonButton,
   IonButtons,
   IonCard,
@@ -23,7 +22,7 @@ import {
   useIonViewWillEnter,
 } from "@ionic/react";
 import { arrowBack } from "ionicons/icons";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory, useLocation, useParams } from "react-router-dom";
 import { useSelectedGroup } from "../hooks/useSelectedGroup";
 import { useSyncRefresh } from "../hooks/useSyncRefresh";
 import {
@@ -35,7 +34,6 @@ import {
   fetchGroupTrainingsByGroupID,
   fetchMemberTrainings,
   GroupTraining,
-  MemberTraining,
 } from "../services/groupOperations.service";
 import { apiGet } from "../services/api";
 
@@ -51,6 +49,10 @@ type TrainingTypeRow = {
 type FacilitatorRow = {
   facilitatorID?: string;
   title?: string;
+};
+
+type TrainingParticipantsLocationState = {
+  training?: GroupTraining | null;
 };
 
 const toDateInput = (value: string | null | undefined) => {
@@ -73,6 +75,7 @@ const formatDateLong = (value: string | null | undefined) => {
 
 const TrainingParticipants: React.FC = () => {
   const history = useHistory();
+  const location = useLocation<TrainingParticipantsLocationState>();
   const { trainingID } = useParams<Params>();
   const { selectedGroupID, selectedGroupName, refreshSelectedGroup } =
     useSelectedGroup();
@@ -81,13 +84,14 @@ const TrainingParticipants: React.FC = () => {
   const [members, setMembers] = useState<Beneficiary[]>([]);
   const [trainingTypes, setTrainingTypes] = useState<TrainingTypeRow[]>([]);
   const [facilitators, setFacilitators] = useState<FacilitatorRow[]>([]);
-  const [memberTrainings, setMemberTrainings] = useState<MemberTraining[]>([]);
   const [existingCodes, setExistingCodes] = useState<string[]>([]);
   const [selectedCodes, setSelectedCodes] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [actionMessage, setActionMessage] = useState("");
+
+  const routeTraining = location.state?.training || null;
 
   const load = useCallback(async (groupIDOverride?: string) => {
     const activeGroupID = groupIDOverride ?? selectedGroupID;
@@ -101,47 +105,52 @@ const TrainingParticipants: React.FC = () => {
     setLoading(true);
     try {
       const [
-        trainingRowsRaw,
-        beneficiaryRowsRaw,
-        trainingTypeRowsRaw,
-        facilitatorRowsRaw,
-        memberTrainingRowsRaw,
-      ] =
-        await Promise.all([
-          fetchGroupTrainingsByGroupID(activeGroupID),
-          fetchBeneficiariesByGroupCode(activeGroupID),
-          apiGet<TrainingTypeRow[]>("/training-types"),
-          apiGet<FacilitatorRow[]>("/training-facilitators"),
-          fetchMemberTrainings({
-            trainingID,
-            groupID: activeGroupID,
-          }),
-        ]);
+        trainingRowsResult,
+        beneficiaryRowsResult,
+        trainingTypeRowsResult,
+        facilitatorRowsResult,
+        memberTrainingRowsResult,
+      ] = await Promise.allSettled([
+        fetchGroupTrainingsByGroupID(activeGroupID),
+        fetchBeneficiariesByGroupCode(activeGroupID),
+        apiGet<TrainingTypeRow[]>("/training-types"),
+        apiGet<FacilitatorRow[]>("/training-facilitators"),
+        fetchMemberTrainings({
+          trainingID,
+          groupID: activeGroupID,
+        }),
+      ]);
 
-      const trainingRows = Array.isArray(trainingRowsRaw) ? trainingRowsRaw : [];
-      const beneficiaryRows = Array.isArray(beneficiaryRowsRaw)
-        ? beneficiaryRowsRaw
-        : [];
-      const trainingTypeRows = Array.isArray(trainingTypeRowsRaw)
-        ? trainingTypeRowsRaw
-        : [];
-      const facilitatorRows = Array.isArray(facilitatorRowsRaw)
-        ? facilitatorRowsRaw
-        : [];
-      const memberTrainingRows = Array.isArray(memberTrainingRowsRaw)
-        ? memberTrainingRowsRaw
-        : [];
+      const trainingRows =
+        trainingRowsResult.status === "fulfilled" ? trainingRowsResult.value : [];
+      const beneficiaryRows =
+        beneficiaryRowsResult.status === "fulfilled" ? beneficiaryRowsResult.value : [];
+      const trainingTypeRows =
+        trainingTypeRowsResult.status === "fulfilled"
+          ? trainingTypeRowsResult.value
+          : [];
+      const facilitatorRows =
+        facilitatorRowsResult.status === "fulfilled"
+          ? facilitatorRowsResult.value
+          : [];
+      const memberTrainingRows =
+        memberTrainingRowsResult.status === "fulfilled"
+          ? memberTrainingRowsResult.value
+          : [];
 
       const foundTraining =
         trainingRows.find(
           (row) => String(row.TrainingID || "") === String(trainingID || ""),
-        ) || null;
+        ) ||
+        (routeTraining &&
+        String(routeTraining.TrainingID || "") === String(trainingID || "")
+          ? routeTraining
+          : null);
 
       setTraining(foundTraining);
       setMembers(beneficiaryRows);
       setTrainingTypes(trainingTypeRows);
       setFacilitators(facilitatorRows);
-      setMemberTrainings(memberTrainingRows);
       setExistingCodes(
         Array.from(
           new Set(
@@ -156,20 +165,31 @@ const TrainingParticipants: React.FC = () => {
       if (!foundTraining) {
         setActionMessage("Training not found.");
       }
+
+      const loadFailures = [
+        trainingRowsResult,
+        beneficiaryRowsResult,
+        trainingTypeRowsResult,
+        facilitatorRowsResult,
+        memberTrainingRowsResult,
+      ].filter((result) => result.status === "rejected");
+
+      if (loadFailures.length > 0) {
+        console.error("Training participants partial load failure:", loadFailures);
+      }
     } catch (error) {
       console.error("Failed to load training participants page:", error);
       setTraining(null);
       setMembers([]);
       setTrainingTypes([]);
       setFacilitators([]);
-      setMemberTrainings([]);
       setActionMessage(
         error instanceof Error ? error.message : "Failed to load training.",
       );
     } finally {
       setLoading(false);
     }
-  }, [selectedGroupID, trainingID]);
+  }, [routeTraining, selectedGroupID, trainingID]);
 
   useIonViewWillEnter(() => {
     load();
@@ -253,29 +273,6 @@ const TrainingParticipants: React.FC = () => {
     [existingCodes, members],
   );
 
-  const allAttendingMembers = useMemo(() => {
-    const combinedCodes = new Set([...existingCodes, ...selectedCodes]);
-    return members.filter((member) =>
-      combinedCodes.has(String(member.sppCode || "")),
-    );
-  }, [existingCodes, members, selectedCodes]);
-
-  const maleCount = useMemo(
-    () =>
-      allAttendingMembers.filter(
-        (member) => String(member.sex || "").trim() === "01",
-      ).length,
-    [allAttendingMembers],
-  );
-
-  const femaleCount = useMemo(
-    () =>
-      allAttendingMembers.filter(
-        (member) => String(member.sex || "").trim() === "02",
-      ).length,
-    [allAttendingMembers],
-  );
-
   const handleSave = async () => {
     if (!training?.TrainingID) {
       setActionMessage("Training not found.");
@@ -284,16 +281,16 @@ const TrainingParticipants: React.FC = () => {
 
     try {
       setSaving(true);
-      await Promise.all(
-        selectedCodes.map((sppCode) =>
-          createMemberTraining({
-            groupID: selectedGroupID,
-            sppCode,
-            TrainingID: String(training.TrainingID || ""),
-            attendance: "1",
-          }),
-        ),
-      );
+      const codesToSave = [...selectedCodes];
+
+      for (const sppCode of codesToSave) {
+        await createMemberTraining({
+          groupID: selectedGroupID,
+          sppCode,
+          TrainingID: String(training.TrainingID || ""),
+          attendance: "1",
+        });
+      }
 
       history.push("/groups/trainings");
     } catch (error) {
@@ -364,38 +361,6 @@ const TrainingParticipants: React.FC = () => {
                         "-"}
                     </p>
                   </IonLabel>
-                </IonItem>
-              </IonCardContent>
-            </IonCard>
-
-            <IonCard>
-              <IonCardHeader>
-                <IonCardTitle>Selected Attendance</IonCardTitle>
-              </IonCardHeader>
-              <IonCardContent>
-                <IonItem lines="none">
-                  <IonLabel>Already Added</IonLabel>
-                  <IonBadge slot="end" color="medium">
-                    {memberTrainings.length}
-                  </IonBadge>
-                </IonItem>
-                <IonItem lines="none">
-                  <IonLabel>Males</IonLabel>
-                  <IonBadge slot="end" color="success">
-                    {maleCount}
-                  </IonBadge>
-                </IonItem>
-                <IonItem lines="none">
-                  <IonLabel>Females</IonLabel>
-                  <IonBadge slot="end" color="success">
-                    {femaleCount}
-                  </IonBadge>
-                </IonItem>
-                <IonItem lines="none">
-                  <IonLabel>Total Counted Participants</IonLabel>
-                  <IonBadge slot="end" color="tertiary">
-                    {allAttendingMembers.length}
-                  </IonBadge>
                 </IonItem>
               </IonCardContent>
             </IonCard>
@@ -472,6 +437,7 @@ const TrainingParticipants: React.FC = () => {
               color="success"
               onClick={handleSave}
               disabled={saving}
+              style={{ marginBottom: 16 }}
             >
               {saving ? "Saving..." : "Save Training Participants"}
             </IonButton>

@@ -1,7 +1,7 @@
 import { apiGet, apiPatch, apiPost, updateCachedCollection } from "./api";
 
 export type GroupTraining = {
-  TrainingID?: number;
+  TrainingID?: string | number;
   regionID?: string;
   districtID?: string;
   groupID?: string;
@@ -11,19 +11,21 @@ export type GroupTraining = {
   trainedBy?: string;
   Males?: number | string;
   Females?: number | string;
+  _queued?: boolean;
 };
 
 export type Meeting = {
-  meetID?: number;
+  meetID?: string | number;
   purpose?: string;
   meetingdate?: string;
   minutes?: string;
   groupCode?: string;
+  _queued?: boolean;
 };
 
 export type MeetingAttendance = {
-  id?: number;
-  meetID?: number;
+  id?: string | number;
+  meetID?: string | number;
   groupCode?: string;
   sppCode?: string;
 };
@@ -63,6 +65,9 @@ export type MemberIGA = {
 };
 
 const prependCachedItem = <T>(items: T[], item: T) => [item, ...items];
+
+const makeOfflineTempId = (prefix: string) =>
+  `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
 
 const updateCachedItem = <T extends Record<string, any>>(
   items: T[],
@@ -108,18 +113,33 @@ export const createGroupTraining = async (
     >
   >,
 ) => {
-  const created = await apiPost<GroupTraining & { id?: number }>("/group-trainings", payload);
+  const offlineTrainingId = makeOfflineTempId("training");
+  const created = await apiPost<GroupTraining & { id?: number; _queued?: boolean }>(
+    "/group-trainings",
+    {
+      ...payload,
+      TrainingID: offlineTrainingId,
+    },
+  );
+  const nextTrainingId =
+    created?._queued
+      ? offlineTrainingId
+      : created?.TrainingID ?? created?.id ?? undefined;
   await updateCachedCollection<GroupTraining>("/group-trainings", (items) =>
     prependCachedItem(items, {
       ...payload,
-      TrainingID: created?.TrainingID ?? created?.id ?? undefined,
+      TrainingID: nextTrainingId,
+      _queued: Boolean(created?._queued),
     }),
   );
-  return created;
+  return {
+    ...created,
+    TrainingID: nextTrainingId,
+  };
 };
 
 export const updateGroupTraining = async (
-  trainingID: number,
+  trainingID: string | number,
   payload: Partial<GroupTraining>,
 ) =>
   apiPatch(
@@ -132,7 +152,7 @@ export const updateGroupTraining = async (
     return result;
   });
 
-export const deleteGroupTraining = async (trainingID: number) =>
+export const deleteGroupTraining = async (trainingID: string | number) =>
   apiPatch(
     `/group-trainings/${encodeURIComponent(String(trainingID))}/delete`,
     {},
@@ -156,18 +176,33 @@ export const fetchMeetingsByGroupCode = async (
 export const createMeeting = async (
   payload: Required<Pick<Meeting, "purpose" | "meetingdate" | "minutes" | "groupCode">>,
 ) => {
-  const created = await apiPost<Meeting & { id?: number }>("/meetings", payload);
+  const offlineMeetingId = makeOfflineTempId("meeting");
+  const created = await apiPost<Meeting & { id?: number; _queued?: boolean }>(
+    "/meetings",
+    {
+      ...payload,
+      meetID: offlineMeetingId,
+    },
+  );
+  const nextMeetingId =
+    created?._queued
+      ? offlineMeetingId
+      : created?.meetID ?? created?.id ?? undefined;
   await updateCachedCollection<Meeting>("/meetings", (items) =>
     prependCachedItem(items, {
       ...payload,
-      meetID: created?.meetID ?? created?.id ?? undefined,
+      meetID: nextMeetingId,
+      _queued: Boolean(created?._queued),
     }),
   );
-  return created;
+  return {
+    ...created,
+    meetID: nextMeetingId,
+  };
 };
 
 export const updateMeeting = async (
-  meetingID: number,
+  meetingID: string | number,
   payload: Partial<Meeting>,
 ) =>
   apiPatch(`/meetings/${encodeURIComponent(String(meetingID))}`, payload).then(
@@ -179,7 +214,7 @@ export const updateMeeting = async (
     },
   );
 
-export const deleteMeeting = async (meetingID: number) =>
+export const deleteMeeting = async (meetingID: string | number) =>
   apiPatch(`/meetings/${encodeURIComponent(String(meetingID))}/delete`, {}).then(
     async (result) => {
       await updateCachedCollection<Meeting>("/meetings", (items) =>
@@ -210,7 +245,7 @@ export const createMeetingAttendance = async (
   return created;
 };
 
-export const deleteMeetingAttendance = async (attendanceID: number) =>
+export const deleteMeetingAttendance = async (attendanceID: string | number) =>
   apiPatch(
     `/meeting-attendance/${encodeURIComponent(String(attendanceID))}/delete`,
     {},
@@ -251,12 +286,23 @@ export const createMemberTraining = async (
   >,
 ) => {
   const created = await apiPost<MemberTraining & { id?: number }>("/member-trainings", payload);
-  const endpoint = `/member-trainings?groupID=${encodeURIComponent(String(payload.groupID || ""))}`;
-  await updateCachedCollection<MemberTraining>(endpoint, (items) =>
-    prependCachedItem(items, {
-      ...payload,
-      RecordID: created?.RecordID ?? created?.id ?? undefined,
-    }),
+  const cachedItem = {
+    ...payload,
+    RecordID: created?.RecordID ?? created?.id ?? undefined,
+  };
+  const endpoints = [
+    `/member-trainings?groupID=${encodeURIComponent(String(payload.groupID || ""))}`,
+    `/member-trainings?trainingID=${encodeURIComponent(
+      String(payload.TrainingID || ""),
+    )}&groupID=${encodeURIComponent(String(payload.groupID || ""))}`,
+  ];
+
+  await Promise.all(
+    endpoints.map((endpoint) =>
+      updateCachedCollection<MemberTraining>(endpoint, (items) =>
+        prependCachedItem(items, cachedItem),
+      ),
+    ),
   );
   return created;
 };

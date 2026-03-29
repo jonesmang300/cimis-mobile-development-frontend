@@ -157,7 +157,7 @@ const DashboardSummaryDetails: React.FC = () => {
     return filteredItems.length;
   }, [filteredItems, metricKey]);
 
-  const { visible, loadMore, resetKey } = useLocalInfiniteScroll({
+  const { visible, visibleCount, loadMore, resetKey } = useLocalInfiniteScroll({
     items: filteredItems,
     pageSize: 25,
   });
@@ -238,6 +238,12 @@ const DashboardSummaryDetails: React.FC = () => {
               <p>
                 Scroll through the results or search to narrow large datasets quickly.
               </p>
+              {filteredItems.length > 25 ? (
+                <p>
+                  Showing {Math.min(visibleCount, filteredItems.length).toLocaleString()} of{" "}
+                  {filteredItems.length.toLocaleString()} records. Scroll to load more.
+                </p>
+              ) : null}
             </IonCardContent>
           </IonCard>
 

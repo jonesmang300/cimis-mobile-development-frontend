@@ -104,7 +104,9 @@ const Attendance: React.FC = () => {
 
   const [showAttendanceModal, setShowAttendanceModal] = useState<boolean>(false);
   const [attendanceSearch, setAttendanceSearch] = useState<string>("");
+  const [meetingSearch, setMeetingSearch] = useState<string>("");
   const [selectedCodes, setSelectedCodes] = useState<string[]>([]);
+  const [attendanceMeetingId, setAttendanceMeetingId] = useState<string>("");
   const [removeAttendanceTarget, setRemoveAttendanceTarget] =
     useState<MeetingAttendance | null>(null);
 
@@ -213,12 +215,21 @@ const Attendance: React.FC = () => {
     return counts;
   }, [attendanceRows]);
 
+  const activeAttendanceMeeting = useMemo(
+    () =>
+      meetings.find(
+        (meeting) =>
+          String(meeting.meetID || "") === String(attendanceMeetingId || ""),
+      ) || null,
+    [attendanceMeetingId, meetings],
+  );
+
   const selectedMeetingAttendances = useMemo(
     () =>
       attendanceRows.filter(
-        (row) => row.meetID === selectedMeeting?.meetID,
+        (row) => row.meetID === activeAttendanceMeeting?.meetID,
       ),
-    [attendanceRows, selectedMeeting],
+    [activeAttendanceMeeting, attendanceRows],
   );
 
   const selectedAttendeeCodes = useMemo(
@@ -250,6 +261,23 @@ const Attendance: React.FC = () => {
     availableMembers.some((member) =>
       selectedCodes.includes(String(member.sppCode || "")),
     ) && !allVisibleSelected;
+
+  const filteredMeetings = useMemo(() => {
+    const query = meetingSearch.trim().toLowerCase();
+    if (!query) return meetings;
+
+    return meetings.filter((meeting) => {
+      const searchable = [
+        meeting.purpose,
+        formatDateLong(meeting.meetingdate),
+        meeting.minutes,
+      ]
+        .map((value) => String(value || "").toLowerCase())
+        .join(" ");
+
+      return searchable.includes(query);
+    });
+  }, [meetingSearch, meetings]);
 
   const openAddMeeting = () => {
     setEditingMeeting(null);
@@ -339,7 +367,9 @@ const Attendance: React.FC = () => {
   };
 
   const handleSaveAttendance = async () => {
-    if (!selectedMeeting?.meetID) {
+    const activeMeetingId = String(activeAttendanceMeeting?.meetID || "").trim();
+
+    if (!activeMeetingId) {
       setActionMessage("Choose a meeting first.");
       return;
     }
@@ -351,15 +381,24 @@ const Attendance: React.FC = () => {
 
     try {
       setSaving(true);
-      const results = await Promise.allSettled(
-        selectedCodes.map((sppCode) =>
-          createMeetingAttendance({
-            meetID: Number(selectedMeeting.meetID),
+      const codesToSave = [...selectedCodes];
+      const results: Array<
+        | { status: "fulfilled" }
+        | { status: "rejected"; reason: unknown }
+      > = [];
+
+      for (const sppCode of codesToSave) {
+        try {
+          await createMeetingAttendance({
+            meetID: activeMeetingId,
             groupCode: selectedGroupID,
             sppCode,
-          }),
-        ),
-      );
+          });
+          results.push({ status: "fulfilled" });
+        } catch (error) {
+          results.push({ status: "rejected", reason: error });
+        }
+      }
 
       const failedCount = results.filter(
         (result) => result.status === "rejected",
@@ -368,11 +407,12 @@ const Attendance: React.FC = () => {
       setShowAttendanceModal(false);
       setSelectedCodes([]);
       setAttendanceSearch("");
+      setAttendanceMeetingId("");
       await load();
 
       if (failedCount > 0) {
         setActionMessage(
-          `${selectedCodes.length - failedCount} attendance record(s) saved. ${failedCount} failed.`,
+          `${codesToSave.length - failedCount} attendance record(s) saved. ${failedCount} failed.`,
         );
       }
     } catch (error) {
@@ -446,28 +486,42 @@ const Attendance: React.FC = () => {
           </IonCardContent>
         </IonCard>
 
+        <IonSearchbar
+          value={meetingSearch}
+          onIonInput={(e) => setMeetingSearch(String(e.detail.value || ""))}
+          placeholder="Search meetings"
+        />
+
         {loading ? (
           <div style={{ textAlign: "center", paddingTop: 24 }}>
             <IonSpinner name="crescent" />
           </div>
-        ) : meetings.length === 0 ? (
+        ) : filteredMeetings.length === 0 ? (
           <IonCard>
             <IonCardContent>
               <IonLabel color="medium">
-                No meetings found for the selected group.
+                {meetingSearch.trim()
+                  ? "No meetings match your search."
+                  : "No meetings found for the selected group."}
               </IonLabel>
             </IonCardContent>
           </IonCard>
         ) : (
           <IonList>
-            {meetings.map((meeting) => (
+            {filteredMeetings.map((meeting) => (
               <IonCard key={meeting.meetID || `${meeting.groupCode}-${meeting.meetingdate}`}>
                 <IonCardContent>
                   <IonButton
                     expand="block"
                     color="success"
                     onClick={() => {
+                      if (!meeting.meetID) {
+                        setActionMessage("Meeting not found.");
+                        return;
+                      }
+
                       setSelectedMeeting(meeting);
+                      setAttendanceMeetingId(String(meeting.meetID || ""));
                       setSelectedCodes([]);
                       setAttendanceSearch("");
                       setShowAttendanceModal(true);
@@ -623,6 +677,7 @@ const Attendance: React.FC = () => {
             setShowAttendanceModal(false);
             setSelectedCodes([]);
             setAttendanceSearch("");
+            setAttendanceMeetingId("");
           }}
         >
           <IonHeader>
@@ -634,6 +689,7 @@ const Attendance: React.FC = () => {
                     setShowAttendanceModal(false);
                     setSelectedCodes([]);
                     setAttendanceSearch("");
+                    setAttendanceMeetingId("");
                   }}
                 >
                   Close
@@ -642,12 +698,28 @@ const Attendance: React.FC = () => {
             </IonToolbar>
           </IonHeader>
           <IonContent className="ion-padding">
-            <IonItem lines="none">
-              <IonLabel>
-                <h2>{selectedMeeting?.purpose || "-"}</h2>
-                <p>{formatDateLong(selectedMeeting?.meetingdate)}</p>
-              </IonLabel>
-            </IonItem>
+            <IonCard>
+              <IonCardContent>
+                <IonLabel>
+                  <h2>{selectedGroupName || "No group selected"}</h2>
+                  <p>{selectedGroupID || "-"}</p>
+                </IonLabel>
+              </IonCardContent>
+            </IonCard>
+
+            <IonCard>
+              <IonCardHeader>
+                <IonCardTitle>Meeting</IonCardTitle>
+              </IonCardHeader>
+              <IonCardContent>
+                <IonItem lines="none">
+                  <IonLabel>
+                    <h2>{activeAttendanceMeeting?.purpose || "-"}</h2>
+                    <p>{formatDateLong(activeAttendanceMeeting?.meetingdate)}</p>
+                  </IonLabel>
+                </IonItem>
+              </IonCardContent>
+            </IonCard>
 
             <IonSearchbar
               value={attendanceSearch}

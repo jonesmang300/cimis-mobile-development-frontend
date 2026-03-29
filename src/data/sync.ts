@@ -149,19 +149,100 @@ const buildAuthHeaders = () => {
   };
 };
 
-const replayOp = async (op: PendingOp) => {
+type PendingOpReplayContext = {
+  meetingIdMap: Map<string, string | number>;
+  trainingIdMap: Map<string, string | number>;
+};
+
+const rewriteQueuedOperation = (
+  op: PendingOp,
+  context: PendingOpReplayContext,
+) => {
+  const endpoint = String(op.endpoint || "");
+  const normalizedBody = normalizeQueuedBody(op.body);
+  const parsedBody = safeJsonParse<any>(normalizedBody);
+
+  if (!parsedBody || typeof parsedBody !== "object") {
+    return {
+      endpoint,
+      body: normalizedBody,
+    };
+  }
+
+  const nextBody = { ...parsedBody };
+
+  if (
+    endpoint.includes("/meeting-attendance") &&
+    nextBody.meetID !== undefined &&
+    context.meetingIdMap.has(String(nextBody.meetID))
+  ) {
+    nextBody.meetID = context.meetingIdMap.get(String(nextBody.meetID));
+  }
+
+  if (
+    endpoint.includes("/member-trainings") &&
+    nextBody.TrainingID !== undefined &&
+    context.trainingIdMap.has(String(nextBody.TrainingID))
+  ) {
+    nextBody.TrainingID = context.trainingIdMap.get(String(nextBody.TrainingID));
+  }
+
+  return {
+    endpoint,
+    body: JSON.stringify(nextBody),
+  };
+};
+
+const replayOp = async (op: PendingOp, context: PendingOpReplayContext) => {
+  const rewritten = rewriteQueuedOperation(op, context);
   const options: RequestInit = {
     method: op.method,
     headers: {
       ...buildAuthHeaders(),
       ...(op.headers ? JSON.parse(op.headers) : {}),
     },
-    body: normalizeQueuedBody(op.body),
+    body: rewritten.body,
   };
 
-  const res = await fetch(buildRequestUrl(op.endpoint), options);
+  const res = await fetch(buildRequestUrl(rewritten.endpoint), options);
   if (!res.ok) {
     throw new Error(`Replay failed with status ${res.status}`);
+  }
+
+  let data: any = null;
+  try {
+    data = await res.json();
+  } catch {
+    data = null;
+  }
+
+  const requestBody = safeJsonParse<any>(rewritten.body);
+
+  if (
+    rewritten.endpoint.includes("/meetings") &&
+    op.method.toUpperCase() === "POST" &&
+    requestBody?.meetingdate &&
+    requestBody?.purpose &&
+    requestBody?.groupCode &&
+    String(requestBody?.meetID || "").startsWith("meeting_")
+  ) {
+    const realId = data?.meetID || data?.id;
+    if (realId !== undefined && realId !== null) {
+      context.meetingIdMap.set(String(requestBody.meetID), realId);
+    }
+  }
+
+  if (
+    rewritten.endpoint.includes("/group-trainings") &&
+    op.method.toUpperCase() === "POST" &&
+    requestBody?.groupID &&
+    requestBody?.StartDate &&
+    String(requestBody?.TrainingID || "").startsWith("training_")
+  ) {
+    const realId = data?.TrainingID || data?.id;
+    if (realId !== undefined && realId !== null) {
+      context.trainingIdMap.set(String(requestBody.TrainingID), realId);
+    }
   }
 };
 
@@ -396,6 +477,10 @@ export const syncSelectedQueueItems = async (itemIds: string[]) => {
 
   let syncedCount = 0;
   const failed: string[] = [];
+  const replayContext: PendingOpReplayContext = {
+    meetingIdMap: new Map(),
+    trainingIdMap: new Map(),
+  };
 
   for (const itemId of uniqueIds) {
     try {
@@ -403,7 +488,7 @@ export const syncSelectedQueueItems = async (itemIds: string[]) => {
         const opId = Number(itemId.replace("op:", ""));
         const op = pendingOps.find((entry) => entry.id === opId);
         if (!op) continue;
-        await replayOp(op);
+        await replayOp(op, replayContext);
         await deletePendingOp(op.id);
         syncedCount += 1;
         continue;
@@ -457,6 +542,10 @@ export const flushQueue = async (): Promise<void> => {
   if (flushing) return;
   flushing = true;
   let changed = false;
+  const replayContext: PendingOpReplayContext = {
+    meetingIdMap: new Map(),
+    trainingIdMap: new Map(),
+  };
   try {
     const online = await isOnline().catch(() => false);
     if (!online) return;
@@ -464,7 +553,7 @@ export const flushQueue = async (): Promise<void> => {
     const pending = await listPendingOps();
     for (const op of pending) {
       try {
-        await replayOp(op);
+        await replayOp(op, replayContext);
         await deletePendingOp(op.id);
         changed = true;
       } catch (error) {
