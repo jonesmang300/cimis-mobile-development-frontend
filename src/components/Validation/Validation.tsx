@@ -451,7 +451,11 @@ const GroupAssignment: React.FC = () => {
       setToastMessage("Beneficiary updated");
     } catch (err) {
       console.error("Update failed:", err);
-      setToastMessage("Failed to update beneficiary");
+      const backendMessage =
+        err instanceof Error && err.message.trim()
+          ? err.message.trim()
+          : "Unknown error.";
+      setToastMessage(`Failed to edit/update beneficiary: ${backendMessage}`);
     } finally {
       setIsSubmitting(false);
     }

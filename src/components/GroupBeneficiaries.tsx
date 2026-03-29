@@ -263,9 +263,11 @@ const GroupBeneficiaries: React.FC = () => {
       setActionMessage("Beneficiary updated successfully.");
     } catch (error) {
       console.error("Failed to update beneficiary:", error);
-      setActionMessage(
-        error instanceof Error ? error.message : "Failed to update beneficiary.",
-      );
+      const backendMessage =
+        error instanceof Error && error.message.trim()
+          ? error.message.trim()
+          : "Unknown error.";
+      setActionMessage(`Failed to edit/update beneficiary: ${backendMessage}`);
     } finally {
       setSavingEdit(false);
     }
