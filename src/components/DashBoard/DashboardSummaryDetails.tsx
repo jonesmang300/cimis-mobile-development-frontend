@@ -128,6 +128,10 @@ const DashboardSummaryDetails: React.FC = () => {
     load();
   });
 
+  React.useEffect(() => {
+    load();
+  }, [load]);
+
   const filteredItems = useMemo(() => {
     const normalized = query.trim().toLowerCase();
     if (!normalized) return items;
