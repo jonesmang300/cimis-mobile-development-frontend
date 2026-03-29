@@ -35,6 +35,8 @@ import {
 import { subscribeSyncUpdates } from "../data/sync";
 import { useSelectedGroup } from "../hooks/useSelectedGroup";
 import MobileDateInput from "./form/MobileDateInput";
+import { goBackFromGroupChild } from "../utils/groupNavigation";
+import { useHistory } from "react-router-dom";
 
 const MAX_NAT_ID = 8;
 const MAX_HH_SIZE = 100;
@@ -119,6 +121,7 @@ const validateHouseholdSize = (value: string | number | null | undefined) => {
 
 const GroupBeneficiaries: React.FC = () => {
   const router = useIonRouter();
+  const history = useHistory();
   const [rows, setRows] = useState<Beneficiary[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const { selectedGroupID, selectedGroupName, refreshSelectedGroup } =
@@ -276,7 +279,12 @@ const GroupBeneficiaries: React.FC = () => {
       <IonHeader>
         <IonToolbar color="success">
           <IonButtons slot="start">
-            <IonButton onClick={() => router.goBack()} color="light">
+            <IonButton
+              onClick={() => {
+                goBackFromGroupChild(history);
+              }}
+              color="light"
+            >
               <IonIcon icon={arrowBack} />
             </IonButton>
           </IonButtons>

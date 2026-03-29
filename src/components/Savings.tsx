@@ -35,6 +35,7 @@ import {
 import { useHistory } from "react-router-dom";
 import { useSelectedGroup } from "../hooks/useSelectedGroup";
 import { useSyncRefresh } from "../hooks/useSyncRefresh";
+import { goBackFromGroupChild } from "../utils/groupNavigation";
 
 import {
   Beneficiary,
@@ -369,7 +370,7 @@ const Savings: React.FC = () => {
       <IonHeader>
         <IonToolbar color="success">
           <IonButtons slot="start">
-            <IonButton onClick={() => history.goBack()} color="light">
+            <IonButton onClick={() => goBackFromGroupChild(history)} color="light">
               <IonIcon icon={arrowBack} />
             </IonButton>
           </IonButtons>

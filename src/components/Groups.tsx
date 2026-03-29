@@ -310,6 +310,25 @@ const Group: React.FC = () => {
     loadGroups();
   });
 
+  useEffect(() => {
+    const storedGroupID = String(localStorage.getItem("selectedGroupID") || "").trim();
+
+    if (!storedGroupID) {
+      return;
+    }
+
+    setSelectedGroup((current) => {
+      if (current && String(current.groupID || "").trim() === storedGroupID) {
+        return current;
+      }
+
+      const matchedGroup =
+        groups.find((group) => String(group.groupID || "").trim() === storedGroupID) || null;
+
+      return matchedGroup;
+    });
+  }, [groups]);
+
   const handleSelectGroup = (group: GroupRow) => {
     setSelectedGroup(group);
     localStorage.setItem("selectedGroupID", group.groupID);
