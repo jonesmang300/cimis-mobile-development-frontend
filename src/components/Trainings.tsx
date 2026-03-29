@@ -516,7 +516,7 @@ const Trainings: React.FC = () => {
 
                     <IonItem lines="none">
                       <IonLabel>
-                        <p>
+                        <h2>
                           {`${
                             trainingTypeNameById[
                               String(row.TrainingTypeID || "")
@@ -524,6 +524,9 @@ const Trainings: React.FC = () => {
                             row.TrainingTypeID ||
                             "-"
                           } Training`}
+                        </h2>
+                        <p>
+                          Start Date: {formatDateLong(row.StartDate)}
                         </p>
                       </IonLabel>
                       <IonBadge slot="end" color="success">
