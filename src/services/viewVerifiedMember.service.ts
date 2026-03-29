@@ -40,7 +40,9 @@ export const getVerifiedMemberBySppCode = async (
 ): Promise<VerifiedMemberDetails | null> => {
   if (!sppCode) return null;
 
-  const data = await apiGet<VerifiedMemberDetails>(`/beneficiaries/${sppCode}`);
+  const data = await apiGet<VerifiedMemberDetails>(
+    `/beneficiaries?sppCode=${encodeURIComponent(sppCode)}`,
+  );
 
   return data || null;
 };

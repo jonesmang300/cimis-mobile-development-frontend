@@ -304,7 +304,7 @@ export const updateBeneficiary = async (beneficiary: Beneficiary) => {
   };
 
   const result = await apiPatch(
-    `/beneficiaries/${encodeURIComponent(beneficiary.sppCode)}`,
+    `/beneficiaries?sppCode=${encodeURIComponent(beneficiary.sppCode)}`,
     patchPayload,
   );
 

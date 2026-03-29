@@ -181,7 +181,9 @@ const MemberIGA: React.FC = () => {
         apiGet<GroupMeta>(`/groups/${encodeURIComponent(activeGroupID)}`),
         apiGet<BusinessCategoryRow[]>("/business-categories"),
         apiGet<IGATypeRow[]>("/iga-types"),
-        apiGet<BeneficiaryMeta>(`/beneficiaries/${encodeURIComponent(sppCode)}`),
+        apiGet<BeneficiaryMeta>(
+          `/beneficiaries?sppCode=${encodeURIComponent(sppCode)}`,
+        ),
       ]);
 
       const igaRows =

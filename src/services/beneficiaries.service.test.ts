@@ -48,7 +48,7 @@ describe("updateBeneficiary", () => {
       selected: 1,
     });
 
-    expect(apiPatch).toHaveBeenCalledWith("/beneficiaries/SPP001", {
+    expect(apiPatch).toHaveBeenCalledWith("/beneficiaries?sppCode=SPP001", {
       sex: "02",
       dob: "1990-04-20",
       nat_id: "AB123456",
@@ -87,7 +87,7 @@ describe("updateBeneficiary", () => {
       selected: null,
     });
 
-    expect(apiPatch).toHaveBeenCalledWith("/beneficiaries/SPP002", {
+    expect(apiPatch).toHaveBeenCalledWith("/beneficiaries?sppCode=SPP002", {
       sex: null,
       dob: null,
       nat_id: null,
@@ -97,5 +97,21 @@ describe("updateBeneficiary", () => {
       groupCode: "GRP-2",
       selected: null,
     });
+  });
+
+  it("encodes sppCode safely when it contains a slash", async () => {
+    const { updateBeneficiary } = await import("./beneficiaries.service");
+
+    await updateBeneficiary({
+      sppCode: "080801004/0019",
+      sex: "01",
+    });
+
+    expect(apiPatch).toHaveBeenCalledWith(
+      "/beneficiaries?sppCode=080801004%2F0019",
+      expect.objectContaining({
+        sex: "01",
+      }),
+    );
   });
 });
