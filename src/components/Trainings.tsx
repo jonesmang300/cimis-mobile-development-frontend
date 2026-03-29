@@ -517,12 +517,13 @@ const Trainings: React.FC = () => {
                     <IonItem lines="none">
                       <IonLabel>
                         <p>
-                          Training Type:{" "}
-                          {trainingTypeNameById[
-                            String(row.TrainingTypeID || "")
-                          ] ||
+                          {`${
+                            trainingTypeNameById[
+                              String(row.TrainingTypeID || "")
+                            ] ||
                             row.TrainingTypeID ||
-                            "-"}
+                            "-"
+                          } Training`}
                         </p>
                       </IonLabel>
                       <IonBadge slot="end" color="success">
