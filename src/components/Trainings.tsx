@@ -516,7 +516,6 @@ const Trainings: React.FC = () => {
 
                     <IonItem lines="none">
                       <IonLabel>
-                        <h2>Training</h2>
                         <p>
                           Training Type:{" "}
                           {trainingTypeNameById[

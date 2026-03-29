@@ -682,7 +682,7 @@ const Attendance: React.FC = () => {
         >
           <IonHeader>
             <IonToolbar color="success">
-              <IonTitle>Add Attendance</IonTitle>
+              <IonTitle>Add Meeting Participants</IonTitle>
               <IonButtons slot="end">
                 <IonButton
                   onClick={() => {
@@ -708,9 +708,6 @@ const Attendance: React.FC = () => {
             </IonCard>
 
             <IonCard>
-              <IonCardHeader>
-                <IonCardTitle>Meeting</IonCardTitle>
-              </IonCardHeader>
               <IonCardContent>
                 <IonItem lines="none">
                   <IonLabel>

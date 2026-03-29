@@ -5,8 +5,6 @@ import {
   IonButtons,
   IonCard,
   IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
   IonCheckbox,
   IonContent,
   IonHeader,
@@ -314,7 +312,7 @@ const TrainingParticipants: React.FC = () => {
               <IonIcon icon={arrowBack} />
             </IonButton>
           </IonButtons>
-          <IonTitle style={{ color: "white" }}>Training Participants</IonTitle>
+          <IonTitle style={{ color: "white" }}>Add Training Participants</IonTitle>
         </IonToolbar>
       </IonHeader>
 
@@ -341,9 +339,6 @@ const TrainingParticipants: React.FC = () => {
         ) : (
           <>
             <IonCard>
-              <IonCardHeader>
-                <IonCardTitle>Training</IonCardTitle>
-              </IonCardHeader>
               <IonCardContent>
                 <IonItem lines="none">
                   <IonLabel>
