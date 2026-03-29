@@ -8,6 +8,7 @@ import React, {
 import { useAutoLogout } from "../../hooks/useAutoLogout";
 
 const LAST_ACTIVITY_KEY = "lastActivityAt";
+const INACTIVITY_LIMIT = 30 * 60 * 1000;
 
 type AuthUser = {
   id?: number | string;
@@ -39,8 +40,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       const token = localStorage.getItem("token");
       const rawUser = localStorage.getItem("user");
+      const rawLastActivity = Number(localStorage.getItem(LAST_ACTIVITY_KEY) || 0);
+      const hasValidLastActivity =
+        Number.isFinite(rawLastActivity) && rawLastActivity > 0;
+      const isExpired =
+        hasValidLastActivity && Date.now() - rawLastActivity >= INACTIVITY_LIMIT;
+
+      if (token && isExpired) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem(LAST_ACTIVITY_KEY);
+        setIsLoggedIn(false);
+        setUser(null);
+        return;
+      }
 
       setIsLoggedIn(!!token);
+      if (token && !hasValidLastActivity) {
+        localStorage.setItem(LAST_ACTIVITY_KEY, String(Date.now()));
+      }
 
       if (rawUser) {
         setUser(JSON.parse(rawUser));
