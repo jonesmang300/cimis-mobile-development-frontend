@@ -66,7 +66,7 @@ type IGATypeRow = {
 
 type BeneficiaryMeta = {
   hh_head_name?: string;
-  hh_code?: string;
+  hh_code?: string | null;
   sppCode?: string;
 };
 

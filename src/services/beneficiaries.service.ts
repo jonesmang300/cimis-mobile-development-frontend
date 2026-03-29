@@ -111,7 +111,7 @@ export type Beneficiary = {
   sppCode: string;
 
   hh_head_name?: string;
-  hh_code?: string;
+  hh_code?: string | null;
 
   sex?: string | null;
   dob?: string | null;
@@ -119,9 +119,9 @@ export type Beneficiary = {
   nat_id?: string | null;
   hh_size?: number | null;
 
-  groupname?: string;
-  groupCode?: string;
-  groupID?: string;
+  groupname?: string | null;
+  groupCode?: string | null;
+  groupID?: string | null;
   selected?: number | string | null;
 
   villageClusterID?: string;
@@ -283,11 +283,24 @@ export const updateBeneficiary = async (beneficiary: Beneficiary) => {
         ? null
         : Number(sizeStr);
 
+  const hh_code = String(beneficiary.hh_code ?? "").trim() || null;
+  const groupname = String(beneficiary.groupname ?? "").trim() || null;
+  const groupValue =
+    String(beneficiary.groupCode ?? beneficiary.groupID ?? "").trim() || null;
+  const selected =
+    beneficiary.selected === null || beneficiary.selected === undefined
+      ? null
+      : String(beneficiary.selected);
+
   const patchPayload = {
     sex: beneficiary.sex || null,
     dob: toDateOnly(beneficiary.dob),
     nat_id,
     hh_size,
+    hh_code,
+    groupname,
+    groupCode: groupValue,
+    selected,
   };
 
   const result = await apiPatch(

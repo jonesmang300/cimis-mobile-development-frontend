@@ -53,7 +53,7 @@ type Params = {
 type BeneficiarySummary = {
   sppCode?: string;
   hh_head_name?: string;
-  hh_code?: string;
+  hh_code?: string | null;
 };
 
 const safeDecodeURIComponent = (value: string) => {
