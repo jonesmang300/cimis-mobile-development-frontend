@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Redirect, Route, Switch, NavLink, useHistory, useLocation } from "react-router-dom";
 import { IonApp, IonChip, IonIcon, IonLabel, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
@@ -30,7 +30,7 @@ import ViewMeeting from "../components/ViewMeeting";
 import Settings from "../components/Settings";
 import NotificationsPage from "../components/NotificationsPage";
 import SupportPage from "../components/SupportPage";
-import { onNetworkChange } from "../plugins/network";
+import { isOnline, onNetworkChange } from "../plugins/network";
 import {
   getFailedOfflineGroupError,
   startSyncService,
@@ -70,6 +70,8 @@ const ProtectedShell: React.FC = () => {
   const [online, setOnline] = useState<boolean | null>(null);
   const [queued, setQueued] = useState(0);
   const [failedSyncCount, setFailedSyncCount] = useState(0);
+  const [routeReloadKey, setRouteReloadKey] = useState(0);
+  const wasOfflineRef = useRef(false);
 
   useEffect(() => {
     const refreshSyncError = async () => {
@@ -78,6 +80,10 @@ const ProtectedShell: React.FC = () => {
     };
 
     const unsubscribeNet = onNetworkChange((connected) => {
+      if (connected && wasOfflineRef.current) {
+        setRouteReloadKey((current) => current + 1);
+      }
+      wasOfflineRef.current = !connected;
       setOnline(connected);
       refreshSyncError().catch(() => null);
     });
@@ -89,6 +95,14 @@ const ProtectedShell: React.FC = () => {
 
     startSyncService();
     refreshSyncError().catch(() => null);
+    isOnline()
+      .then((connected) => {
+        setOnline(connected);
+        wasOfflineRef.current = !connected;
+      })
+      .catch(() => {
+        wasOfflineRef.current = false;
+      });
 
     return () => {
       unsubscribeNet();
@@ -222,7 +236,7 @@ const ProtectedShell: React.FC = () => {
         </header>
 
         <main className="web-content">
-          <Switch>
+          <Switch key={routeReloadKey}>
             <Route exact path="/home" component={Home} />
             <Route
               exact

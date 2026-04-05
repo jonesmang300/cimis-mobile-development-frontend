@@ -12,6 +12,7 @@ import {
   IonItem,
   IonLabel,
   IonList,
+  IonModal,
   IonPage,
   IonSearchbar,
   IonSpinner,
@@ -34,6 +35,7 @@ import {
   GroupTraining,
 } from "../services/groupOperations.service";
 import { apiGet } from "../services/api";
+import "./TrainingParticipants.css";
 
 type Params = {
   trainingID: string;
@@ -51,6 +53,15 @@ type FacilitatorRow = {
 
 type TrainingParticipantsLocationState = {
   training?: GroupTraining | null;
+};
+
+type TrainingParticipantsProps = {
+  embedded?: boolean;
+  isOpen?: boolean;
+  onClose?: () => void;
+  onSaved?: (rows: Array<{ sppCode: string; TrainingID: string; groupID: string }>) => void;
+  trainingIDOverride?: string;
+  trainingOverride?: GroupTraining | null;
 };
 
 const toDateInput = (value: string | null | undefined) => {
@@ -71,10 +82,18 @@ const formatDateLong = (value: string | null | undefined) => {
   }).format(date);
 };
 
-const TrainingParticipants: React.FC = () => {
+const TrainingParticipants: React.FC<TrainingParticipantsProps> = ({
+  embedded = false,
+  isOpen = true,
+  onClose,
+  onSaved,
+  trainingIDOverride,
+  trainingOverride,
+}) => {
   const history = useHistory();
   const location = useLocation<TrainingParticipantsLocationState>();
-  const { trainingID } = useParams<Params>();
+  const { trainingID: routeTrainingID } = useParams<Params>();
+  const trainingID = trainingIDOverride ?? routeTrainingID;
   const { selectedGroupID, selectedGroupName, refreshSelectedGroup } =
     useSelectedGroup();
 
@@ -89,7 +108,7 @@ const TrainingParticipants: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [actionMessage, setActionMessage] = useState("");
 
-  const routeTraining = location.state?.training || null;
+  const routeTraining = trainingOverride || location.state?.training || null;
 
   const load = useCallback(async (groupIDOverride?: string) => {
     const activeGroupID = groupIDOverride ?? selectedGroupID;
@@ -280,6 +299,11 @@ const TrainingParticipants: React.FC = () => {
     try {
       setSaving(true);
       const codesToSave = [...selectedCodes];
+      const savedRows: Array<{
+        sppCode: string;
+        TrainingID: string;
+        groupID: string;
+      }> = [];
 
       for (const sppCode of codesToSave) {
         await createMemberTraining({
@@ -288,9 +312,22 @@ const TrainingParticipants: React.FC = () => {
           TrainingID: String(training.TrainingID || ""),
           attendance: "1",
         });
+        savedRows.push({
+          sppCode,
+          TrainingID: String(training.TrainingID || ""),
+          groupID: String(selectedGroupID || ""),
+        });
       }
 
-      history.push("/groups/trainings");
+      if (savedRows.length > 0) {
+        onSaved?.(savedRows);
+      }
+
+      if (embedded) {
+        onClose?.();
+      } else {
+        history.push("/groups/trainings");
+      }
     } catch (error) {
       console.error("Failed to save training attendance:", error);
       setActionMessage(
@@ -303,28 +340,33 @@ const TrainingParticipants: React.FC = () => {
     }
   };
 
-  return (
-    <IonPage>
-      <IonHeader>
-        <IonToolbar color="success">
-          <IonButtons slot="start">
-            <IonButton onClick={() => history.goBack()} color="light">
-              <IonIcon icon={arrowBack} />
-            </IonButton>
-          </IonButtons>
-          <IonTitle style={{ color: "white" }}>Add Training Participants</IonTitle>
-        </IonToolbar>
-      </IonHeader>
+  const handleClose = onClose ?? (() => history.goBack());
 
-      <IonContent className="ion-padding">
-        <IonCard>
-          <IonCardContent>
-            <IonLabel>
-              <h2>{selectedGroupName || "No group selected"}</h2>
-              <p>{selectedGroupID || "-"}</p>
-            </IonLabel>
-          </IonCardContent>
-        </IonCard>
+  const modalContent = (
+      <IonModal isOpen={isOpen} onDidDismiss={handleClose}>
+        <IonHeader>
+          <IonToolbar color="success">
+            <IonButtons slot="start">
+              <IonButton onClick={handleClose} color="light">
+                <IonIcon icon={arrowBack} />
+              </IonButton>
+            </IonButtons>
+            <IonTitle style={{ color: "white" }}>Add Training Participants</IonTitle>
+            <IonButtons slot="end">
+              <IonButton onClick={handleClose}>Close</IonButton>
+            </IonButtons>
+          </IonToolbar>
+        </IonHeader>
+
+        <IonContent className="ion-padding">
+          <IonCard className="app-detail-hero-card">
+            <IonCardContent>
+              <IonLabel>
+                <h2>{selectedGroupName || "No group selected"}</h2>
+                <p>{selectedGroupID || "-"}</p>
+              </IonLabel>
+            </IonCardContent>
+          </IonCard>
 
         {loading ? (
           <div style={{ textAlign: "center", paddingTop: 24 }}>
@@ -416,7 +458,7 @@ const TrainingParticipants: React.FC = () => {
                             handleToggle(sppCode, !!e.detail.checked)
                           }
                         />
-                        <IonLabel>
+                        <IonLabel className="training-participant-item__label">
                           <h3>{member.hh_head_name || sppCode}</h3>
                           <p>ML Code: {member.hh_code || "-"}</p>
                         </IonLabel>
@@ -439,16 +481,20 @@ const TrainingParticipants: React.FC = () => {
           </>
         )}
 
-        <IonAlert
-          isOpen={!!actionMessage}
-          onDidDismiss={() => setActionMessage("")}
-          header="Training Participants"
-          message={actionMessage}
-          buttons={["OK"]}
-        />
-      </IonContent>
-    </IonPage>
+          <IonAlert
+            isOpen={!!actionMessage}
+            onDidDismiss={() => setActionMessage("")}
+            header="Training Participants"
+            message={actionMessage}
+            buttons={["OK"]}
+          />
+        </IonContent>
+      </IonModal>
   );
+
+  if (embedded) return modalContent;
+
+  return <IonPage>{modalContent}</IonPage>;
 };
 
 export default TrainingParticipants;

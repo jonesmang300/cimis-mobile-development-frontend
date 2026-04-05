@@ -94,6 +94,191 @@ ion-toolbar[color="success"] ion-icon {
   color: #ffffff;
 }
 
+.app-detail-modal-shell {
+  width: min(920px, 100%);
+  margin: 0 auto;
+}
+
+.app-detail-hero-card {
+  margin: 8px 0 18px;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(22, 163, 74, 0.14);
+  box-shadow: 0 20px 40px rgba(20, 29, 23, 0.08);
+  --background: linear-gradient(135deg, #2eb85c 0%, #7ad77d 100%);
+}
+
+.app-detail-hero-card ion-card-content,
+.app-detail-hero-card__content {
+  color: #ffffff;
+}
+
+.app-detail-hero-card ion-label,
+.app-detail-hero-card ion-label *,
+.app-detail-hero-card .app-inline-action-main,
+.app-detail-hero-card .app-inline-action-main *,
+.app-detail-hero-card .app-inline-action-trailing {
+  color: #ffffff !important;
+}
+
+.app-detail-hero-card h2,
+.app-detail-hero-card h3 {
+  margin: 0 0 6px;
+  color: #ffffff;
+  font-size: clamp(1.35rem, 2.2vw, 1.8rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.app-detail-hero-card p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.96);
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.app-inline-action-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+}
+
+.app-inline-action-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.app-inline-action-main h2,
+.app-inline-action-main h3,
+.app-inline-action-main p {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-inline-action-trailing {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.app-inline-action-button {
+  margin: 0;
+  min-width: 42px;
+  min-height: 42px;
+  --padding-start: 0;
+  --padding-end: 0;
+  --border-radius: 14px;
+  --background: #f4fbf5;
+  --background-hover: #eef8f0;
+  --color: #178f48;
+  border: 1px solid rgba(46, 184, 92, 0.14);
+}
+
+.app-inline-action-button ion-icon {
+  font-size: 1.15rem;
+}
+
+.app-ellipsis-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-record-modal-content {
+  --background: linear-gradient(180deg, #f7faf8 0%, #ffffff 100%);
+}
+
+.app-record-modal-stack {
+  width: min(100%, 720px);
+  margin: 0 auto;
+}
+
+.app-record-modal-hero {
+  margin: 0 0 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(22, 163, 74, 0.14);
+  box-shadow: 0 14px 30px rgba(20, 29, 23, 0.08);
+  --background: linear-gradient(135deg, #2eb85c 0%, #7ad77d 100%);
+}
+
+.app-record-modal-hero h2,
+.app-record-modal-hero h3 {
+  margin: 0 0 6px;
+  color: #ffffff;
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.app-record-modal-hero p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 0.92rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.app-record-modal-hero ion-card-content,
+.app-record-modal-hero ion-label,
+.app-record-modal-hero ion-label *,
+.app-record-modal-hero * {
+  color: #ffffff !important;
+}
+
+.app-record-modal-item {
+  --background: #ffffff;
+  margin-bottom: 12px;
+  border: 1px solid #edf1ee;
+  border-radius: 16px;
+  box-shadow: 0 10px 24px rgba(17, 24, 20, 0.05);
+}
+
+.app-record-modal-item ion-label[position="stacked"] {
+  margin-bottom: 8px;
+  color: #5a6c5f !important;
+  font-size: 0.82rem !important;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.app-record-modal-item h3 {
+  margin: 0 0 6px;
+  color: #5a6c5f;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.app-record-modal-item p {
+  margin: 0;
+  color: #18251b;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.app-record-modal-save {
+  margin-top: 12px;
+  min-height: 48px;
+  --border-radius: 16px;
+  font-weight: 700;
+}
+
+@media (max-width: 576px) {
+  .app-detail-modal-shell {
+    width: 100%;
+  }
+
+  .app-detail-hero-card {
+    border-radius: 20px;
+  }
+}
+
 .app-sync-status {
   position: fixed;
   top: calc(10px + env(safe-area-inset-top));

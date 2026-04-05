@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  IonActionSheet,
   IonAlert,
   IonBadge,
   IonButton,
@@ -28,6 +29,7 @@ import {
 import {
   addCircleOutline,
   arrowBack,
+  ellipsisHorizontal,
   createOutline,
   eyeOutline,
   personAddOutline,
@@ -53,6 +55,7 @@ import {
   MeetingAttendance,
   updateMeeting,
 } from "../services/groupOperations.service";
+import "./Attendance.css";
 
 type MeetingFormState = {
   purpose: string;
@@ -101,6 +104,8 @@ const Attendance: React.FC = () => {
   const [meetingForm, setMeetingForm] = useState<MeetingFormState>(emptyMeetingForm);
   const [editingMeeting, setEditingMeeting] = useState<Meeting | null>(null);
   const [deleteMeetingTarget, setDeleteMeetingTarget] = useState<Meeting | null>(null);
+  const [actionMeeting, setActionMeeting] = useState<Meeting | null>(null);
+  const [viewMeeting, setViewMeeting] = useState<Meeting | null>(null);
 
   const [showAttendanceModal, setShowAttendanceModal] = useState<boolean>(false);
   const [attendanceSearch, setAttendanceSearch] = useState<string>("");
@@ -382,6 +387,7 @@ const Attendance: React.FC = () => {
     try {
       setSaving(true);
       const codesToSave = [...selectedCodes];
+      const savedAttendanceRows: MeetingAttendance[] = [];
       const results: Array<
         | { status: "fulfilled" }
         | { status: "rejected"; reason: unknown }
@@ -390,6 +396,11 @@ const Attendance: React.FC = () => {
       for (const sppCode of codesToSave) {
         try {
           await createMeetingAttendance({
+            meetID: activeMeetingId,
+            groupCode: selectedGroupID,
+            sppCode,
+          });
+          savedAttendanceRows.push({
             meetID: activeMeetingId,
             groupCode: selectedGroupID,
             sppCode,
@@ -404,11 +415,26 @@ const Attendance: React.FC = () => {
         (result) => result.status === "rejected",
       ).length;
 
+      if (savedAttendanceRows.length > 0) {
+        setAttendanceRows((prev) => {
+          const seen = new Set(
+            prev.map(
+              (row) => `${String(row.meetID || "")}:${String(row.sppCode || "")}`,
+            ),
+          );
+          const appended = savedAttendanceRows.filter(
+            (row) =>
+              !seen.has(`${String(row.meetID || "")}:${String(row.sppCode || "")}`),
+          );
+          return appended.length > 0 ? [...appended, ...prev] : prev;
+        });
+      }
+
       setShowAttendanceModal(false);
       setSelectedCodes([]);
       setAttendanceSearch("");
       setAttendanceMeetingId("");
-      await load();
+      void load();
 
       if (failedCount > 0) {
         setActionMessage(
@@ -458,7 +484,8 @@ const Attendance: React.FC = () => {
       </IonHeader>
 
       <IonContent className="ion-padding">
-        <IonCard>
+        <div className="app-detail-modal-shell">
+        <IonCard className="app-detail-hero-card">
           <IonCardContent>
             <IonLabel>
               <h2>{selectedGroupName || "No group selected"}</h2>
@@ -507,89 +534,41 @@ const Attendance: React.FC = () => {
             </IonCardContent>
           </IonCard>
         ) : (
-          <IonList>
+          <IonList className="meetings-list">
             {filteredMeetings.map((meeting) => (
-              <IonCard key={meeting.meetID || `${meeting.groupCode}-${meeting.meetingdate}`}>
-                <IonCardContent>
-                  <IonButton
-                    expand="block"
-                    color="success"
-                    onClick={() => {
-                      if (!meeting.meetID) {
-                        setActionMessage("Meeting not found.");
-                        return;
-                      }
-
-                      setSelectedMeeting(meeting);
-                      setAttendanceMeetingId(String(meeting.meetID || ""));
-                      setSelectedCodes([]);
-                      setAttendanceSearch("");
-                      setShowAttendanceModal(true);
-                    }}
-                  >
-                    <IonIcon icon={personAddOutline} slot="start" />
-                    Add Attendance
-                  </IonButton>
-
-                  <IonItem
-                    lines="none"
-                    onClick={() => setSelectedMeeting(meeting)}
-                  >
-                    <IonLabel>
-                      <h2>{meeting.purpose || "Untitled Meeting"}</h2>
-                      <p>{formatDateLong(meeting.meetingdate)}</p>
-                    </IonLabel>
-                    <IonBadge slot="end" color="success">
-                      {attendanceCountByMeeting[String(meeting.meetID || "")] || 0}
-                    </IonBadge>
-                  </IonItem>
-
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      flexWrap: "nowrap",
-                      overflowX: "auto",
-                      marginTop: "8px",
-                    }}
-                  >
+              <IonCard
+                key={meeting.meetID || `${meeting.groupCode}-${meeting.meetingdate}`}
+                className="meetings-list-card"
+              >
+                <IonCardContent className="meetings-list-card__content">
+                  <div className="meetings-list-card__header">
+                    <div
+                      className="meetings-list-card__copy"
+                      onClick={() => setSelectedMeeting(meeting)}
+                    >
+                      <IonLabel>
+                        <h2>{meeting.purpose || "Untitled Meeting"}</h2>
+                        <p className="meetings-list-card__date">
+                          {formatDateLong(meeting.meetingdate)}
+                        </p>
+                        <IonBadge color="light" className="meetings-list-card__badge">
+                          <IonIcon icon={personAddOutline} />
+                          <span>
+                            {attendanceCountByMeeting[String(meeting.meetID || "")] || 0}{" "}
+                            Attendees
+                          </span>
+                        </IonBadge>
+                      </IonLabel>
+                    </div>
                     <IonButton
                       fill="clear"
                       size="small"
-                      title="View"
-                      aria-label="View meeting"
-                      style={{ margin: 0, minWidth: "36px" }}
-                      onClick={() =>
-                        history.push(
-                          `/groups/attendance/view/${encodeURIComponent(
-                            String(meeting.meetID || ""),
-                          )}`,
-                        )
-                      }
+                      title="More actions"
+                      aria-label="More actions"
+                      className="app-inline-action-button meetings-list-card__menu"
+                      onClick={() => setActionMeeting(meeting)}
                     >
-                      <IonIcon icon={eyeOutline} />
-                    </IonButton>
-                    <IonButton
-                      fill="clear"
-                      size="small"
-                      title="Edit"
-                      aria-label="Edit meeting"
-                      style={{ margin: 0, minWidth: "36px" }}
-                      onClick={() => openEditMeeting(meeting)}
-                    >
-                      <IonIcon icon={createOutline} />
-                    </IonButton>
-                    <IonButton
-                      fill="clear"
-                      color="danger"
-                      size="small"
-                      title="Delete"
-                      aria-label="Delete meeting"
-                      style={{ margin: 0, minWidth: "36px" }}
-                      onClick={() => setDeleteMeetingTarget(meeting)}
-                    >
-                      <IonIcon icon={trashOutline} />
+                      <IonIcon icon={ellipsisHorizontal} slot="icon-only" />
                     </IonButton>
                   </div>
                 </IonCardContent>
@@ -597,6 +576,56 @@ const Attendance: React.FC = () => {
             ))}
           </IonList>
         )}
+
+        <IonModal
+          isOpen={!!viewMeeting}
+          onDidDismiss={() => setViewMeeting(null)}
+        >
+          <IonHeader>
+            <IonToolbar color="success">
+              <IonTitle>Meeting Details</IonTitle>
+              <IonButtons slot="end">
+                <IonButton onClick={() => setViewMeeting(null)}>Close</IonButton>
+              </IonButtons>
+            </IonToolbar>
+          </IonHeader>
+          <IonContent className="ion-padding app-record-modal-content">
+            <div className="app-record-modal-stack">
+              <IonCard className="app-record-modal-hero">
+                <IonCardContent>
+                  <IonLabel>
+                    <h2>{viewMeeting?.purpose || "Meeting"}</h2>
+                    <p>{selectedGroupName || selectedGroupID || "-"}</p>
+                  </IonLabel>
+                </IonCardContent>
+              </IonCard>
+              <IonItem lines="none" className="app-record-modal-item">
+                <IonLabel>
+                  <h3>Purpose</h3>
+                  <p>{viewMeeting?.purpose || "-"}</p>
+                </IonLabel>
+              </IonItem>
+              <IonItem lines="none" className="app-record-modal-item">
+                <IonLabel>
+                  <h3>Meeting Date</h3>
+                  <p>{formatDateLong(viewMeeting?.meetingdate)}</p>
+                </IonLabel>
+              </IonItem>
+              <IonItem lines="none" className="app-record-modal-item">
+                <IonLabel>
+                  <h3>Minutes</h3>
+                  <p>{viewMeeting?.minutes || "-"}</p>
+                </IonLabel>
+              </IonItem>
+              <IonItem lines="none" className="app-record-modal-item">
+                <IonLabel>
+                  <h3>Attendance Count</h3>
+                  <p>{attendanceCountByMeeting[String(viewMeeting?.meetID || "")] || 0}</p>
+                </IonLabel>
+              </IonItem>
+            </div>
+          </IonContent>
+        </IonModal>
 
         <IonModal
           isOpen={showMeetingModal}
@@ -620,10 +649,20 @@ const Attendance: React.FC = () => {
               </IonButtons>
             </IonToolbar>
           </IonHeader>
-          <IonContent className="ion-padding">
-            <IonItem>
+          <IonContent className="ion-padding app-record-modal-content">
+            <div className="app-record-modal-stack">
+            <IonCard className="app-record-modal-hero">
+              <IonCardContent>
+                <IonLabel>
+                  <h2>{editingMeeting ? "Edit Meeting" : "Add Meeting"}</h2>
+                  <p>{selectedGroupName || selectedGroupID || "-"}</p>
+                </IonLabel>
+              </IonCardContent>
+            </IonCard>
+            <IonItem className="app-record-modal-item">
               <IonLabel position="stacked">Purpose</IonLabel>
               <IonInput
+                placeholder="Enter meeting purpose"
                 value={meetingForm.purpose}
                 onIonInput={(e) =>
                   setMeetingForm((prev) => ({
@@ -633,10 +672,11 @@ const Attendance: React.FC = () => {
                 }
               />
             </IonItem>
-            <IonItem>
+            <IonItem className="app-record-modal-item">
               <IonLabel position="stacked">Meeting Date</IonLabel>
               <MobileDateInput
                 value={meetingForm.meetingdate}
+                placeholder="Select meeting date"
                 onIonInput={(e) =>
                   setMeetingForm((prev) => ({
                     ...prev,
@@ -645,9 +685,10 @@ const Attendance: React.FC = () => {
                 }
               />
             </IonItem>
-            <IonItem>
+            <IonItem className="app-record-modal-item">
               <IonLabel position="stacked">Minutes</IonLabel>
               <IonTextarea
+                placeholder="Enter meeting minutes"
                 value={meetingForm.minutes}
                 autoGrow
                 rows={6}
@@ -665,9 +706,11 @@ const Attendance: React.FC = () => {
               color="success"
               onClick={handleSaveMeeting}
               disabled={saving}
+              className="app-record-modal-save"
             >
               {saving ? "Saving..." : editingMeeting ? "Update Meeting" : "Add Meeting"}
             </IonButton>
+            </div>
           </IonContent>
         </IonModal>
 
@@ -697,26 +740,23 @@ const Attendance: React.FC = () => {
               </IonButtons>
             </IonToolbar>
           </IonHeader>
-          <IonContent className="ion-padding">
-            <IonCard>
-              <IonCardContent>
-                <IonLabel>
-                  <h2>{selectedGroupName || "No group selected"}</h2>
-                  <p>{selectedGroupID || "-"}</p>
-                </IonLabel>
-              </IonCardContent>
-            </IonCard>
-
-            <IonCard>
-              <IonCardContent>
-                <IonItem lines="none">
+          <IonContent className="ion-padding app-record-modal-content">
+            <div className="app-record-modal-stack">
+              <IonCard className="app-record-modal-hero">
+                <IonCardContent>
                   <IonLabel>
-                    <h2>{activeAttendanceMeeting?.purpose || "-"}</h2>
-                    <p>{formatDateLong(activeAttendanceMeeting?.meetingdate)}</p>
+                    <h2>{activeAttendanceMeeting?.purpose || "Meeting Attendance"}</h2>
+                    <p>{selectedGroupName || selectedGroupID || "-"}</p>
                   </IonLabel>
-                </IonItem>
-              </IonCardContent>
-            </IonCard>
+                </IonCardContent>
+              </IonCard>
+
+              <IonItem lines="none" className="app-record-modal-item">
+                <IonLabel>
+                  <h3>Meeting Date</h3>
+                  <p>{formatDateLong(activeAttendanceMeeting?.meetingdate)}</p>
+                </IonLabel>
+              </IonItem>
 
             <IonSearchbar
               value={attendanceSearch}
@@ -725,14 +765,14 @@ const Attendance: React.FC = () => {
             />
 
             {availableMembers.length === 0 ? (
-              <IonItem lines="none">
+              <IonItem lines="none" className="app-record-modal-item">
                 <IonLabel color="medium">
                   All beneficiaries for this group are already marked present.
                 </IonLabel>
               </IonItem>
             ) : (
               <>
-                <IonItem lines="none">
+                <IonItem lines="none" className="app-record-modal-item">
                   <IonCheckbox
                     slot="start"
                     checked={allVisibleSelected}
@@ -763,7 +803,10 @@ const Attendance: React.FC = () => {
                     const checked = selectedCodes.includes(sppCode);
 
                     return (
-                      <IonItem key={sppCode}>
+                      <IonItem
+                        key={sppCode}
+                        className="app-record-modal-item meeting-participant-item"
+                      >
                         <IonCheckbox
                           slot="start"
                           checked={checked}
@@ -771,9 +814,8 @@ const Attendance: React.FC = () => {
                             handleToggleCode(sppCode, !!e.detail.checked)
                           }
                         />
-                        <IonLabel>
+                        <IonLabel className="meeting-participant-item__label">
                           <h3>{member.hh_head_name || sppCode}</h3>
-                          <p>Beneficiary Code: {sppCode || "-"}</p>
                           <p>ML Code: {member.hh_code || "-"}</p>
                         </IonLabel>
                       </IonItem>
@@ -788,11 +830,61 @@ const Attendance: React.FC = () => {
               color="success"
               onClick={handleSaveAttendance}
               disabled={saving || selectedCodes.length === 0}
+              className="app-record-modal-save"
             >
               {saving ? "Saving..." : "Save Attendance"}
             </IonButton>
+            </div>
           </IonContent>
         </IonModal>
+
+        <IonActionSheet
+          isOpen={!!actionMeeting}
+          onDidDismiss={() => setActionMeeting(null)}
+          header={actionMeeting?.purpose || "Meeting"}
+          subHeader={actionMeeting ? formatDateLong(actionMeeting.meetingdate) : undefined}
+          buttons={[
+            {
+              text: "Add Attendance",
+              icon: personAddOutline,
+              handler: () => {
+                if (!actionMeeting?.meetID) {
+                  setActionMessage("Meeting not found.");
+                  return;
+                }
+
+                setSelectedMeeting(actionMeeting);
+                setAttendanceMeetingId(String(actionMeeting.meetID || ""));
+                setSelectedCodes([]);
+                setAttendanceSearch("");
+                setShowAttendanceModal(true);
+              },
+            },
+            {
+              text: "View Details",
+              icon: eyeOutline,
+              handler: () => {
+                if (actionMeeting) setViewMeeting(actionMeeting);
+              },
+            },
+            {
+              text: "Edit Meeting",
+              icon: createOutline,
+              handler: () => {
+                if (actionMeeting) openEditMeeting(actionMeeting);
+              },
+            },
+            {
+              text: "Delete Meeting",
+              role: "destructive",
+              icon: trashOutline,
+              handler: () => {
+                if (actionMeeting) setDeleteMeetingTarget(actionMeeting);
+              },
+            },
+            { text: "Cancel", role: "cancel" },
+          ]}
+        />
 
         <IonAlert
           isOpen={!!deleteMeetingTarget}
@@ -827,6 +919,7 @@ const Attendance: React.FC = () => {
           message={actionMessage}
           buttons={["OK"]}
         />
+        </div>
       </IonContent>
     </IonPage>
   );

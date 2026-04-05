@@ -465,18 +465,28 @@ const UserDetails: React.FC = () => {
     String(taID || "-");
 
   return (
-    <div className="app-shell" style={{ maxWidth: 960 }}>
-      <Link to="/users" className="muted">
-        Back
-      </Link>
+    <div className="modal-backdrop">
+      <div
+        className="modal-card app-detail-modal-shell"
+        style={{ maxWidth: 960 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="modal-actions" style={{ justifyContent: "space-between", marginTop: 0, marginBottom: 12 }}>
+          <Link to="/users" className="muted">
+            Back
+          </Link>
+          <Link to="/users" className="btn btn-secondary">
+            Close
+          </Link>
+        </div>
 
-      {loading && <p>Loading...</p>}
-      {error && <div className="alert-banner alert-error">{error}</div>}
-      {success && <div className="alert-banner alert-success">{success}</div>}
+        {loading && <p>Loading...</p>}
+        {error && <div className="alert-banner alert-error">{error}</div>}
+        {success && <div className="alert-banner alert-success">{success}</div>}
 
-      {user && (
-        <div className="card" style={{ marginTop: 12 }}>
-          <div className="toolbar-row">
+        {user && (
+        <div>
+          <div className="modal-head">
             <div>
               <h2 className="section-title" style={{ margin: 0 }}>
                 Edit User
@@ -490,6 +500,24 @@ const UserDetails: React.FC = () => {
                 user.userRole ||
                 "-"}
             </span>
+          </div>
+
+          <div className="card detail-green-card" style={{ marginBottom: 18 }}>
+            <div className="toolbar-row">
+              <div style={{ minWidth: 0 }}>
+                <h2 className="app-ellipsis-text" style={{ margin: 0 }}>
+                  {[form.firstname, form.lastname].filter(Boolean).join(" ") || form.username || "User"}
+                </h2>
+                <p className="app-ellipsis-text" style={{ margin: "6px 0 0" }}>
+                  {form.email || "No email provided"}
+                </p>
+              </div>
+              <span className="pill detail-green-card__pill">
+                {roleNameById[String(form.userRole || user.userRole || "")] ||
+                  user.userRole ||
+                  "-"}
+              </span>
+            </div>
           </div>
 
           <div className="extension-block step-block">
@@ -679,9 +707,9 @@ const UserDetails: React.FC = () => {
               ) : (
                 locations.map((location) => (
                   <div key={location.id} className="assignment-card">
-                    <div>
-                      <strong>{resolveTaName(location.taID, location)}</strong>
-                      <div className="muted">
+                    <div style={{ minWidth: 0 }}>
+                      <strong className="app-ellipsis-text">{resolveTaName(location.taID, location)}</strong>
+                      <div className="muted app-ellipsis-text">
                         {resolveRegionName(location.regionID)} / {resolveDistrictName(location.districtID, location)}
                       </div>
                     </div>
@@ -710,7 +738,8 @@ const UserDetails: React.FC = () => {
             )}
           </div>
         </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

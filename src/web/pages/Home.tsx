@@ -54,7 +54,6 @@ const emptyOverview: DashboardOverview = {
 };
 
 const formatCurrency = (value: number) => `K ${Number(value || 0).toLocaleString("en-US")}`;
-
 const Home: React.FC = () => {
   const history = useHistory();
   const { user } = useAuth();
@@ -66,11 +65,11 @@ const Home: React.FC = () => {
   const roleId = Number(user?.userRole || 0);
 
   const groupSummaryLabel =
-    roleId === 5 ? "Your groups formed" : "All groups formed";
+    roleId === 5 ? "Groups in your TA scope" : "All groups formed";
 
   const heroCaption = useMemo(() => {
     if (roleId === 5) {
-      return "Your dashboard summary for verified members, groups formed, trainings, meetings, savings, and IGAs.";
+      return "Your dashboard summary across the TAs assigned to your account for verified members, groups, trainings, meetings, savings, and IGAs.";
     }
     if (roleId === 2) {
       return "Regional summary across your assigned regions for verified members, groups, trainings, meetings, savings, and IGAs.";
@@ -147,7 +146,7 @@ const Home: React.FC = () => {
 
           <DashboardStatCard
             title={groupSummaryLabel}
-            helper={roleId === 5 ? "Groups created by you" : "All groups in scope"}
+            helper={roleId === 5 ? "Groups in your assigned TAs" : "All groups in scope"}
             icon={peopleOutline}
             loading={loading}
             value={overview.groupsFormed}

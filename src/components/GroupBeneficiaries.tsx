@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import {
+  IonActionSheet,
   IonAlert,
   IonBadge,
   IonButton,
   IonButtons,
+  IonCard,
+  IonCardContent,
   IonContent,
   IonHeader,
   IonIcon,
@@ -13,17 +16,18 @@ import {
   IonList,
   IonModal,
   IonPage,
+  IonSearchbar,
   IonSelect,
   IonSelectOption,
   IonSpinner,
   IonTitle,
   IonToolbar,
-  useIonRouter,
 } from "@ionic/react";
 import {
   arrowBack,
   cashOutline,
   createOutline,
+  ellipsisHorizontal,
   eyeOutline,
   pieChartOutline,
 } from "ionicons/icons";
@@ -35,8 +39,12 @@ import {
 import { subscribeSyncUpdates } from "../data/sync";
 import { useSelectedGroup } from "../hooks/useSelectedGroup";
 import MobileDateInput from "./form/MobileDateInput";
+import MemberSavings from "./MemberSavings";
+import MemberIGA from "./MemberIGA";
 import { goBackFromGroupChild } from "../utils/groupNavigation";
 import { useHistory } from "react-router-dom";
+import { extractDateOnly, formatDateLongLocal, parseDateOnlyLocal } from "../utils/date";
+import "./GroupBeneficiaries.css";
 
 const MAX_NAT_ID = 8;
 const MAX_HH_SIZE = 100;
@@ -49,23 +57,8 @@ const formatGender = (value: string | null | undefined) => {
   return v || "-";
 };
 
-const formatDateLong = (value: string | null | undefined) => {
-  const raw = String(value || "").trim();
-  if (!raw) return "-";
-  const dateOnly = raw.includes("T") ? raw.split("T")[0] : raw;
-  const d = new Date(dateOnly);
-  if (Number.isNaN(d.getTime())) return dateOnly;
-  return new Intl.DateTimeFormat("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(d);
-};
-
 const toDateInputValue = (value: string | null | undefined) => {
-  const raw = String(value || "").trim();
-  if (!raw) return "";
-  return raw.includes("T") ? raw.split("T")[0] : raw;
+  return extractDateOnly(value);
 };
 
 const validateSex = (sex: string | null | undefined) => {
@@ -79,8 +72,8 @@ const validateDOB18Plus = (dob: string | null | undefined) => {
   const value = String(dob || "").trim();
   if (!value) return "Date of birth is required.";
 
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Invalid date of birth.";
+  const date = parseDateOnlyLocal(value);
+  if (!date) return "Invalid date of birth.";
 
   const today = new Date();
   const minDate = new Date(
@@ -119,8 +112,12 @@ const validateHouseholdSize = (value: string | number | null | undefined) => {
   return "";
 };
 
+const getInitial = (value: string | null | undefined) => {
+  const trimmed = String(value || "").trim();
+  return trimmed ? trimmed.charAt(0).toUpperCase() : "B";
+};
+
 const GroupBeneficiaries: React.FC = () => {
-  const router = useIonRouter();
   const history = useHistory();
   const [rows, setRows] = useState<Beneficiary[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -135,6 +132,15 @@ const GroupBeneficiaries: React.FC = () => {
   const [editHouseholdSize, setEditHouseholdSize] = useState<string>("");
   const [actionMessage, setActionMessage] = useState<string>("");
   const [loadError, setLoadError] = useState<string>("");
+  const [actionMember, setActionMember] = useState<Beneficiary | null>(null);
+  const [searchText, setSearchText] = useState<string>("");
+  const [memberSavingsTarget, setMemberSavingsTarget] = useState<Beneficiary | null>(null);
+  const [memberIgaTarget, setMemberIgaTarget] = useState<Beneficiary | null>(null);
+
+  const activeGroupName =
+    selectedGroupName || localStorage.getItem("selectedGroupName") || "";
+  const activeGroupID =
+    selectedGroupID || localStorage.getItem("selectedGroupID") || "";
 
   const loadBeneficiaries = React.useCallback(async () => {
     const latestSelectedGroupID =
@@ -175,6 +181,20 @@ const GroupBeneficiaries: React.FC = () => {
     });
     return () => unsubscribe();
   }, [loadBeneficiaries, refreshSelectedGroup]);
+
+  const filteredRows = rows.filter((member) => {
+    const query = searchText.trim().toLowerCase();
+    if (!query) return true;
+
+    return [
+      member.hh_head_name,
+      member.hh_code,
+      member.sppCode,
+      member.nat_id,
+    ]
+      .map((value) => String(value || "").toLowerCase())
+      .some((value) => value.includes(query));
+  });
 
   const openEdit = (member: Beneficiary) => {
     setEditMember(member);
@@ -293,116 +313,122 @@ const GroupBeneficiaries: React.FC = () => {
       </IonHeader>
 
       <IonContent className="ion-padding">
-        <IonItem lines="none">
-          <IonLabel>
-            <h2>{selectedGroupName || "Selected Group"}</h2>
-            <p>{selectedGroupID || "No group selected"}</p>
-          </IonLabel>
-          <IonBadge slot="end" color="success">
-            {rows.length}
-          </IonBadge>
-        </IonItem>
+        <IonCard className="group-beneficiaries-hero">
+          <IonCardContent className="group-beneficiaries-hero__content">
+            <div className="group-beneficiaries-hero__meta">
+              <div className="group-beneficiaries-hero__text">
+                <h2>{activeGroupName || "Selected Group"}</h2>
+                <p>{activeGroupID || "No group selected"}</p>
+              </div>
+              <IonBadge color="light" className="group-beneficiaries-hero__badge">
+                {rows.length} members
+              </IonBadge>
+            </div>
+          </IonCardContent>
+        </IonCard>
+
+        <IonCard className="group-beneficiaries-search-card">
+          <IonCardContent>
+            <IonSearchbar
+              value={searchText}
+              onIonInput={(e) => setSearchText(String(e.detail.value || ""))}
+              placeholder="Search by beneficiary name, ML code, SPP code, or national ID"
+              className="group-beneficiaries-searchbar"
+            />
+          </IonCardContent>
+        </IonCard>
 
         {!!loadError && (
-          <IonItem lines="none">
+          <IonItem lines="none" className="group-beneficiaries-inline-state error">
             <IonLabel color="danger">{loadError}</IonLabel>
           </IonItem>
         )}
 
         {loading ? (
-          <div style={{ textAlign: "center", paddingTop: 24 }}>
+          <div className="group-beneficiaries-loading">
             <IonSpinner name="crescent" />
           </div>
         ) : rows.length === 0 ? (
-          <IonItem lines="none">
+          <IonItem lines="none" className="group-beneficiaries-inline-state empty">
             <IonLabel color="medium">No beneficiaries found for this group</IonLabel>
           </IonItem>
+        ) : filteredRows.length === 0 ? (
+          <IonItem lines="none" className="group-beneficiaries-inline-state empty">
+            <IonLabel color="medium">No beneficiaries match your search</IonLabel>
+          </IonItem>
         ) : (
-          <IonList>
-            {rows.map((m) => (
-              <IonItem
-                key={m.sppCode}
-                style={{
-                  "--inner-padding-end": "8px",
-                  "--padding-start": "12px",
-                }}
-              >
-                <IonLabel>
-                  <h2>{m.hh_head_name || m.sppCode}</h2>
-                  <p>ML Code: {m.hh_code || "-"}</p>
-                </IonLabel>
-                <IonButton
-                  slot="end"
-                  fill="clear"
-                  size="small"
-                  title="View"
-                  onClick={() => setViewMember(m)}
-                  style={{
-                    margin: 0,
-                    alignSelf: "center",
-                    minHeight: "36px",
-                  }}
-                >
-                  <IonIcon icon={eyeOutline} />
-                </IonButton>
-                <IonButton
-                  slot="end"
-                  fill="clear"
-                  size="small"
-                  title="Edit"
-                  onClick={() => openEdit(m)}
-                  style={{
-                    margin: 0,
-                    alignSelf: "center",
-                    minHeight: "36px",
-                  }}
-                >
-                  <IonIcon icon={createOutline} />
-                </IonButton>
-                <IonButton
-                  slot="end"
-                  fill="clear"
-                  size="small"
-                  title="Member Savings"
-                  onClick={() =>
-                    router.push(
-                      `/groups/savings/member/${encodeURIComponent(
-                        m.sppCode || "",
-                      )}`,
-                    )
-                  }
-                  style={{
-                    margin: 0,
-                    alignSelf: "center",
-                    minHeight: "36px",
-                  }}
-                >
-                  <IonIcon icon={cashOutline} />
-                </IonButton>
-                <IonButton
-                  slot="end"
-                  fill="clear"
-                  size="small"
-                  title="Member IGA"
-                  onClick={() =>
-                    router.push(
-                      `/groups/member-iga/${encodeURIComponent(
-                        m.sppCode || "",
-                      )}`,
-                    )
-                  }
-                  style={{
-                    margin: 0,
-                    alignSelf: "center",
-                    minHeight: "36px",
-                  }}
-                >
-                  <IonIcon icon={pieChartOutline} />
-                </IonButton>
-              </IonItem>
+          <IonList className="group-beneficiaries-list">
+            {filteredRows.map((m) => (
+              <IonCard key={m.sppCode} className="beneficiary-card">
+                <IonCardContent className="beneficiary-card__content">
+                  <div className="beneficiary-card__top">
+                    <div className="beneficiary-card__avatar">
+                      {getInitial(m.hh_head_name || m.sppCode)}
+                    </div>
+                    <div className="beneficiary-card__summary app-inline-action-main">
+                      <h2>{m.hh_head_name || m.sppCode}</h2>
+                      <p>{m.hh_code ? `ML Code: ${m.hh_code}` : `SPP Code: ${m.sppCode || "-"}`}</p>
+                    </div>
+                    <IonButton
+                      fill="clear"
+                      size="small"
+                      title="More actions"
+                      className="beneficiary-menu-button"
+                      onClick={() => setActionMember(m)}
+                    >
+                      <IonIcon icon={ellipsisHorizontal} />
+                    </IonButton>
+                  </div>
+                </IonCardContent>
+              </IonCard>
             ))}
           </IonList>
         )}
+
+        <IonActionSheet
+          isOpen={!!actionMember}
+          header={actionMember?.hh_head_name || "Beneficiary actions"}
+          subHeader={actionMember?.hh_code ? `ML Code: ${actionMember.hh_code}` : undefined}
+          onDidDismiss={() => setActionMember(null)}
+          buttons={[
+            {
+              text: "View Details",
+              icon: eyeOutline,
+              handler: () => {
+                if (actionMember) setViewMember(actionMember);
+              },
+            },
+            {
+              text: "Edit Beneficiary",
+              icon: createOutline,
+              handler: () => {
+                if (actionMember) openEdit(actionMember);
+              },
+            },
+            {
+              text: "Member Savings",
+              icon: cashOutline,
+              handler: () => {
+                if (actionMember) {
+                  setMemberSavingsTarget(actionMember);
+                }
+              },
+            },
+            {
+              text: "Member IGA",
+              icon: pieChartOutline,
+              handler: () => {
+                if (actionMember) {
+                  setMemberIgaTarget(actionMember);
+                }
+              },
+            },
+            {
+              text: "Cancel",
+              role: "cancel",
+            },
+          ]}
+        />
 
         <IonModal
           isOpen={!!viewMember}
@@ -416,38 +442,44 @@ const GroupBeneficiaries: React.FC = () => {
               </IonButtons>
             </IonToolbar>
           </IonHeader>
-          <IonContent className="ion-padding">
-            <IonItem lines="none">
+          <IonContent className="ion-padding group-beneficiaries-modal-content">
+            <IonCard className="group-beneficiaries-modal-hero">
+              <IonCardContent>
+                <h2>{viewMember?.hh_head_name || "-"}</h2>
+                <p>{viewMember?.hh_code ? `ML Code: ${viewMember.hh_code}` : `SPP Code: ${viewMember?.sppCode || "-"}`}</p>
+              </IonCardContent>
+            </IonCard>
+            <IonItem lines="none" className="group-beneficiaries-detail-item">
               <IonLabel>
                 <h3>Beneficiary Name</h3>
                 <p>{viewMember?.hh_head_name || "-"}</p>
               </IonLabel>
             </IonItem>
-            <IonItem lines="none">
+            <IonItem lines="none" className="group-beneficiaries-detail-item">
               <IonLabel>
                 <h3>Gender</h3>
                 <p>{formatGender(viewMember?.sex)}</p>
               </IonLabel>
             </IonItem>
-            <IonItem lines="none">
+            <IonItem lines="none" className="group-beneficiaries-detail-item">
               <IonLabel>
                 <h3>Date of Birth</h3>
-                <p>{formatDateLong(viewMember?.dob)}</p>
+                <p>{formatDateLongLocal(viewMember?.dob)}</p>
               </IonLabel>
             </IonItem>
-            <IonItem lines="none">
+            <IonItem lines="none" className="group-beneficiaries-detail-item">
               <IonLabel>
                 <h3>National ID</h3>
                 <p>{viewMember?.nat_id || "-"}</p>
               </IonLabel>
             </IonItem>
-            <IonItem lines="none">
+            <IonItem lines="none" className="group-beneficiaries-detail-item">
               <IonLabel>
                 <h3>ML Code</h3>
                 <p>{viewMember?.hh_code || "-"}</p>
               </IonLabel>
             </IonItem>
-            <IonItem lines="none">
+            <IonItem lines="none" className="group-beneficiaries-detail-item">
               <IonLabel>
                 <h3>Household Size</h3>
                 <p>{viewMember?.hh_size ?? "-"}</p>
@@ -468,22 +500,29 @@ const GroupBeneficiaries: React.FC = () => {
               </IonButtons>
             </IonToolbar>
           </IonHeader>
-          <IonContent className="ion-padding">
-            <IonItem>
+          <IonContent className="ion-padding group-beneficiaries-modal-content">
+            <IonCard className="group-beneficiaries-modal-hero">
+              <IonCardContent>
+                <h2>{editMember?.hh_head_name || "-"}</h2>
+                <p>{editMember?.hh_code ? `ML Code: ${editMember.hh_code}` : `SPP Code: ${editMember?.sppCode || "-"}`}</p>
+              </IonCardContent>
+            </IonCard>
+            <IonItem className="group-beneficiaries-form-item">
               <IonLabel position="stacked">Beneficiary Name</IonLabel>
               <IonInput value={editMember?.hh_head_name || "-"} readonly />
             </IonItem>
-            <IonItem>
+            <IonItem className="group-beneficiaries-form-item">
               <IonLabel position="stacked">Gender</IonLabel>
               <IonSelect
                 value={editSex}
+                placeholder="Select gender"
                 onIonChange={(e) => setEditSex(String(e.detail.value || ""))}
               >
                 <IonSelectOption value="01">Male</IonSelectOption>
                 <IonSelectOption value="02">Female</IonSelectOption>
               </IonSelect>
             </IonItem>
-            <IonItem>
+            <IonItem className="group-beneficiaries-form-item">
               <IonLabel position="stacked">Date of Birth</IonLabel>
               <MobileDateInput
                 value={editDob}
@@ -491,17 +530,19 @@ const GroupBeneficiaries: React.FC = () => {
                 onIonInput={(e) => setEditDob(String(e.detail.value || ""))}
               />
             </IonItem>
-            <IonItem>
+            <IonItem className="group-beneficiaries-form-item">
               <IonLabel position="stacked">National ID</IonLabel>
               <IonInput
                 value={editNatId}
+                placeholder="Enter national ID"
                 onIonInput={(e) => setEditNatId(String(e.detail.value || ""))}
               />
             </IonItem>
-            <IonItem>
+            <IonItem className="group-beneficiaries-form-item">
               <IonLabel position="stacked">Household Size</IonLabel>
               <IonInput
                 inputmode="numeric"
+                placeholder="Enter household size"
                 value={editHouseholdSize}
                 onIonInput={(e) =>
                   setEditHouseholdSize(
@@ -516,7 +557,7 @@ const GroupBeneficiaries: React.FC = () => {
               color="success"
               disabled={savingEdit || !editMember?.sppCode}
               onClick={handleSaveEdit}
-              style={{ marginTop: 12 }}
+              className="group-beneficiaries-save-button"
             >
               {savingEdit ? <IonSpinner name="crescent" /> : "Save Changes"}
             </IonButton>
@@ -529,6 +570,20 @@ const GroupBeneficiaries: React.FC = () => {
           message={actionMessage}
           buttons={[{ text: "OK", role: "cancel" }]}
           onDidDismiss={() => setActionMessage("")}
+        />
+
+        <MemberSavings
+          embedded
+          isOpen={!!memberSavingsTarget}
+          onClose={() => setMemberSavingsTarget(null)}
+          sppCodeOverride={memberSavingsTarget?.sppCode || ""}
+        />
+
+        <MemberIGA
+          embedded
+          isOpen={!!memberIgaTarget}
+          onClose={() => setMemberIgaTarget(null)}
+          sppCodeOverride={memberIgaTarget?.sppCode || ""}
         />
       </IonContent>
     </IonPage>

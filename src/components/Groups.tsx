@@ -18,6 +18,7 @@ import {
   IonInfiniteScrollContent,
   IonItem,
   IonLoading,
+  IonSearchbar,
   IonSelect,
   IonSelectOption,
   IonSpinner,
@@ -26,6 +27,7 @@ import {
 import {
   arrowBack,
   cashOutline,
+  chevronForwardOutline,
   schoolOutline,
   listOutline,
   peopleOutline,
@@ -50,6 +52,8 @@ type GroupRow = {
   TAID?: string;
   taID?: string;
   villageClusterID?: string;
+  offline?: boolean;
+  syncStatus?: string;
 };
 
 type DashboardMetric =
@@ -66,6 +70,7 @@ const Group: React.FC = () => {
   const [groups, setGroups] = useState<GroupRow[]>([]);
   const [loadingGroups, setLoadingGroups] = useState<boolean>(true);
   const [selectedGroup, setSelectedGroup] = useState<GroupRow | null>(null);
+  const [groupSearch, setGroupSearch] = useState("");
   const {
     regions,
     districts,
@@ -100,21 +105,44 @@ const Group: React.FC = () => {
     }
   }, [location.search]);
 
+  const isPendingSyncGroup = useCallback(
+    (group: GroupRow | null | undefined) =>
+      Boolean(group && (group.offline || String(group.syncStatus || "").trim() === "pending")),
+    [],
+  );
+
   // Dashboard menu items
   const menuItems = [
     {
       label: "Beneficiaries",
+      description: "View members and beneficiary records",
       icon: peopleOutline,
       route: "/groups/beneficiaries",
     },
-    { label: "Group Savings", icon: cashOutline, route: "/groups/savings" },
-    { label: "Trainings", icon: schoolOutline, route: "/groups/trainings" },
+    {
+      label: "Group Savings",
+      description: "Track savings activity and balances",
+      icon: cashOutline,
+      route: "/groups/savings",
+    },
+    {
+      label: "Trainings",
+      description: "Manage training sessions and participation",
+      icon: schoolOutline,
+      route: "/groups/trainings",
+    },
     {
       label: "Meetings & Attendance",
+      description: "Open meetings, attendance, and records",
       icon: listOutline,
       route: "/groups/attendance",
     },
-    { label: "Group IGA", icon: pieChartOutline, route: "/groups/group-iga" },
+    {
+      label: "Group IGA",
+      description: "Review group income generating activities",
+      icon: pieChartOutline,
+      route: "/groups/group-iga",
+    },
   ];
 
   const scopedGroups = useMemo(() => {
@@ -128,6 +156,20 @@ const Group: React.FC = () => {
       return groupVcId === vc;
     });
   }, [groups, vc]);
+
+  const filteredScopedGroups = useMemo(() => {
+    const query = groupSearch.trim().toLowerCase();
+    if (!query) return scopedGroups;
+
+    return scopedGroups.filter((group) => {
+      const searchable = [group.groupname, group.groupID]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      return searchable.includes(query);
+    });
+  }, [groupSearch, scopedGroups]);
 
   const eligibleRegionIds = useMemo(
     () =>
@@ -204,7 +246,7 @@ const Group: React.FC = () => {
     loadMore,
     resetKey,
   } = useLocalInfiniteScroll<GroupRow>({
-    items: scopedGroups,
+    items: filteredScopedGroups,
     pageSize: 20,
   });
 
@@ -395,7 +437,8 @@ const Group: React.FC = () => {
                     </IonCardHeader>
 
                     <IonCardContent>
-                      <IonItem>
+                      <div className="groups-filter-grid">
+                      <IonItem className="groups-filter-item">
                         <IonLabel position="stacked">Region</IonLabel>
                         <IonSelect
                           value={region}
@@ -409,7 +452,7 @@ const Group: React.FC = () => {
                         </IonSelect>
                       </IonItem>
 
-                      <IonItem>
+                      <IonItem className="groups-filter-item">
                         <IonLabel position="stacked">District</IonLabel>
                         <IonSelect
                           value={district}
@@ -427,7 +470,7 @@ const Group: React.FC = () => {
                         </IonSelect>
                       </IonItem>
 
-                      <IonItem>
+                      <IonItem className="groups-filter-item">
                         <IonLabel position="stacked">Traditional Authority</IonLabel>
                         <IonSelect
                           value={ta}
@@ -442,7 +485,7 @@ const Group: React.FC = () => {
                         </IonSelect>
                       </IonItem>
 
-                      <IonItem>
+                      <IonItem className="groups-filter-item">
                         <IonLabel position="stacked">Village Cluster</IonLabel>
                         <IonSelect
                           value={vc}
@@ -459,36 +502,62 @@ const Group: React.FC = () => {
                           ))}
                         </IonSelect>
                       </IonItem>
+                      </div>
                     </IonCardContent>
                   </IonCard>
 
+                  <IonSearchbar
+                    className="groups-searchbar"
+                    value={groupSearch}
+                    debounce={200}
+                    placeholder="Search groups by name or group ID"
+                    onIonInput={(e) => setGroupSearch(String(e.detail.value || ""))}
+                  />
+
                   {!hasVillageClusterFilter ? (
-                    <IonBadge color="medium">
-                      Select a village cluster to view groups
-                    </IonBadge>
+                    <div className="groups-inline-state">
+                      <IonBadge color="medium">
+                        Select a village cluster to view groups
+                      </IonBadge>
+                    </div>
                   ) : scopedGroups.length === 0 ? (
-                    <IonBadge color="medium">
-                      No groups found in the selected village cluster
-                    </IonBadge>
+                    <div className="groups-inline-state">
+                      <IonBadge color="medium">
+                        No groups found in the selected village cluster
+                      </IonBadge>
+                    </div>
+                  ) : filteredScopedGroups.length === 0 ? (
+                    <div className="groups-inline-state">
+                      <IonBadge color="medium">No groups match your search</IonBadge>
+                    </div>
                   ) : (
-                    <IonList>
+                    <IonList className="groups-select-list">
                       {visibleGroups.map((group) => (
                         <IonItem
                           key={group.groupID}
+                          className="groups-select-item"
                           button
-                          detail
                           onClick={() => handleSelectGroup(group)}
                         >
-                          <IonLabel>
+                          <IonLabel className="groups-select-item__copy">
                             <h2>{group.groupname || "Unnamed Group"}</h2>
                             <p>{group.groupID}</p>
+                            {isPendingSyncGroup(group) && (
+                              <IonBadge color="warning" className="groups-sync-badge">
+                                Pending Sync
+                              </IonBadge>
+                            )}
                           </IonLabel>
+                          <IonIcon
+                            icon={chevronForwardOutline}
+                            className="groups-select-item__chevron"
+                          />
                         </IonItem>
                       ))}
                     </IonList>
                   )}
 
-                  {hasVillageClusterFilter && scopedGroups.length > 0 && (
+                  {hasVillageClusterFilter && filteredScopedGroups.length > 0 && (
                     <IonInfiniteScroll
                       key={resetKey}
                       threshold="100px"
@@ -506,16 +575,25 @@ const Group: React.FC = () => {
           </>
         ) : (
           <>
-            <IonCard className="selected-group-card">
+            <IonCard className="selected-group-card modern-group-hero">
               <IonCardContent>
-                <IonLabel>
+                <IonLabel className="modern-group-hero__label">
                   <h2>{selectedGroup?.groupname}</h2>
                   <p>{selectedGroup?.groupID}</p>
+                  {isPendingSyncGroup(selectedGroup) && (
+                    <IonBadge color="warning" className="groups-selected-sync-badge">
+                      Pending Sync
+                    </IonBadge>
+                  )}
                 </IonLabel>
               </IonCardContent>
             </IonCard>
 
-            <IonList>
+            <div className="group-menu-section-heading">
+              <span>Group menu</span>
+            </div>
+
+            <IonList className="group-menu-list">
               {menuItems.map((item) => (
                 <IonCard
                   key={item.label}
@@ -524,8 +602,17 @@ const Group: React.FC = () => {
                   className="group-card"
                 >
                   <IonCardContent className="group-card-content">
-                    <IonIcon icon={item.icon} className="group-card-icon" />
-                    <IonLabel>{item.label}</IonLabel>
+                    <div className="group-card-icon-shell">
+                      <IonIcon icon={item.icon} className="group-card-icon" />
+                    </div>
+                    <IonLabel className="group-card-copy">
+                      <h3>{item.label}</h3>
+                      <p>{item.description}</p>
+                    </IonLabel>
+                    <IonIcon
+                      icon={chevronForwardOutline}
+                      className="group-card-chevron"
+                    />
                   </IonCardContent>
                 </IonCard>
               ))}

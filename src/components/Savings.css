@@ -1,3 +1,93 @@
+.savings-hero-card,
+.savings-stat-card,
+.savings-section-card,
+.group-savings-type-card,
+.savings-history-card,
+.member-savings-card {
+  animation: savingsFadeIn 220ms ease;
+}
+
+.savings-hero-card {
+  margin: 8px 0 18px;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(22, 163, 74, 0.14);
+  box-shadow: 0 20px 40px rgba(20, 29, 23, 0.08);
+  --background: linear-gradient(135deg, #2eb85c 0%, #7ad77d 100%);
+}
+
+.savings-hero-card__content {
+  color: #fff;
+}
+
+.savings-hero-card__content,
+.savings-hero-card__content ion-label,
+.savings-hero-card__content ion-label *,
+.savings-hero-card__text,
+.savings-hero-card__text * {
+  color: #ffffff !important;
+}
+
+.savings-hero-card__meta {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.savings-hero-card__text h2 {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(1.45rem, 2.3vw, 1.9rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.savings-hero-card__text p {
+  margin: 6px 0 0;
+  color: rgba(255, 255, 255, 0.96);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.savings-hero-card__badge {
+  flex-shrink: 0;
+  font-weight: 700;
+}
+
+.savings-overview-grid {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.savings-stat-card,
+.savings-section-card {
+  border-radius: 22px;
+  border: 1px solid rgba(46, 184, 92, 0.1);
+  box-shadow: 0 14px 30px rgba(17, 24, 20, 0.06);
+  --background: linear-gradient(180deg, #ffffff 0%, #fbfdfb 100%);
+}
+
+.savings-stat-card__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.savings-stat-card__label {
+  color: #18251b;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.savings-stat-card__badge {
+  font-weight: 800;
+  font-size: 0.92rem;
+}
+
 .savings-types-list {
   padding-bottom: 0;
   margin-bottom: 0;
@@ -23,14 +113,151 @@
   margin-left: 0;
   margin-right: 0;
   margin-bottom: 8px;
+  border-radius: 18px;
+  border: 1px solid rgba(46, 184, 92, 0.12);
+  box-shadow: 0 10px 20px rgba(17, 24, 20, 0.05);
+  --background: linear-gradient(180deg, #fdfefd 0%, #f4faf5 100%);
+  cursor: pointer;
 }
 
 .group-savings-type-card:last-child {
   margin-bottom: 0;
 }
 
+.group-savings-type-card__content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  position: relative;
+  touch-action: manipulation;
+}
+
+.group-savings-type-card__copy h3 {
+  margin: 0 0 2px;
+  color: #18251b;
+  font-size: 0.98rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.group-savings-type-card__copy p {
+  margin: 0;
+  color: #5a6c5f;
+  font-size: 0.8rem;
+  line-height: 1.25;
+}
+
+.group-savings-type-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.group-savings-type-card__badge {
+  font-weight: 700;
+  font-size: 0.78rem;
+}
+
+.group-savings-type-card__button {
+  margin: 0;
+  min-width: 48px;
+  min-height: 48px;
+  --padding-start: 0;
+  --padding-end: 0;
+  --border-radius: 16px;
+  --background: #ffffff;
+  --background-hover: #f2f8f3;
+  --color: #178f48;
+  border: 1px solid rgba(46, 184, 92, 0.14);
+  box-shadow: 0 8px 18px rgba(23, 143, 72, 0.12);
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+
+.group-savings-type-card__button ion-icon {
+  font-size: 1.5rem;
+}
+
+.savings-history-list,
+.member-savings-list {
+  display: grid;
+  gap: 14px;
+  padding: 0;
+  background: transparent;
+}
+
+.savings-history-card {
+  margin: 0;
+  border-radius: 20px;
+  border: 1px solid rgba(46, 184, 92, 0.12);
+  box-shadow: 0 12px 24px rgba(17, 24, 20, 0.05);
+  --background: linear-gradient(180deg, #ffffff 0%, #fbfdfb 100%);
+}
+
+.savings-history-card__content {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.savings-history-card__copy h3 {
+  margin: 0 0 4px;
+  color: #18251b;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.savings-history-card__copy p {
+  margin: 0 0 4px;
+  color: #5a6c5f;
+  font-size: 0.88rem;
+}
+
+.savings-history-card__copy strong {
+  color: #178f48;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.savings-history-card__menu {
+  margin: 0;
+  min-width: 40px;
+  min-height: 40px;
+  --padding-start: 0;
+  --padding-end: 0;
+  --border-radius: 14px;
+  --background: #f4fbf5;
+  --background-hover: #eef8f0;
+  --color: #178f48;
+  border: 1px solid rgba(46, 184, 92, 0.14);
+}
+
+.savings-history-card__menu ion-icon {
+  font-size: 1.15rem;
+}
+
+.member-savings-searchbar {
+  --background: #f4fbf5;
+  --border-radius: 16px;
+  --box-shadow: none;
+  --placeholder-color: #7a8c80;
+  --icon-color: #17934a;
+  padding: 0;
+  margin-bottom: 14px;
+}
+
 .member-savings-card {
-  margin: 8px 0;
+  margin: 0;
+  border-radius: 20px;
+  border: 1px solid rgba(46, 184, 92, 0.12);
+  box-shadow: 0 12px 24px rgba(17, 24, 20, 0.05);
+  --background: linear-gradient(180deg, #ffffff 0%, #fbfdfb 100%);
 }
 
 .member-savings-card-content {
@@ -40,7 +267,114 @@
   gap: 12px;
 }
 
+.member-savings-card-content h3 {
+  margin: 0 0 4px;
+  color: #18251b;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.member-savings-card-content p {
+  margin: 0 0 4px;
+  color: #5a6c5f;
+  font-size: 0.88rem;
+}
+
 .member-savings-card-content ion-icon {
   font-size: 20px;
   color: var(--ion-color-medium);
+}
+
+.savings-modal-content {
+  background: linear-gradient(180deg, #f7faf8 0%, #ffffff 100%);
+}
+
+.savings-form-item,
+.savings-detail-item {
+  --background: #ffffff;
+  margin-bottom: 12px;
+  border: 1px solid #edf1ee;
+  border-radius: 16px;
+  box-shadow: 0 10px 24px rgba(17, 24, 20, 0.05);
+}
+
+.savings-detail-item h3 {
+  margin: 0 0 6px;
+  color: #5a6c5f;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.savings-detail-item p {
+  margin: 0;
+  color: #18251b;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.savings-form-item ion-label[position="stacked"] {
+  margin-bottom: 8px;
+  color: #5a6c5f !important;
+  font-size: 0.82rem !important;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.savings-save-button {
+  margin-top: 12px;
+  min-height: 48px;
+  --border-radius: 16px;
+  font-weight: 700;
+}
+
+@keyframes savingsFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (min-width: 768px) {
+  .savings-overview-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .savings-history-list,
+  .member-savings-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1080px) {
+  .savings-hero-card,
+  .savings-overview-grid,
+  .savings-section-card {
+    max-width: 980px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (max-width: 576px) {
+  .savings-hero-card {
+    border-radius: 20px;
+  }
+
+  .savings-hero-card__meta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .group-savings-type-card__content,
+  .savings-history-card__content {
+    gap: 12px;
+  }
 }

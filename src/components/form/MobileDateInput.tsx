@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
-import { IonButton, IonIcon, IonInput } from "@ionic/react";
+import { IonButton, IonIcon, IonInput, isPlatform } from "@ionic/react";
 import { calendarOutline } from "ionicons/icons";
+import { extractDateOnly } from "../../utils/date";
 
 type MobileDateInputProps = {
   id?: string;
@@ -22,6 +23,22 @@ const MobileDateInput: React.FC<MobileDateInputProps> = ({
   onIonChange,
 }) => {
   const inputRef = useRef<HTMLIonInputElement | null>(null);
+  const showCustomPickerButton = isPlatform("hybrid");
+
+  const emitNormalizedValue = (
+    event: CustomEvent,
+    handler?: (nextEvent: CustomEvent) => void,
+  ) => {
+    if (!handler) return;
+    const normalizedValue = extractDateOnly(String(event.detail?.value || ""));
+    handler({
+      ...event,
+      detail: {
+        ...event.detail,
+        value: normalizedValue,
+      },
+    } as CustomEvent);
+  };
 
   const openPicker = async () => {
     const input = await inputRef.current?.getInputElement();
@@ -53,18 +70,20 @@ const MobileDateInput: React.FC<MobileDateInputProps> = ({
         placeholder={placeholder}
         min={min}
         max={max}
-        onIonInput={onIonInput}
-        onIonChange={onIonChange}
+        onIonInput={(event) => emitNormalizedValue(event, onIonInput)}
+        onIonChange={(event) => emitNormalizedValue(event, onIonChange)}
       />
-      <IonButton
-        fill="clear"
-        color="medium"
-        onClick={openPicker}
-        aria-label="Open date picker"
-        style={{ margin: 0 }}
-      >
-        <IonIcon icon={calendarOutline} />
-      </IonButton>
+      {showCustomPickerButton && (
+        <IonButton
+          fill="clear"
+          color="medium"
+          onClick={openPicker}
+          aria-label="Open date picker"
+          style={{ margin: 0 }}
+        >
+          <IonIcon icon={calendarOutline} slot="icon-only" />
+        </IonButton>
+      )}
     </div>
   );
 };

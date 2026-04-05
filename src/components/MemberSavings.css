@@ -1,3 +1,37 @@
+.member-savings-hero-card {
+  margin: 8px 0 18px;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(22, 163, 74, 0.14);
+  box-shadow: 0 20px 40px rgba(20, 29, 23, 0.08);
+  --background: linear-gradient(135deg, #2eb85c 0%, #7ad77d 100%);
+}
+
+.member-savings-hero-card__content,
+.member-savings-hero-card__content ion-label,
+.member-savings-hero-card__content ion-label *,
+.member-savings-modal-hero,
+.member-savings-modal-hero ion-label,
+.member-savings-modal-hero ion-label *,
+.member-savings-modal-hero * {
+  color: #ffffff !important;
+}
+
+.member-savings-hero-card__content h2 {
+  margin: 0 0 6px;
+  color: #ffffff;
+  font-size: clamp(1.45rem, 2.3vw, 1.9rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.member-savings-hero-card__content p {
+  margin: 0 0 4px;
+  color: #ffffff;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
 .member-savings-types-list {
   padding-bottom: 0;
   margin-bottom: 0;
@@ -7,8 +41,196 @@
   margin-left: 0;
   margin-right: 0;
   margin-bottom: 8px;
+  border-radius: 18px;
+  border: 1px solid rgba(46, 184, 92, 0.12);
+  box-shadow: 0 10px 20px rgba(17, 24, 20, 0.05);
+  --background: linear-gradient(180deg, #fdfefd 0%, #f4faf5 100%);
 }
 
 .member-savings-type-card:last-child {
   margin-bottom: 0;
+}
+
+.member-savings-type-card__content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+.member-savings-type-card__copy h3 {
+  margin: 0 0 2px;
+  color: #18251b;
+  font-size: 0.98rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.member-savings-type-card__copy p {
+  margin: 0;
+  color: #5a6c5f;
+  font-size: 0.8rem;
+  line-height: 1.25;
+}
+
+.member-savings-type-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.member-savings-type-card__badge {
+  font-weight: 700;
+  font-size: 0.78rem;
+}
+
+.member-savings-type-card__button {
+  margin: 0;
+  min-width: 48px;
+  min-height: 48px;
+  --padding-start: 0;
+  --padding-end: 0;
+  --border-radius: 16px;
+  --background: #ffffff;
+  --background-hover: #f2f8f3;
+  --color: #178f48;
+  border: 1px solid rgba(46, 184, 92, 0.14);
+  box-shadow: 0 8px 18px rgba(23, 143, 72, 0.12);
+}
+
+.member-savings-type-card__button ion-icon {
+  font-size: 1.5rem;
+}
+
+.member-savings-history-list {
+  display: grid;
+  gap: 14px;
+  padding: 0;
+  background: transparent;
+}
+
+.member-savings-history-card {
+  margin: 0;
+  border-radius: 20px;
+  border: 1px solid rgba(46, 184, 92, 0.12);
+  box-shadow: 0 12px 24px rgba(17, 24, 20, 0.05);
+  --background: linear-gradient(180deg, #ffffff 0%, #fbfdfb 100%);
+}
+
+.member-savings-history-card__content {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.member-savings-history-card__copy h3 {
+  margin: 0 0 4px;
+  color: #18251b;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.member-savings-history-card__copy p {
+  margin: 0 0 4px;
+  color: #5a6c5f;
+  font-size: 0.88rem;
+}
+
+.member-savings-history-card__menu {
+  margin: 0;
+  min-width: 40px;
+  min-height: 40px;
+  --padding-start: 0;
+  --padding-end: 0;
+  --border-radius: 14px;
+  --background: #f4fbf5;
+  --background-hover: #eef8f0;
+  --color: #178f48;
+  border: 1px solid rgba(46, 184, 92, 0.14);
+}
+
+.member-savings-history-card__menu ion-icon {
+  font-size: 1.15rem;
+}
+
+.member-savings-modal-content {
+  background: linear-gradient(180deg, #f7faf8 0%, #ffffff 100%);
+}
+
+.member-savings-modal-hero {
+  margin: 0 0 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(22, 163, 74, 0.14);
+  box-shadow: 0 14px 30px rgba(20, 29, 23, 0.08);
+  --background: linear-gradient(135deg, #2eb85c 0%, #7ad77d 100%);
+}
+
+.member-savings-modal-hero h2 {
+  margin: 0 0 6px;
+  color: #ffffff;
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.member-savings-modal-hero p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.member-savings-form-item,
+.member-savings-detail-item {
+  --background: #ffffff;
+  margin-bottom: 12px;
+  border: 1px solid #edf1ee;
+  border-radius: 16px;
+  box-shadow: 0 10px 24px rgba(17, 24, 20, 0.05);
+}
+
+.member-savings-detail-item h3 {
+  margin: 0 0 6px;
+  color: #5a6c5f;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.member-savings-detail-item p {
+  margin: 0;
+  color: #18251b;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.member-savings-form-item ion-label[position="stacked"] {
+  margin-bottom: 8px;
+  color: #5a6c5f !important;
+  font-size: 0.82rem !important;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.member-savings-save-button {
+  margin-top: 12px;
+  min-height: 48px;
+  --border-radius: 16px;
+  font-weight: 700;
+}
+
+@media (min-width: 768px) {
+  .member-savings-history-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 576px) {
+  .member-savings-hero-card {
+    border-radius: 20px;
+  }
 }

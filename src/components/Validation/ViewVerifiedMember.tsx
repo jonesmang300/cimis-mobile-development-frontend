@@ -12,6 +12,7 @@ import {
   IonIcon,
   IonItem,
   IonLabel,
+  IonModal,
   IonPage,
   IonSpinner,
   IonTitle,
@@ -139,131 +140,139 @@ const ViewVerifiedMember: React.FC = () => {
   ================================ */
   return (
     <IonPage>
-      <IonHeader>
-        <IonToolbar color="success">
-          <IonButtons slot="start">
-            <IonButton onClick={() => router.goBack()} color="light">
-              <IonIcon icon={arrowBack} />
-            </IonButton>
-          </IonButtons>
-          <IonTitle style={{ color: "white" }}>Verified Member Details</IonTitle>
-        </IonToolbar>
-      </IonHeader>
+      <IonModal isOpen onDidDismiss={() => router.goBack()}>
+        <IonHeader>
+          <IonToolbar color="success">
+            <IonButtons slot="start">
+              <IonButton onClick={() => router.goBack()} color="light">
+                <IonIcon icon={arrowBack} />
+              </IonButton>
+            </IonButtons>
+            <IonTitle style={{ color: "white" }}>Verified Member Details</IonTitle>
+          </IonToolbar>
+        </IonHeader>
 
-      <IonContent fullscreen className="ion-padding view-verified-member-page">
-        {loading ? (
-          <div className="view-verified-spinner">
-            <IonSpinner name="crescent" />
+        <IonContent fullscreen className="ion-padding view-verified-member-page">
+          <div className="app-detail-modal-shell">
+            {loading ? (
+              <div className="view-verified-spinner">
+                <IonSpinner name="crescent" />
+              </div>
+            ) : errorMsg ? (
+              <IonBadge className="view-verified-badge" color="danger">
+                {errorMsg}
+              </IonBadge>
+            ) : !member ? (
+              <IonBadge className="view-verified-badge" color="medium">
+                Member not found
+              </IonBadge>
+            ) : (
+              <>
+                <IonCard className="app-detail-hero-card">
+                  <IonCardContent>
+                    <h2>{member.hh_head_name || "Verified Member"}</h2>
+                    <p>{member.hh_code ? `ML Code: ${member.hh_code}` : `SPP Code: ${member.sppCode || "-"}`}</p>
+                  </IonCardContent>
+                </IonCard>
+                <IonCard>
+                  <IonCardHeader>
+                    <IonCardTitle>Location Details</IonCardTitle>
+                  </IonCardHeader>
+
+                  <IonCardContent>
+                    <IonItem>
+                      <IonLabel>
+                        <strong>Region</strong>
+                        <p>{regionName}</p>
+                      </IonLabel>
+                    </IonItem>
+
+                    <IonItem>
+                      <IonLabel>
+                        <strong>District</strong>
+                        <p>{districtName}</p>
+                      </IonLabel>
+                    </IonItem>
+
+                    <IonItem>
+                      <IonLabel>
+                        <strong>Traditional Authority</strong>
+                        <p>{taName}</p>
+                      </IonLabel>
+                    </IonItem>
+
+                    <IonItem>
+                      <IonLabel>
+                        <strong>Village Cluster</strong>
+                        <p>{vcName}</p>
+                      </IonLabel>
+                    </IonItem>
+
+                    <IonItem>
+                      <IonLabel>
+                        <strong>Group Name</strong>
+                        <p>{member.groupname || "N/A"}</p>
+                      </IonLabel>
+                    </IonItem>
+                  </IonCardContent>
+                </IonCard>
+
+                <IonCard>
+                  <IonCardHeader>
+                    <IonCardTitle>Beneficiary Details</IonCardTitle>
+                  </IonCardHeader>
+
+                  <IonCardContent>
+                    <IonItem>
+                      <IonLabel>
+                        <strong>Household Head Name</strong>
+                        <p>{member.hh_head_name || "N/A"}</p>
+                      </IonLabel>
+                    </IonItem>
+
+                    <IonItem>
+                      <IonLabel>
+                        <strong>Sex</strong>
+                        <p>{formatSex(member.sex)}</p>
+                      </IonLabel>
+                    </IonItem>
+
+                    <IonItem>
+                      <IonLabel>
+                        <strong>Date of Birth</strong>
+                        <p>{formatDate(member.dob)}</p>
+                      </IonLabel>
+                    </IonItem>
+
+                    <IonItem>
+                      <IonLabel>
+                        <strong>National ID</strong>
+                        <p>{member.nat_id || "N/A"}</p>
+                      </IonLabel>
+                    </IonItem>
+
+                    <IonItem>
+                      <IonLabel>
+                        <strong>Household Size</strong>
+                        <p>{member.hh_size ?? "N/A"}</p>
+                      </IonLabel>
+                    </IonItem>
+
+                    <IonItem>
+                      <IonLabel>
+                        <strong>Household Code</strong>
+                        <p>{member.hh_code || "N/A"}</p>
+                      </IonLabel>
+                    </IonItem>
+                  </IonCardContent>
+                </IonCard>
+
+                <div className="bottom-spacer" />
+              </>
+            )}
           </div>
-        ) : errorMsg ? (
-          <IonBadge className="view-verified-badge" color="danger">
-            {errorMsg}
-          </IonBadge>
-        ) : !member ? (
-          <IonBadge className="view-verified-badge" color="medium">
-            Member not found
-          </IonBadge>
-        ) : (
-          <>
-            {/* LOCATION DETAILS */}
-            <IonCard>
-              <IonCardHeader>
-                <IonCardTitle>Location Details</IonCardTitle>
-              </IonCardHeader>
-
-              <IonCardContent>
-                <IonItem>
-                  <IonLabel>
-                    <strong>Region</strong>
-                    <p>{regionName}</p>
-                  </IonLabel>
-                </IonItem>
-
-                <IonItem>
-                  <IonLabel>
-                    <strong>District</strong>
-                    <p>{districtName}</p>
-                  </IonLabel>
-                </IonItem>
-
-                <IonItem>
-                  <IonLabel>
-                    <strong>Traditional Authority</strong>
-                    <p>{taName}</p>
-                  </IonLabel>
-                </IonItem>
-
-                <IonItem>
-                  <IonLabel>
-                    <strong>Village Cluster</strong>
-                    <p>{vcName}</p>
-                  </IonLabel>
-                </IonItem>
-
-                <IonItem>
-                  <IonLabel>
-                    <strong>Group Name</strong>
-                    <p>{member.groupname || "N/A"}</p>
-                  </IonLabel>
-                </IonItem>
-              </IonCardContent>
-            </IonCard>
-
-            {/* BENEFICIARY DETAILS */}
-            <IonCard>
-              <IonCardHeader>
-                <IonCardTitle>Beneficiary Details</IonCardTitle>
-              </IonCardHeader>
-
-              <IonCardContent>
-                <IonItem>
-                  <IonLabel>
-                    <strong>Household Head Name</strong>
-                    <p>{member.hh_head_name || "N/A"}</p>
-                  </IonLabel>
-                </IonItem>
-
-                <IonItem>
-                  <IonLabel>
-                    <strong>Sex</strong>
-                    <p>{formatSex(member.sex)}</p>
-                  </IonLabel>
-                </IonItem>
-
-                <IonItem>
-                  <IonLabel>
-                    <strong>Date of Birth</strong>
-                    <p>{formatDate(member.dob)}</p>
-                  </IonLabel>
-                </IonItem>
-
-                <IonItem>
-                  <IonLabel>
-                    <strong>National ID</strong>
-                    <p>{member.nat_id || "N/A"}</p>
-                  </IonLabel>
-                </IonItem>
-
-                <IonItem>
-                  <IonLabel>
-                    <strong>Household Size</strong>
-                    <p>{member.hh_size ?? "N/A"}</p>
-                  </IonLabel>
-                </IonItem>
-
-                <IonItem>
-                  <IonLabel>
-                    <strong>Household Code</strong>
-                    <p>{member.hh_code || "N/A"}</p>
-                  </IonLabel>
-                </IonItem>
-              </IonCardContent>
-            </IonCard>
-
-            <div className="bottom-spacer" />
-          </>
-        )}
-      </IonContent>
+        </IonContent>
+      </IonModal>
     </IonPage>
   );
 };

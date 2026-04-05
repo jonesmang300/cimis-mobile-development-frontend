@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  IonActionSheet,
   IonAlert,
   IonBadge,
   IonButton,
@@ -28,8 +29,10 @@ import {
 import {
   addCircleOutline,
   arrowBack,
+  ellipsisHorizontal,
   createOutline,
   eyeOutline,
+  personAddOutline,
   trashOutline,
 } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
@@ -51,6 +54,8 @@ import {
   MemberTraining,
   updateGroupTraining,
 } from "../services/groupOperations.service";
+import TrainingParticipants from "./TrainingParticipants";
+import "./Attendance.css";
 
 type GroupMeta = {
   groupID?: string;
@@ -122,9 +127,11 @@ const Trainings: React.FC = () => {
   const [editingRow, setEditingRow] = useState<GroupTraining | null>(null);
   const [viewRow, setViewRow] = useState<GroupTraining | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<GroupTraining | null>(null);
+  const [actionRow, setActionRow] = useState<GroupTraining | null>(null);
   const [actionMessage, setActionMessage] = useState<string>("");
   const [form, setForm] = useState<TrainingFormState>(emptyForm);
   const [listSearch, setListSearch] = useState("");
+  const [attendanceTraining, setAttendanceTraining] = useState<GroupTraining | null>(null);
 
   const load = useCallback(async (groupIDOverride?: string) => {
     const activeGroupID = groupIDOverride ?? selectedGroupID;
@@ -427,7 +434,8 @@ const Trainings: React.FC = () => {
       </IonHeader>
 
       <IonContent className="ion-padding">
-        <IonCard>
+        <div className="app-detail-modal-shell">
+        <IonCard className="app-detail-hero-card">
           <IonCardContent>
             <IonLabel>
               <h2>{selectedGroupName || "No group selected"}</h2>
@@ -476,7 +484,7 @@ const Trainings: React.FC = () => {
             </IonCardContent>
           </IonCard>
         ) : (
-          <IonList>
+          <IonList className="meetings-list">
             {filteredRows.map((row) => {
               const stats = attendanceStatsByTraining[
                 String(row.TrainingID || "")
@@ -491,90 +499,39 @@ const Trainings: React.FC = () => {
               return (
                 <IonCard
                   key={row.TrainingID || `${row.groupID}-${row.StartDate}`}
+                  className="meetings-list-card"
                 >
-                  <IonCardContent>
-                  <IonButton
-                    expand="block"
-                    color="success"
-                    onClick={() => {
-                      if (!row.TrainingID) {
-                        setActionMessage("Training not found.");
-                        return;
-                      }
-
-                      history.push({
-                        pathname: `/groups/trainings/attendance/${encodeURIComponent(
-                          String(row.TrainingID || ""),
-                        )}`,
-                        state: { training: row },
-                      });
-                    }}
-                  >
-                    <IonIcon icon={addCircleOutline} slot="start" />
-                    Add Attendance
-                  </IonButton>
-
-                    <IonItem lines="none">
-                      <IonLabel>
-                        <h2>
-                          {`${
-                            trainingTypeNameById[
-                              String(row.TrainingTypeID || "")
-                            ] ||
-                            row.TrainingTypeID ||
-                            "-"
-                          } Training`}
-                        </h2>
-                        <p>
-                          Start Date: {formatDateLong(row.StartDate)}
-                        </p>
-                      </IonLabel>
-                      <IonBadge slot="end" color="success">
-                        {total}
-                      </IonBadge>
-                    </IonItem>
-
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "flex-start",
-                        gap: "8px",
-                        flexWrap: "nowrap",
-                        overflowX: "auto",
-                        marginTop: "8px",
-                      }}
-                    >
+                  <IonCardContent className="meetings-list-card__content">
+                    <div className="meetings-list-card__header">
+                      <div className="meetings-list-card__copy">
+                        <IonLabel>
+                          <h2>
+                            {`${
+                              trainingTypeNameById[
+                                String(row.TrainingTypeID || "")
+                              ] ||
+                              row.TrainingTypeID ||
+                              "-"
+                            } Training`}
+                          </h2>
+                          <p className="meetings-list-card__date">
+                            {formatDateLong(row.StartDate)}
+                          </p>
+                          <IonBadge color="light" className="meetings-list-card__badge">
+                            <IonIcon icon={personAddOutline} />
+                            <span>{total} Attendees</span>
+                          </IonBadge>
+                        </IonLabel>
+                      </div>
                       <IonButton
                         fill="clear"
                         size="small"
-                        title="View"
-                        aria-label="View training"
-                        style={{ margin: 0, minWidth: "36px" }}
-                        onClick={() => setViewRow(row)}
+                        title="More actions"
+                        aria-label="More actions"
+                        className="app-inline-action-button meetings-list-card__menu"
+                        onClick={() => setActionRow(row)}
                       >
-                        <IonIcon icon={eyeOutline} />
-                      </IonButton>
-                      <IonButton
-                        fill="clear"
-                        size="small"
-                        title="Edit"
-                        aria-label="Edit training"
-                        style={{ margin: 0, minWidth: "36px" }}
-                        onClick={() => openEditModal(row)}
-                      >
-                        <IonIcon icon={createOutline} />
-                      </IonButton>
-                      <IonButton
-                        fill="clear"
-                        color="danger"
-                        size="small"
-                        title="Delete"
-                        aria-label="Delete training"
-                        style={{ margin: 0, minWidth: "36px" }}
-                        onClick={() => setDeleteTarget(row)}
-                      >
-                        <IonIcon icon={trashOutline} />
+                        <IonIcon icon={ellipsisHorizontal} slot="icon-only" />
                       </IonButton>
                     </div>
                   </IonCardContent>
@@ -608,8 +565,17 @@ const Trainings: React.FC = () => {
               </IonButtons>
             </IonToolbar>
           </IonHeader>
-          <IonContent className="ion-padding">
-            <IonItem>
+          <IonContent className="ion-padding app-record-modal-content">
+            <div className="app-record-modal-stack">
+            <IonCard className="app-record-modal-hero">
+              <IonCardContent>
+                <IonLabel>
+                  <h2>{editingRow ? "Edit Training" : "Add Training"}</h2>
+                  <p>{selectedGroupName || selectedGroupID || "-"}</p>
+                </IonLabel>
+              </IonCardContent>
+            </IonCard>
+            <IonItem className="app-record-modal-item">
               <IonLabel position="stacked">Select Training Type</IonLabel>
               <IonSelect
                 value={form.TrainingTypeID}
@@ -631,10 +597,11 @@ const Trainings: React.FC = () => {
                 ))}
               </IonSelect>
             </IonItem>
-            <IonItem>
+            <IonItem className="app-record-modal-item">
               <IonLabel position="stacked">Start Date</IonLabel>
               <MobileDateInput
                 value={form.StartDate}
+                placeholder="Select start date"
                 onIonInput={(e) =>
                   setForm((prev) => ({
                     ...prev,
@@ -643,10 +610,11 @@ const Trainings: React.FC = () => {
                 }
               />
             </IonItem>
-            <IonItem>
+            <IonItem className="app-record-modal-item">
               <IonLabel position="stacked">Finish Date</IonLabel>
               <MobileDateInput
                 value={form.FinishDate}
+                placeholder="Select finish date"
                 onIonInput={(e) =>
                   setForm((prev) => ({
                     ...prev,
@@ -655,7 +623,7 @@ const Trainings: React.FC = () => {
                 }
               />
             </IonItem>
-            <IonItem>
+            <IonItem className="app-record-modal-item">
               <IonLabel position="stacked">Select Trained By</IonLabel>
               <IonSelect
                 value={form.trainedBy}
@@ -677,10 +645,11 @@ const Trainings: React.FC = () => {
                 ))}
               </IonSelect>
             </IonItem>
-            <IonItem>
+            <IonItem className="app-record-modal-item">
               <IonLabel position="stacked">Males Attended</IonLabel>
               <IonInput
                 type="number"
+                placeholder="Enter number of males"
                 value={form.Males}
                 onIonInput={(e) =>
                   setForm((prev) => ({
@@ -691,10 +660,11 @@ const Trainings: React.FC = () => {
                 }
               />
             </IonItem>
-            <IonItem>
+            <IonItem className="app-record-modal-item">
               <IonLabel position="stacked">Females Attended</IonLabel>
               <IonInput
                 type="number"
+                placeholder="Enter number of females"
                 value={form.Females}
                 onIonInput={(e) =>
                   setForm((prev) => ({
@@ -711,6 +681,7 @@ const Trainings: React.FC = () => {
               color="success"
               onClick={handleSave}
               disabled={saving}
+              className="app-record-modal-save"
             >
               {saving
                 ? "Saving..."
@@ -718,6 +689,7 @@ const Trainings: React.FC = () => {
                   ? "Update Training"
                   : "Add Training"}
             </IonButton>
+            </div>
           </IonContent>
         </IonModal>
 
@@ -730,7 +702,8 @@ const Trainings: React.FC = () => {
               </IonButtons>
             </IonToolbar>
           </IonHeader>
-          <IonContent className="ion-padding">
+          <IonContent className="ion-padding app-record-modal-content">
+            <div className="app-record-modal-stack">
             {(() => {
               const stats = attendanceStatsByTraining[
                 String(viewRow?.TrainingID || "")
@@ -752,7 +725,21 @@ const Trainings: React.FC = () => {
 
               return (
                 <>
-                  <IonItem lines="none">
+                  <IonCard className="app-record-modal-hero">
+                    <IonCardContent>
+                      <IonLabel>
+                        <h2>
+                          {trainingTypeNameById[
+                            String(viewRow?.TrainingTypeID || "")
+                          ] ||
+                            viewRow?.TrainingTypeID ||
+                            "Training"}
+                        </h2>
+                        <p>{selectedGroupName || selectedGroupID || "-"}</p>
+                      </IonLabel>
+                    </IonCardContent>
+                  </IonCard>
+                  <IonItem lines="none" className="app-record-modal-item">
                     <IonLabel>
                       <h3>Training Type</h3>
                       <p>
@@ -764,19 +751,19 @@ const Trainings: React.FC = () => {
                       </p>
                     </IonLabel>
                   </IonItem>
-                  <IonItem lines="none">
+                  <IonItem lines="none" className="app-record-modal-item">
                     <IonLabel>
                       <h3>Start Date</h3>
                       <p>{formatDateLong(viewRow?.StartDate)}</p>
                     </IonLabel>
                   </IonItem>
-                  <IonItem lines="none">
+                  <IonItem lines="none" className="app-record-modal-item">
                     <IonLabel>
                       <h3>Finish Date</h3>
                       <p>{formatDateLong(viewRow?.FinishDate)}</p>
                     </IonLabel>
                   </IonItem>
-                  <IonItem lines="none">
+                  <IonItem lines="none" className="app-record-modal-item">
                     <IonLabel>
                       <h3>Trained By</h3>
                       <p>
@@ -788,7 +775,7 @@ const Trainings: React.FC = () => {
                       </p>
                     </IonLabel>
                   </IonItem>
-                  <IonItem lines="none">
+                  <IonItem lines="none" className="app-record-modal-item">
                     <IonLabel>
                       <h3>Attendance</h3>
                       <p>Males: {stats.males}</p>
@@ -796,13 +783,13 @@ const Trainings: React.FC = () => {
                       <p>Total: {stats.total}</p>
                     </IonLabel>
                   </IonItem>
-                  <IonItem lines="none">
+                  <IonItem lines="none" className="app-record-modal-item">
                     <IonLabel>
                       <h3>Attendance Register:</h3>
                     </IonLabel>
                   </IonItem>
                   {attachedMembers.length === 0 ? (
-                    <IonItem lines="none">
+                    <IonItem lines="none" className="app-record-modal-item">
                       <IonLabel color="medium">
                         No members attached to this training yet.
                       </IonLabel>
@@ -812,6 +799,7 @@ const Trainings: React.FC = () => {
                       <IonItem
                         key={`${member?.sppCode || "member"}-${index}`}
                         lines="none"
+                        className="app-record-modal-item"
                       >
                         <IonLabel>
                           <h3>
@@ -833,8 +821,59 @@ const Trainings: React.FC = () => {
                 </>
               );
             })()}
+            </div>
           </IonContent>
         </IonModal>
+
+        <IonActionSheet
+          isOpen={!!actionRow}
+          onDidDismiss={() => setActionRow(null)}
+          header={
+            actionRow
+              ? trainingTypeNameById[String(actionRow.TrainingTypeID || "")] ||
+                actionRow.TrainingTypeID ||
+                "Training"
+              : "Training"
+          }
+          subHeader={actionRow ? `Start Date: ${formatDateLong(actionRow.StartDate)}` : undefined}
+          buttons={[
+            {
+              text: "Add Attendance",
+              icon: personAddOutline,
+              handler: () => {
+                if (!actionRow?.TrainingID) {
+                  setActionMessage("Training not found.");
+                  return;
+                }
+
+                setAttendanceTraining(actionRow);
+              },
+            },
+            {
+              text: "View Details",
+              icon: eyeOutline,
+              handler: () => {
+                if (actionRow) setViewRow(actionRow);
+              },
+            },
+            {
+              text: "Edit Training",
+              icon: createOutline,
+              handler: () => {
+                if (actionRow) openEditModal(actionRow);
+              },
+            },
+            {
+              text: "Delete Training",
+              role: "destructive",
+              icon: trashOutline,
+              handler: () => {
+                if (actionRow) setDeleteTarget(actionRow);
+              },
+            },
+            { text: "Cancel", role: "cancel" },
+          ]}
+        />
 
         <IonAlert
           isOpen={!!deleteTarget}
@@ -858,6 +897,39 @@ const Trainings: React.FC = () => {
           message={actionMessage}
           buttons={["OK"]}
         />
+
+        <TrainingParticipants
+          embedded
+          isOpen={!!attendanceTraining}
+          onClose={() => setAttendanceTraining(null)}
+          onSaved={(savedRows) => {
+            setMemberTrainings((prev) => {
+              const seen = new Set(
+                prev.map(
+                  (row) =>
+                    `${String(row.TrainingID || "")}:${String(row.sppCode || "")}`,
+                ),
+              );
+              const appended = savedRows
+                .filter(
+                  (row) => !seen.has(`${row.TrainingID}:${row.sppCode}`),
+                )
+                .map((row) => ({
+                  TrainingID: row.TrainingID,
+                  sppCode: row.sppCode,
+                  groupID: row.groupID,
+                  attendance: "1",
+                }));
+
+              return appended.length > 0 ? [...appended, ...prev] : prev;
+            });
+
+            void load();
+          }}
+          trainingIDOverride={String(attendanceTraining?.TrainingID || "")}
+          trainingOverride={attendanceTraining}
+        />
+        </div>
       </IonContent>
     </IonPage>
   );

@@ -152,15 +152,51 @@ const buildAuthHeaders = () => {
 type PendingOpReplayContext = {
   meetingIdMap: Map<string, string | number>;
   trainingIdMap: Map<string, string | number>;
+  groupIgaIdMap: Map<string, string | number>;
+  memberIgaIdMap: Map<string, string | number>;
+};
+
+const replaceMappedPathId = (
+  endpoint: string,
+  basePath: string,
+  idMap: Map<string, string | number>,
+) => {
+  const pattern = new RegExp(`(${basePath}/)([^/?]+)(/delete)?(?=$|\\?)`);
+  const match = endpoint.match(pattern);
+
+  if (!match) return endpoint;
+
+  const queuedId = decodeURIComponent(match[2] || "");
+  if (!idMap.has(queuedId)) return endpoint;
+
+  const realId = encodeURIComponent(String(idMap.get(queuedId)));
+  return endpoint.replace(pattern, `$1${realId}${match[3] || ""}`);
 };
 
 const rewriteQueuedOperation = (
   op: PendingOp,
   context: PendingOpReplayContext,
 ) => {
-  const endpoint = String(op.endpoint || "");
+  let endpoint = String(op.endpoint || "");
   const normalizedBody = normalizeQueuedBody(op.body);
   const parsedBody = safeJsonParse<any>(normalizedBody);
+
+  endpoint = replaceMappedPathId(endpoint, "/meetings", context.meetingIdMap);
+  endpoint = replaceMappedPathId(
+    endpoint,
+    "/group-trainings",
+    context.trainingIdMap,
+  );
+  endpoint = replaceMappedPathId(
+    endpoint,
+    "/group-igas",
+    context.groupIgaIdMap,
+  );
+  endpoint = replaceMappedPathId(
+    endpoint,
+    "/member-igas",
+    context.memberIgaIdMap,
+  );
 
   if (!parsedBody || typeof parsedBody !== "object") {
     return {
@@ -185,6 +221,22 @@ const rewriteQueuedOperation = (
     context.trainingIdMap.has(String(nextBody.TrainingID))
   ) {
     nextBody.TrainingID = context.trainingIdMap.get(String(nextBody.TrainingID));
+  }
+
+  if (
+    endpoint.includes("/group-igas") &&
+    nextBody.recID !== undefined &&
+    context.groupIgaIdMap.has(String(nextBody.recID))
+  ) {
+    nextBody.recID = context.groupIgaIdMap.get(String(nextBody.recID));
+  }
+
+  if (
+    endpoint.includes("/member-igas") &&
+    nextBody.recID !== undefined &&
+    context.memberIgaIdMap.has(String(nextBody.recID))
+  ) {
+    nextBody.recID = context.memberIgaIdMap.get(String(nextBody.recID));
   }
 
   return {
@@ -242,6 +294,31 @@ const replayOp = async (op: PendingOp, context: PendingOpReplayContext) => {
     const realId = data?.TrainingID || data?.id;
     if (realId !== undefined && realId !== null) {
       context.trainingIdMap.set(String(requestBody.TrainingID), realId);
+    }
+  }
+
+  if (
+    rewritten.endpoint.includes("/group-igas") &&
+    op.method.toUpperCase() === "POST" &&
+    requestBody?.groupID &&
+    String(requestBody?.recID || "").startsWith("group_iga_")
+  ) {
+    const realId = data?.recID || data?.id;
+    if (realId !== undefined && realId !== null) {
+      context.groupIgaIdMap.set(String(requestBody.recID), realId);
+    }
+  }
+
+  if (
+    rewritten.endpoint.includes("/member-igas") &&
+    op.method.toUpperCase() === "POST" &&
+    requestBody?.groupID &&
+    requestBody?.sppCode &&
+    String(requestBody?.recID || "").startsWith("member_iga_")
+  ) {
+    const realId = data?.recID || data?.id;
+    if (realId !== undefined && realId !== null) {
+      context.memberIgaIdMap.set(String(requestBody.recID), realId);
     }
   }
 };
@@ -480,6 +557,8 @@ export const syncSelectedQueueItems = async (itemIds: string[]) => {
   const replayContext: PendingOpReplayContext = {
     meetingIdMap: new Map(),
     trainingIdMap: new Map(),
+    groupIgaIdMap: new Map(),
+    memberIgaIdMap: new Map(),
   };
 
   for (const itemId of uniqueIds) {
@@ -545,6 +624,8 @@ export const flushQueue = async (): Promise<void> => {
   const replayContext: PendingOpReplayContext = {
     meetingIdMap: new Map(),
     trainingIdMap: new Map(),
+    groupIgaIdMap: new Map(),
+    memberIgaIdMap: new Map(),
   };
   try {
     const online = await isOnline().catch(() => false);

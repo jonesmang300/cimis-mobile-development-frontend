@@ -294,45 +294,30 @@ export const getDashboardOverview = async (
     ),
   );
 
-  let totalVerified = 0;
-  let myVerified = 0;
+  const verifiedRows = await Promise.all(
+    visibleVillageClusters.map(async (villageClusterID) => {
+      const [totalRes, deviceRes] = await Promise.all([
+        apiGet<any[]>(
+          `/beneficiaries/verified?villageClusterID=${encodeURIComponent(
+            villageClusterID,
+          )}`,
+        ),
+        apiGet<any[]>(
+          `/beneficiaries/verified/deviceId?villageClusterID=${encodeURIComponent(
+            villageClusterID,
+          )}&deviceId=${encodeURIComponent(deviceId)}`,
+        ),
+      ]);
 
-  if (roleId === 2) {
-    const verifiedRows = await Promise.all(
-      visibleVillageClusters.map(async (villageClusterID) => {
-        const [totalRes, deviceRes] = await Promise.all([
-          apiGet<any[]>(
-            `/beneficiaries/verified?villageClusterID=${encodeURIComponent(
-              villageClusterID,
-            )}`,
-          ),
-          apiGet<any[]>(
-            `/beneficiaries/verified/deviceId?villageClusterID=${encodeURIComponent(
-              villageClusterID,
-            )}&deviceId=${encodeURIComponent(deviceId)}`,
-          ),
-        ]);
+      return {
+        total: Array.isArray(totalRes) ? totalRes.length : 0,
+        mine: Array.isArray(deviceRes) ? deviceRes.length : 0,
+      };
+    }),
+  );
 
-        return {
-          total: Array.isArray(totalRes) ? totalRes.length : 0,
-          mine: Array.isArray(deviceRes) ? deviceRes.length : 0,
-        };
-      }),
-    );
-
-    totalVerified = verifiedRows.reduce((sum, row) => sum + row.total, 0);
-    myVerified = verifiedRows.reduce((sum, row) => sum + row.mine, 0);
-  } else {
-    const [verifiedTotalRes, verifiedByDeviceRes] = await Promise.all([
-      apiGet<{ total: number | string }>("/beneficiaries/count/selected"),
-      apiGet<{ total: number | string }>(
-        `/beneficiaries/count/selected/device/${encodeURIComponent(deviceId)}`,
-      ),
-    ]);
-
-    totalVerified = toNumber(verifiedTotalRes?.total);
-    myVerified = toNumber(verifiedByDeviceRes?.total);
-  }
+  const totalVerified = verifiedRows.reduce((sum, row) => sum + row.total, 0);
+  const myVerified = verifiedRows.reduce((sum, row) => sum + row.mine, 0);
 
   const filteredTrainings = (Array.isArray(trainings) ? trainings : []).filter((row) =>
     visibleGroupIds.has(String(row.groupID || "")),

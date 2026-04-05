@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   IonBadge,
   IonButtons,
@@ -56,7 +56,6 @@ const emptyOverview: DashboardOverview = {
 };
 
 const formatCurrency = (value: number) => `K ${Number(value || 0).toLocaleString("en-US")}`;
-
 const Dashboard: React.FC = () => {
   const history = useHistory();
   const { user, logout } = useAuth();
@@ -71,11 +70,11 @@ const Dashboard: React.FC = () => {
     String(user?.username || "User");
 
   const groupSummaryLabel =
-    roleId === 5 ? "Your groups formed" : "All groups formed";
+    roleId === 5 ? "Groups in your TA scope" : "All groups formed";
 
   const heroCaption = useMemo(() => {
     if (roleId === 5) {
-      return "Your dashboard summary for verified members, groups formed, trainings, meetings, savings, and IGAs.";
+      return "Your dashboard summary across the TAs assigned to your account for verified members, groups, trainings, meetings, savings, and IGAs.";
     }
     if (roleId === 2) {
       return "Regional summary across your assigned regions for verified members, groups, trainings, meetings, savings, and IGAs.";
@@ -103,7 +102,7 @@ const Dashboard: React.FC = () => {
     loadOverview();
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     const unsubscribeQueue = subscribeQueueCount((count) => setQueued(count));
     const unsubscribeSync = subscribeSyncUpdates(() => {
       loadOverview();
@@ -270,7 +269,7 @@ const Dashboard: React.FC = () => {
               <IonCol size="12" sizeMd="6" sizeLg="4">
                 <DashboardStatCard
                   title={groupSummaryLabel}
-                  helper={roleId === 5 ? "Groups created by you" : "All groups in scope"}
+                  helper={roleId === 5 ? "Groups in your assigned TAs" : "All groups in scope"}
                   icon={peopleOutline}
                   loading={loading}
                   value={overview.groupsFormed}

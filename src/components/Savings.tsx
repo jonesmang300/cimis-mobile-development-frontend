@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  IonActionSheet,
+  IonAlert,
   IonBadge,
   IonButton,
   IonButtons,
@@ -16,6 +18,7 @@ import {
   IonList,
   IonModal,
   IonPage,
+  IonSearchbar,
   IonSelect,
   IonSelectOption,
   IonSpinner,
@@ -27,6 +30,7 @@ import {
 import {
   addCircleOutline,
   arrowBack,
+  ellipsisHorizontal,
   createOutline,
   eyeOutline,
   chevronForward,
@@ -129,6 +133,9 @@ const Savings: React.FC = () => {
   const [activeType, setActiveType] = useState<SavingsType | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [viewRow, setViewRow] = useState<GroupSaving | null>(null);
+  const [historyActionRow, setHistoryActionRow] = useState<GroupSaving | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<GroupSaving | null>(null);
+  const [memberSearchText, setMemberSearchText] = useState("");
 
   /* ---------------- LOAD DATA ---------------- */
 
@@ -255,6 +262,22 @@ const Savings: React.FC = () => {
     return members.filter((m) => codesWithSavings.has(String(m.sppCode || "")));
   }, [memberSavings, members]);
 
+  const filteredMembersWithSavings = useMemo(() => {
+    const query = memberSearchText.trim().toLowerCase();
+    if (!query) return membersWithSavings;
+
+    return membersWithSavings.filter((member) => {
+      const memberCode = String(member.sppCode || "").toLowerCase();
+      const memberName = String(member.hh_head_name || "").toLowerCase();
+      const mlCode = String(member.hh_code || "").toLowerCase();
+      return (
+        memberCode.includes(query) ||
+        memberName.includes(query) ||
+        mlCode.includes(query)
+      );
+    });
+  }, [memberSearchText, membersWithSavings]);
+
   const sortedGroupSavings = useMemo(() => {
     const toSortableDate = (row: GroupSaving) =>
       `${String(row?.Yr || "").padStart(4, "0")}-${String(row?.Month || "").padStart(2, "0")}`;
@@ -280,6 +303,12 @@ const Savings: React.FC = () => {
   const resetForm = () => {
     setAmount("");
     setEditingRecID(null);
+  };
+
+  const closeAddModal = () => {
+    setShowAddModal(false);
+    setActiveType(null);
+    resetForm();
   };
 
   const openAddModalForType = (type: SavingsType) => {
@@ -353,8 +382,7 @@ const Savings: React.FC = () => {
         });
       }
 
-      setShowAddModal(false);
-      resetForm();
+      closeAddModal();
       await load();
     } catch (error) {
       console.error(error);
@@ -379,27 +407,49 @@ const Savings: React.FC = () => {
       </IonHeader>
 
       <IonContent className="ion-padding">
-        <IonCard>
-          <IonCardContent>
-            <IonLabel>
-              <h2>{selectedGroupName || "No group selected"}</h2>
-              <p>{selectedGroupID || "-"}</p>
-            </IonLabel>
+        <IonCard className="savings-hero-card">
+          <IonCardContent className="savings-hero-card__content">
+            <div className="savings-hero-card__meta">
+              <div className="savings-hero-card__text">
+                <h2>
+                  {selectedGroupName ||
+                    localStorage.getItem("selectedGroupName") ||
+                    "No group selected"}
+                </h2>
+                <p>{selectedGroupID || localStorage.getItem("selectedGroupID") || "-"}</p>
+              </div>
+              <IonBadge color="light" className="savings-hero-card__badge">
+                {membersWithSavings.length} members
+              </IonBadge>
+            </div>
           </IonCardContent>
         </IonCard>
 
-        <IonCard>
-          <IonCardHeader>
-            <IonCardTitle>Total Savings</IonCardTitle>
-          </IonCardHeader>
-          <IonCardContent>
-            <IonBadge color="success">
-              {formatAmountDisplay(totalGroupSavings)}
-            </IonBadge>
-          </IonCardContent>
-        </IonCard>
+        <div className="savings-overview-grid">
+          <IonCard className="savings-stat-card">
+            <IonCardContent>
+              <div className="savings-stat-card__row">
+                <span className="savings-stat-card__label">Total Savings</span>
+                <IonBadge color="success" className="savings-stat-card__badge">
+                  {formatAmountDisplay(totalGroupSavings)}
+                </IonBadge>
+              </div>
+            </IonCardContent>
+          </IonCard>
 
-        <IonCard>
+          <IonCard className="savings-stat-card">
+            <IonCardContent>
+              <div className="savings-stat-card__row">
+                <span className="savings-stat-card__label">Savings Records</span>
+                <IonBadge color="success" className="savings-stat-card__badge">
+                  {sortedGroupSavings.length.toLocaleString()}
+                </IonBadge>
+              </div>
+            </IonCardContent>
+          </IonCard>
+        </div>
+
+        <IonCard className="savings-section-card">
           <IonCardHeader>
             <IonCardTitle>Savings Accounts</IonCardTitle>
           </IonCardHeader>
@@ -409,23 +459,35 @@ const Savings: React.FC = () => {
             ) : (
               <IonList className="group-savings-types-list">
                 {savingsTypes.map((type) => (
-                  <IonCard key={type.TypeID} className="group-savings-type-card">
-                    <IonCardContent>
-                      <IonItem lines="none">
+                  <IonCard
+                    key={type.TypeID}
+                    className="group-savings-type-card"
+                    onClick={() => openAddModalForType(type)}
+                  >
+                    <IonCardContent
+                      className="group-savings-type-card__content"
+                    >
+                      <div className="group-savings-type-card__copy">
                         <IonLabel>
                           <h3>{type.savings_name}</h3>
+                          <p>Add or update savings for this account</p>
                         </IonLabel>
-                        <IonBadge color="success" slot="end">
+                      </div>
+                      <div className="group-savings-type-card__actions">
+                        <IonBadge color="success" className="group-savings-type-card__badge">
                           {formatAmountDisplay(totalByType[type.TypeID] || 0)}
                         </IonBadge>
                         <IonButton
-                          slot="end"
                           fill="clear"
-                          onClick={() => openAddModalForType(type)}
+                          className="group-savings-type-card__button"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            openAddModalForType(type);
+                          }}
                         >
                           <IonIcon icon={addCircleOutline} />
                         </IonButton>
-                      </IonItem>
+                      </div>
                     </IonCardContent>
                   </IonCard>
                 ))}
@@ -434,70 +496,89 @@ const Savings: React.FC = () => {
           </IonCardContent>
         </IonCard>
 
-        <IonModal isOpen={showAddModal}>
+        <IonModal
+          isOpen={showAddModal}
+          onDidDismiss={closeAddModal}
+          keepContentsMounted={false}
+        >
           <IonHeader>
             <IonToolbar color="success">
               <IonTitle>{editingRecID ? "Edit Saving" : "Add Saving"}</IonTitle>
               <IonButtons slot="end">
-                <IonButton onClick={() => setShowAddModal(false)}>
+                <IonButton onClick={closeAddModal}>
                   Close
                 </IonButton>
               </IonButtons>
             </IonToolbar>
           </IonHeader>
 
-          <IonContent className="ion-padding">
-            <IonItem>
-              <IonLabel position="stacked">Amount</IonLabel>
-              <IonInput
-                value={amount}
-                inputMode="numeric"
-                onIonInput={(e) =>
-                  setAmount(formatAmountInput(String(e.detail?.value ?? "")))
-                }
-              />
-            </IonItem>
+          <IonContent className="ion-padding app-record-modal-content">
+            <div className="app-record-modal-stack">
+              <IonCard className="app-record-modal-hero">
+                <IonCardContent>
+                  <IonLabel>
+                    <h2>{activeType?.savings_name || "Group Saving"}</h2>
+                    <p>{selectedGroupName || selectedGroupID || "-"}</p>
+                  </IonLabel>
+                </IonCardContent>
+              </IonCard>
 
-            <IonItem>
-              <IonLabel position="stacked">Month</IonLabel>
-              <IonSelect
-                value={month}
-                onIonChange={(e) => setMonth(String(e.detail?.value ?? ""))}
+              <IonItem className="app-record-modal-item">
+                <IonLabel position="stacked">Amount</IonLabel>
+                <IonInput
+                  value={amount}
+                  inputMode="numeric"
+                  placeholder="Enter amount"
+                  onIonInput={(e) =>
+                    setAmount(formatAmountInput(String(e.detail?.value ?? "")))
+                  }
+                />
+              </IonItem>
+
+              <IonItem className="app-record-modal-item">
+                <IonLabel position="stacked">Month</IonLabel>
+                <IonSelect
+                  value={month}
+                  placeholder="Select month"
+                  onIonChange={(e) => setMonth(String(e.detail?.value ?? ""))}
+                >
+                  {monthOptions.map((m) => (
+                    <IonSelectOption key={m.value} value={m.value}>
+                      {m.label}
+                    </IonSelectOption>
+                  ))}
+                </IonSelect>
+              </IonItem>
+
+              <IonItem className="app-record-modal-item">
+                <IonLabel position="stacked">Year</IonLabel>
+                <IonSelect
+                  value={year}
+                  placeholder="Select year"
+                  onIonChange={(e) => setYear(String(e.detail?.value ?? ""))}
+                >
+                  {yearOptions.map((y) => (
+                    <IonSelectOption key={y} value={y}>
+                      {y}
+                    </IonSelectOption>
+                  ))}
+                </IonSelect>
+              </IonItem>
+
+              <IonButton
+                expand="block"
+                color="success"
+                onClick={handleSaveGroupSaving}
+                disabled={saving}
+                className="app-record-modal-save"
               >
-                {monthOptions.map((m) => (
-                  <IonSelectOption key={m.value} value={m.value}>
-                    {m.label}
-                  </IonSelectOption>
-                ))}
-              </IonSelect>
-            </IonItem>
-
-            <IonItem>
-              <IonLabel position="stacked">Year</IonLabel>
-              <IonSelect
-                value={year}
-                onIonChange={(e) => setYear(String(e.detail?.value ?? ""))}
-              >
-                {yearOptions.map((y) => (
-                  <IonSelectOption key={y} value={y}>
-                    {y}
-                  </IonSelectOption>
-                ))}
-              </IonSelect>
-            </IonItem>
-
-            <IonButton
-              expand="block"
-              color="success"
-              onClick={handleSaveGroupSaving}
-              disabled={saving}
-            >
-              {saving ? <IonSpinner name="crescent" /> : "Save"}
-            </IonButton>
+                {saving ? <IonSpinner name="crescent" /> : "Save"}
+              </IonButton>
+            </div>
           </IonContent>
         </IonModal>
 
-        <IonCard>
+        <IonCard className="savings-section-card">
           <IonCardHeader>
             <IonCardTitle>Group Savings History</IonCardTitle>
           </IonCardHeader>
@@ -505,94 +586,29 @@ const Savings: React.FC = () => {
             {sortedGroupSavings.length === 0 ? (
               <IonLabel color="medium">No group savings recorded yet.</IonLabel>
             ) : (
-              <IonList>
+              <IonList className="savings-history-list">
                 {sortedGroupSavings.map((row) => (
-                  <IonItem key={row.RecID || `${row.GroupID}-${row.Month}-${row.Yr}-${row.sType}`}>
-                    <IonLabel>
-                      <h3>{savingsTypeNameById[String(row.sType || "")] || "Group Saving"}</h3>
-                      <p>{formatMonthYearLabel(row)}</p>
-                      <p>{formatAmountDisplay(row.Amount)}</p>
-                    </IonLabel>
-                    <div
-                      slot="end"
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "2px",
-                        flexShrink: 0,
-                      }}
-                    >
+                  <IonCard
+                    key={row.RecID || `${row.GroupID}-${row.Month}-${row.Yr}-${row.sType}`}
+                    className="savings-history-card"
+                  >
+                    <IonCardContent className="savings-history-card__content">
+                      <div className="savings-history-card__copy">
+                        <h3>{savingsTypeNameById[String(row.sType || "")] || "Group Saving"}</h3>
+                        <p>{formatMonthYearLabel(row)}</p>
+                        <strong>{formatAmountDisplay(row.Amount)}</strong>
+                      </div>
                       <IonButton
                         fill="clear"
-                        size="small"
-                        title="View"
-                        onClick={() => setViewRow(row)}
-                        style={{ margin: 0 }}
+                        className="savings-history-card__menu"
+                        title="More actions"
+                        onClick={() => setHistoryActionRow(row)}
                       >
-                        <IonIcon icon={eyeOutline} />
+                        <IonIcon icon={ellipsisHorizontal} />
                       </IonButton>
-                      <IonButton
-                        fill="clear"
-                        size="small"
-                        title="Edit"
-                        onClick={() => openEditModalForSaving(row)}
-                        style={{ margin: 0 }}
-                      >
-                        <IonIcon icon={createOutline} />
-                      </IonButton>
-                      <IonButton
-                        fill="clear"
-                        size="small"
-                        color="danger"
-                        title="Delete"
-                        onClick={() => handleDeleteSaving(row.RecID)}
-                        style={{ margin: 0 }}
-                      >
-                        <IonIcon icon={trashOutline} />
-                      </IonButton>
-                    </div>
-                  </IonItem>
+                    </IonCardContent>
+                  </IonCard>
                 ))}
-              </IonList>
-            )}
-          </IonCardContent>
-        </IonCard>
-
-        <IonCard>
-          <IonCardHeader>
-            <IonCardTitle>Member Savings</IonCardTitle>
-          </IonCardHeader>
-          <IonCardContent>
-            {membersWithSavings.length === 0 ? (
-              <IonLabel color="medium">No members found for this group.</IonLabel>
-            ) : (
-              <IonList>
-                {membersWithSavings.map((member) => {
-                  const memberCode = String(member.sppCode || "");
-                  const totalForMember = memberSavingsTotalsByCode[memberCode] || 0;
-
-                  return (
-                    <IonCard
-                      key={memberCode || member.hh_code}
-                      button
-                      onClick={() =>
-                        history.push(
-                          `/groups/savings/member/${encodeURIComponent(memberCode)}`,
-                        )
-                      }
-                      className="member-savings-card"
-                    >
-                      <IonCardContent className="member-savings-card-content">
-                        <IonLabel>
-                          <h3>{member.hh_head_name || memberCode || "Member"}</h3>
-                          <p>ML Code: {member.hh_code || "-"}</p>
-                          <p>Total Savings: {formatAmountDisplay(totalForMember)}</p>
-                        </IonLabel>
-                        <IonIcon icon={chevronForward} slot="end" />
-                      </IonCardContent>
-                    </IonCard>
-                  );
-                })}
               </IonList>
             )}
           </IonCardContent>
@@ -607,37 +623,125 @@ const Savings: React.FC = () => {
               </IonButtons>
             </IonToolbar>
           </IonHeader>
-          <IonContent className="ion-padding">
-            <IonItem lines="none">
-              <IonLabel>
-                <h3>Group</h3>
-                <p>{selectedGroupName || selectedGroupID || "-"}</p>
-              </IonLabel>
-            </IonItem>
-            <IonItem lines="none">
-              <IonLabel>
-                <h3>Saving Type</h3>
-                <p>
-                  {savingsTypeNameById[String(viewRow?.sType || "")] ||
-                    viewRow?.sType ||
-                    "-"}
-                </p>
-              </IonLabel>
-            </IonItem>
-            <IonItem lines="none">
-              <IonLabel>
-                <h3>Month & Year</h3>
-                <p>{viewRow ? formatMonthYearLabel(viewRow) : "-"}</p>
-              </IonLabel>
-            </IonItem>
-            <IonItem lines="none">
-              <IonLabel>
-                <h3>Amount</h3>
-                <p>{formatAmountDisplay(viewRow?.Amount)}</p>
-              </IonLabel>
-            </IonItem>
+          <IonContent className="ion-padding app-record-modal-content">
+            <div className="app-record-modal-stack">
+              <IonCard className="app-record-modal-hero">
+                <IonCardContent>
+                  <IonLabel>
+                    <h2>
+                      {savingsTypeNameById[String(viewRow?.sType || "")] ||
+                        viewRow?.sType ||
+                        "Group Saving"}
+                    </h2>
+                    <p>{selectedGroupName || selectedGroupID || "-"}</p>
+                  </IonLabel>
+                </IonCardContent>
+              </IonCard>
+              <IonItem lines="none" className="app-record-modal-item">
+                <IonLabel>
+                  <h3>Group</h3>
+                  <p>{selectedGroupName || selectedGroupID || "-"}</p>
+                </IonLabel>
+              </IonItem>
+              <IonItem lines="none" className="app-record-modal-item">
+                <IonLabel>
+                  <h3>Saving Type</h3>
+                  <p>
+                    {savingsTypeNameById[String(viewRow?.sType || "")] ||
+                      viewRow?.sType ||
+                      "-"}
+                  </p>
+                </IonLabel>
+              </IonItem>
+              <IonItem lines="none" className="app-record-modal-item">
+                <IonLabel>
+                  <h3>Month & Year</h3>
+                  <p>{viewRow ? formatMonthYearLabel(viewRow) : "-"}</p>
+                </IonLabel>
+              </IonItem>
+              <IonItem lines="none" className="app-record-modal-item">
+                <IonLabel>
+                  <h3>Amount</h3>
+                  <p>{formatAmountDisplay(viewRow?.Amount)}</p>
+                </IonLabel>
+              </IonItem>
+            </div>
           </IonContent>
         </IonModal>
+
+        <IonActionSheet
+          isOpen={!!historyActionRow}
+          header={
+            historyActionRow
+              ? savingsTypeNameById[String(historyActionRow.sType || "")] || "Group Saving"
+              : "Group Saving"
+          }
+          subHeader={historyActionRow ? formatMonthYearLabel(historyActionRow) : undefined}
+          onDidDismiss={() => setHistoryActionRow(null)}
+          buttons={[
+            {
+              text: "View Details",
+              icon: eyeOutline,
+              handler: () => {
+                if (historyActionRow) setViewRow(historyActionRow);
+              },
+            },
+            {
+              text: "Edit Saving",
+              icon: createOutline,
+              handler: () => {
+                if (historyActionRow) openEditModalForSaving(historyActionRow);
+              },
+            },
+            {
+              text: "Delete Saving",
+              role: "destructive",
+              icon: trashOutline,
+              handler: () => {
+                if (historyActionRow) setDeleteTarget(historyActionRow);
+              },
+            },
+            {
+              text: "Cancel",
+              role: "cancel",
+            },
+          ]}
+        />
+
+        <IonAlert
+          isOpen={!!deleteTarget}
+          header="Delete Group Saving?"
+          message={
+            deleteTarget
+              ? [
+                  `Saving Type: ${
+                    savingsTypeNameById[String(deleteTarget.sType || "")] ||
+                    "Group Saving"
+                  }`,
+                  `Period: ${formatMonthYearLabel(deleteTarget)}`,
+                  `Amount: ${formatAmountDisplay(deleteTarget.Amount)}`,
+                ].join("\n")
+              : ""
+          }
+          buttons={[
+            {
+              text: "Cancel",
+              role: "cancel",
+              handler: () => setDeleteTarget(null),
+            },
+            {
+              text: "Delete",
+              role: "destructive",
+              handler: () => {
+                if (deleteTarget) {
+                  void handleDeleteSaving(deleteTarget.RecID);
+                  setDeleteTarget(null);
+                }
+              },
+            },
+          ]}
+          onDidDismiss={() => setDeleteTarget(null)}
+        />
       </IonContent>
     </IonPage>
   );

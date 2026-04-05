@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  IonActionSheet,
   IonAlert,
   IonBadge,
   IonButton,
@@ -27,6 +28,7 @@ import {
 import {
   addCircleOutline,
   arrowBack,
+  ellipsisHorizontal,
   createOutline,
   eyeOutline,
   trashOutline,
@@ -139,6 +141,7 @@ const GroupIGA: React.FC = () => {
   const [editingRow, setEditingRow] = useState<GroupIGARow | null>(null);
   const [viewRow, setViewRow] = useState<GroupIGARow | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<GroupIGARow | null>(null);
+  const [actionRow, setActionRow] = useState<GroupIGARow | null>(null);
   const [actionMessage, setActionMessage] = useState("");
   const [form, setForm] = useState<FormState>(emptyForm);
 
@@ -372,7 +375,8 @@ const GroupIGA: React.FC = () => {
       </IonHeader>
 
       <IonContent className="ion-padding">
-        <IonCard>
+        <div className="app-detail-modal-shell">
+        <IonCard className="app-detail-hero-card">
           <IonCardContent>
             <IonLabel>
               <h2>{selectedGroupName || "No group selected"}</h2>
@@ -423,7 +427,8 @@ const GroupIGA: React.FC = () => {
             {rows.map((row) => (
               <IonCard key={row.recID || `${row.groupID}-${row.imonth}-${row.iyear}`}>
                 <IonCardContent>
-                  <IonItem lines="none">
+                  <div className="app-inline-action-row">
+                    <div className="app-inline-action-main">
                       <IonLabel>
                         <h2>
                           {businessCategoryNameById[String(row.bus_category || "")] ||
@@ -437,53 +442,23 @@ const GroupIGA: React.FC = () => {
                         <p>
                           Period: {monthName(row.imonth)} {row.iyear || "-"}
                         </p>
-                    </IonLabel>
-                    <IonBadge slot="end" color="success">
-                      {formatAmountDisplay(row.amount_invested)}
-                    </IonBadge>
-                  </IonItem>
-
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      flexWrap: "nowrap",
-                      overflowX: "auto",
-                      marginTop: "8px",
-                    }}
-                  >
+                      </IonLabel>
+                    </div>
+                    <div className="app-inline-action-trailing">
+                      <IonBadge color="success">
+                        {formatAmountDisplay(row.amount_invested)}
+                      </IonBadge>
                     <IonButton
                       fill="clear"
                       size="small"
-                      title="View"
-                      aria-label="View group IGA"
-                      style={{ margin: 0, minWidth: "36px" }}
-                      onClick={() => setViewRow(row)}
+                      title="More actions"
+                      aria-label="More actions"
+                      className="app-inline-action-button"
+                      onClick={() => setActionRow(row)}
                     >
-                      <IonIcon icon={eyeOutline} />
+                      <IonIcon icon={ellipsisHorizontal} slot="icon-only" />
                     </IonButton>
-                    <IonButton
-                      fill="clear"
-                      size="small"
-                      title="Edit"
-                      aria-label="Edit group IGA"
-                      style={{ margin: 0, minWidth: "36px" }}
-                      onClick={() => openEditModal(row)}
-                    >
-                      <IonIcon icon={createOutline} />
-                    </IonButton>
-                    <IonButton
-                      fill="clear"
-                      color="danger"
-                      size="small"
-                      title="Delete"
-                      aria-label="Delete group IGA"
-                      style={{ margin: 0, minWidth: "36px" }}
-                      onClick={() => setDeleteTarget(row)}
-                    >
-                      <IonIcon icon={trashOutline} />
-                    </IonButton>
+                    </div>
                   </div>
                 </IonCardContent>
               </IonCard>
@@ -513,8 +488,17 @@ const GroupIGA: React.FC = () => {
               </IonButtons>
             </IonToolbar>
           </IonHeader>
-          <IonContent className="ion-padding">
-            <IonItem>
+          <IonContent className="ion-padding app-record-modal-content">
+            <div className="app-record-modal-stack">
+            <IonCard className="app-record-modal-hero">
+              <IonCardContent>
+                <IonLabel>
+                  <h2>{editingRow ? "Edit Group IGA" : "Add Group IGA"}</h2>
+                  <p>{selectedGroupName || selectedGroupID || "-"}</p>
+                </IonLabel>
+              </IonCardContent>
+            </IonCard>
+            <IonItem className="app-record-modal-item">
               <IonLabel position="stacked">Select Business Category</IonLabel>
               <IonSelect
                 value={form.bus_category}
@@ -537,7 +521,7 @@ const GroupIGA: React.FC = () => {
                 ))}
               </IonSelect>
             </IonItem>
-            <IonItem>
+            <IonItem className="app-record-modal-item">
               <IonLabel position="stacked">Select IGA Type</IonLabel>
               <IonSelect
                 value={form.type}
@@ -559,10 +543,11 @@ const GroupIGA: React.FC = () => {
                 ))}
               </IonSelect>
             </IonItem>
-            <IonItem>
+            <IonItem className="app-record-modal-item">
               <IonLabel position="stacked">No. Male</IonLabel>
               <IonInput
                 type="number"
+                placeholder="Enter number of males"
                 value={form.no_male}
                 onIonInput={(e) =>
                   setForm((prev) => ({
@@ -572,10 +557,11 @@ const GroupIGA: React.FC = () => {
                 }
               />
             </IonItem>
-            <IonItem>
+            <IonItem className="app-record-modal-item">
               <IonLabel position="stacked">No. Female</IonLabel>
               <IonInput
                 type="number"
+                placeholder="Enter number of females"
                 value={form.no_female}
                 onIonInput={(e) =>
                   setForm((prev) => ({
@@ -586,10 +572,11 @@ const GroupIGA: React.FC = () => {
                 }
               />
             </IonItem>
-            <IonItem>
+            <IonItem className="app-record-modal-item">
               <IonLabel position="stacked">Amount Invested</IonLabel>
               <IonInput
                 inputMode="numeric"
+                placeholder="Enter amount invested"
                 value={form.amount_invested}
                 onIonInput={(e) =>
                   setForm((prev) => ({
@@ -601,10 +588,11 @@ const GroupIGA: React.FC = () => {
                 }
               />
             </IonItem>
-            <IonItem>
+            <IonItem className="app-record-modal-item">
               <IonLabel position="stacked">Month</IonLabel>
               <IonSelect
                 value={form.imonth}
+                placeholder="Select month"
                 onIonChange={(e) =>
                   setForm((prev) => ({
                     ...prev,
@@ -619,10 +607,11 @@ const GroupIGA: React.FC = () => {
                 ))}
               </IonSelect>
             </IonItem>
-            <IonItem>
+            <IonItem className="app-record-modal-item">
               <IonLabel position="stacked">Year</IonLabel>
               <IonSelect
                 value={form.iyear}
+                placeholder="Select year"
                 onIonChange={(e) =>
                   setForm((prev) => ({
                     ...prev,
@@ -643,9 +632,11 @@ const GroupIGA: React.FC = () => {
               color="success"
               onClick={handleSave}
               disabled={saving}
+              className="app-record-modal-save"
             >
               {saving ? "Saving..." : editingRow ? "Update Group IGA" : "Add Group IGA"}
             </IonButton>
+            </div>
           </IonContent>
         </IonModal>
 
@@ -658,8 +649,21 @@ const GroupIGA: React.FC = () => {
               </IonButtons>
             </IonToolbar>
           </IonHeader>
-          <IonContent className="ion-padding">
-            <IonItem lines="none">
+          <IonContent className="ion-padding app-record-modal-content">
+            <div className="app-record-modal-stack">
+            <IonCard className="app-record-modal-hero">
+              <IonCardContent>
+                <IonLabel>
+                  <h2>
+                    {igaTypeNameById[String(viewRow?.type || "")] ||
+                      businessCategoryNameById[String(viewRow?.bus_category || "")] ||
+                      "Group IGA"}
+                  </h2>
+                  <p>{selectedGroupName || selectedGroupID || "-"}</p>
+                </IonLabel>
+              </IonCardContent>
+            </IonCard>
+            <IonItem lines="none" className="app-record-modal-item">
               <IonLabel>
                 <h3>Business Category</h3>
                 <p>
@@ -669,7 +673,7 @@ const GroupIGA: React.FC = () => {
                 </p>
               </IonLabel>
             </IonItem>
-            <IonItem lines="none">
+            <IonItem lines="none" className="app-record-modal-item">
               <IonLabel>
                 <h3>IGA Type</h3>
                 <p>
@@ -679,25 +683,25 @@ const GroupIGA: React.FC = () => {
                 </p>
               </IonLabel>
             </IonItem>
-            <IonItem lines="none">
+            <IonItem lines="none" className="app-record-modal-item">
               <IonLabel>
                 <h3>Male Participants</h3>
                 <p>{Number(viewRow?.no_male || 0)}</p>
               </IonLabel>
             </IonItem>
-            <IonItem lines="none">
+            <IonItem lines="none" className="app-record-modal-item">
               <IonLabel>
                 <h3>Female Participants</h3>
                 <p>{Number(viewRow?.no_female || 0)}</p>
               </IonLabel>
             </IonItem>
-            <IonItem lines="none">
+            <IonItem lines="none" className="app-record-modal-item">
               <IonLabel>
                 <h3>Amount Invested</h3>
                 <p>{formatAmountDisplay(viewRow?.amount_invested)}</p>
               </IonLabel>
             </IonItem>
-            <IonItem lines="none">
+            <IonItem lines="none" className="app-record-modal-item">
               <IonLabel>
                 <h3>Period</h3>
                 <p>
@@ -705,8 +709,51 @@ const GroupIGA: React.FC = () => {
                 </p>
               </IonLabel>
             </IonItem>
+            </div>
           </IonContent>
         </IonModal>
+
+        <IonActionSheet
+          isOpen={!!actionRow}
+          onDidDismiss={() => setActionRow(null)}
+          header={
+            actionRow
+              ? igaTypeNameById[String(actionRow.type || "")] ||
+                businessCategoryNameById[String(actionRow.bus_category || "")] ||
+                "Group IGA"
+              : "Group IGA"
+          }
+          subHeader={
+            actionRow
+              ? `Period: ${monthName(actionRow.imonth)} ${actionRow.iyear || "-"}`
+              : undefined
+          }
+          buttons={[
+            {
+              text: "View Details",
+              icon: eyeOutline,
+              handler: () => {
+                if (actionRow) setViewRow(actionRow);
+              },
+            },
+            {
+              text: "Edit Group IGA",
+              icon: createOutline,
+              handler: () => {
+                if (actionRow) openEditModal(actionRow);
+              },
+            },
+            {
+              text: "Delete Group IGA",
+              role: "destructive",
+              icon: trashOutline,
+              handler: () => {
+                if (actionRow) setDeleteTarget(actionRow);
+              },
+            },
+            { text: "Cancel", role: "cancel" },
+          ]}
+        />
 
         <IonAlert
           isOpen={!!deleteTarget}
@@ -726,6 +773,7 @@ const GroupIGA: React.FC = () => {
           message={actionMessage}
           buttons={["OK"]}
         />
+        </div>
       </IonContent>
     </IonPage>
   );

@@ -40,7 +40,7 @@ export type MemberTraining = {
 };
 
 export type GroupIGA = {
-  recID?: number;
+  recID?: string | number;
   groupID?: string;
   districtID?: string;
   bus_category?: string;
@@ -50,10 +50,11 @@ export type GroupIGA = {
   amount_invested?: number | string;
   imonth?: string;
   iyear?: string;
+  _queued?: boolean;
 };
 
 export type MemberIGA = {
-  recID?: number;
+  recID?: string | number;
   groupID?: string;
   districtID?: string;
   sppCode?: string;
@@ -62,6 +63,7 @@ export type MemberIGA = {
   amount_invested?: number | string;
   imonth?: string;
   iyear?: string;
+  _queued?: boolean;
 };
 
 const prependCachedItem = <T>(items: T[], item: T) => [item, ...items];
@@ -333,18 +335,33 @@ export const createGroupIGA = async (
     >
   >,
 ) => {
-  const created = await apiPost<GroupIGA & { id?: number }>("/group-igas", payload);
+  const offlineGroupIgaId = makeOfflineTempId("group_iga");
+  const created = await apiPost<GroupIGA & { id?: number; _queued?: boolean }>(
+    "/group-igas",
+    {
+      ...payload,
+      recID: offlineGroupIgaId,
+    },
+  );
+  const nextRecId =
+    created?._queued
+      ? offlineGroupIgaId
+      : created?.recID ?? created?.id ?? undefined;
   await updateCachedCollection<GroupIGA>("/group-igas", (items) =>
     prependCachedItem(items, {
       ...payload,
-      recID: created?.recID ?? created?.id ?? undefined,
+      recID: nextRecId,
+      _queued: Boolean(created?._queued),
     }),
   );
-  return created;
+  return {
+    ...created,
+    recID: nextRecId,
+  };
 };
 
 export const updateGroupIGA = async (
-  recID: number,
+  recID: string | number,
   payload: Partial<GroupIGA>,
 ) =>
   apiPatch(`/group-igas/${encodeURIComponent(String(recID))}`, payload).then(
@@ -356,7 +373,7 @@ export const updateGroupIGA = async (
     },
   );
 
-export const deleteGroupIGA = async (recID: number) =>
+export const deleteGroupIGA = async (recID: string | number) =>
   apiPatch(`/group-igas/${encodeURIComponent(String(recID))}/delete`, {}).then(
     async (result) => {
       await updateCachedCollection<GroupIGA>("/group-igas", (items) =>
@@ -365,6 +382,46 @@ export const deleteGroupIGA = async (recID: number) =>
       return result;
     },
   );
+
+export const createMemberIGA = async (
+  payload: Required<
+    Pick<
+      MemberIGA,
+      | "groupID"
+      | "districtID"
+      | "sppCode"
+      | "bus_category"
+      | "type"
+      | "amount_invested"
+      | "imonth"
+      | "iyear"
+    >
+  >,
+) => {
+  const offlineMemberIgaId = makeOfflineTempId("member_iga");
+  const created = await apiPost<MemberIGA & { id?: number; _queued?: boolean }>(
+    "/member-igas",
+    {
+      ...payload,
+      recID: offlineMemberIgaId,
+    },
+  );
+  const nextRecId =
+    created?._queued
+      ? offlineMemberIgaId
+      : created?.recID ?? created?.id ?? undefined;
+  await updateCachedCollection<MemberIGA>("/member-igas", (items) =>
+    prependCachedItem(items, {
+      ...payload,
+      recID: nextRecId,
+      _queued: Boolean(created?._queued),
+    }),
+  );
+  return {
+    ...created,
+    recID: nextRecId,
+  };
+};
 
 export const fetchMemberIGAs = async (): Promise<MemberIGA[]> => {
   const rows = await apiGet<MemberIGA[]>("/member-igas");
@@ -384,33 +441,8 @@ export const fetchMemberIGAsByMember = async (
   );
 };
 
-export const createMemberIGA = async (
-  payload: Required<
-    Pick<
-      MemberIGA,
-      | "groupID"
-      | "districtID"
-      | "sppCode"
-      | "bus_category"
-      | "type"
-      | "amount_invested"
-      | "imonth"
-      | "iyear"
-    >
-  >,
-) => {
-  const created = await apiPost<MemberIGA & { id?: number }>("/member-igas", payload);
-  await updateCachedCollection<MemberIGA>("/member-igas", (items) =>
-    prependCachedItem(items, {
-      ...payload,
-      recID: created?.recID ?? created?.id ?? undefined,
-    }),
-  );
-  return created;
-};
-
 export const updateMemberIGA = async (
-  recID: number,
+  recID: string | number,
   payload: Partial<MemberIGA>,
 ) =>
   apiPatch(`/member-igas/${encodeURIComponent(String(recID))}`, payload).then(
@@ -422,7 +454,7 @@ export const updateMemberIGA = async (
     },
   );
 
-export const deleteMemberIGA = async (recID: number) =>
+export const deleteMemberIGA = async (recID: string | number) =>
   apiPatch(`/member-igas/${encodeURIComponent(String(recID))}/delete`, {}).then(
     async (result) => {
       await updateCachedCollection<MemberIGA>("/member-igas", (items) =>

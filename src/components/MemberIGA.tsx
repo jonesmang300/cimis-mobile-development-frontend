@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  IonActionSheet,
   IonAlert,
   IonBadge,
   IonButton,
@@ -27,7 +28,9 @@ import {
 import {
   addCircleOutline,
   arrowBack,
+  ellipsisHorizontal,
   createOutline,
+  eyeOutline,
   trashOutline,
 } from "ionicons/icons";
 import { useHistory, useParams } from "react-router-dom";
@@ -45,6 +48,13 @@ import {
 
 type Params = {
   sppCode: string;
+};
+
+type MemberIGAProps = {
+  embedded?: boolean;
+  isOpen?: boolean;
+  onClose?: () => void;
+  sppCodeOverride?: string;
 };
 
 type GroupMeta = {
@@ -137,10 +147,15 @@ const monthName = (monthValue: string | number | null | undefined) => {
   return monthOptions.find((m) => m.value === value)?.label || "-";
 };
 
-const MemberIGA: React.FC = () => {
+const MemberIGA: React.FC<MemberIGAProps> = ({
+  embedded = false,
+  isOpen = true,
+  onClose,
+  sppCodeOverride,
+}) => {
   const history = useHistory();
   const { sppCode: sppCodeParam } = useParams<Params>();
-  const sppCode = safeDecodeURIComponent(sppCodeParam || "");
+  const sppCode = safeDecodeURIComponent(sppCodeOverride ?? sppCodeParam ?? "");
   const { selectedGroupID, selectedGroupName, refreshSelectedGroup } =
     useSelectedGroup();
 
@@ -155,6 +170,7 @@ const MemberIGA: React.FC = () => {
   const [editingRow, setEditingRow] = useState<MemberIGARow | null>(null);
   const [viewRow, setViewRow] = useState<MemberIGARow | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<MemberIGARow | null>(null);
+  const [actionRow, setActionRow] = useState<MemberIGARow | null>(null);
   const [actionMessage, setActionMessage] = useState("");
   const [form, setForm] = useState<FormState>(emptyForm);
 
@@ -381,30 +397,27 @@ const MemberIGA: React.FC = () => {
     }
   };
 
-  return (
-    <IonPage>
-      <IonHeader>
-        <IonToolbar color="success">
-          <IonButtons slot="start">
-            <IonButton onClick={() => history.goBack()} color="light">
-              <IonIcon icon={arrowBack} />
-            </IonButton>
-          </IonButtons>
-          <IonTitle style={{ color: "white" }}>Member IGA</IonTitle>
-        </IonToolbar>
-      </IonHeader>
+  const handleClose = onClose ?? (() => history.goBack());
 
+  const content = (
       <IonContent className="ion-padding">
-        <IonItem lines="none">
-          <IonLabel>
-            <h2>{beneficiaryMeta?.hh_head_name || "Selected Beneficiary"}</h2>
-            <p>ML Code: {beneficiaryMeta?.hh_code || "-"}</p>
-            <p>{selectedGroupName || selectedGroupID || "Selected Group"}</p>
-          </IonLabel>
-          <IonBadge slot="end" color="success">
-            {rows.length}
-          </IonBadge>
-        </IonItem>
+        <div className="app-detail-modal-shell">
+        <IonCard className="app-detail-hero-card">
+          <IonCardContent>
+            <div className="app-inline-action-row">
+              <div className="app-inline-action-main">
+                <IonLabel>
+                  <h2>{beneficiaryMeta?.hh_head_name || "Selected Beneficiary"}</h2>
+                  <p>ML Code: {beneficiaryMeta?.hh_code || "-"}</p>
+                  <p>{selectedGroupName || selectedGroupID || "Selected Group"}</p>
+                </IonLabel>
+              </div>
+              <div className="app-inline-action-trailing">
+                <IonBadge color="light">{rows.length}</IonBadge>
+              </div>
+            </div>
+          </IonCardContent>
+        </IonCard>
 
         <IonButton
           expand="block"
@@ -449,7 +462,8 @@ const MemberIGA: React.FC = () => {
             {rows.map((row) => (
               <IonCard key={row.recID}>
                 <IonCardContent>
-                  <IonItem lines="none">
+                  <div className="app-inline-action-row">
+                    <div className="app-inline-action-main">
                     <IonLabel>
                       <h2>
                         {igaTypeNameById[String(row.type || "")] ||
@@ -469,31 +483,23 @@ const MemberIGA: React.FC = () => {
                         Period: {monthName(row.imonth)} {row.iyear || "-"}
                       </p>
                     </IonLabel>
-                    <IonButtons
-                      slot="end"
-                      style={{ display: "flex", flexWrap: "nowrap", gap: "4px" }}
-                    >
+                    </div>
+                    <div className="app-inline-action-trailing">
+                      <IonBadge color="success">
+                        {formatAmountDisplay(row.amount_invested)}
+                      </IonBadge>
                       <IonButton
                         fill="clear"
                         size="small"
-                        title="Edit"
-                        onClick={() => openEditModal(row)}
-                        style={{ margin: 0, minWidth: "36px" }}
+                        title="More actions"
+                        aria-label="More actions"
+                        className="app-inline-action-button"
+                        onClick={() => setActionRow(row)}
                       >
-                        <IonIcon icon={createOutline} />
+                        <IonIcon icon={ellipsisHorizontal} slot="icon-only" />
                       </IonButton>
-                      <IonButton
-                        fill="clear"
-                        color="danger"
-                        size="small"
-                        title="Delete"
-                        onClick={() => setDeleteTarget(row)}
-                        style={{ margin: 0, minWidth: "36px" }}
-                      >
-                        <IonIcon icon={trashOutline} />
-                      </IonButton>
-                    </IonButtons>
-                  </IonItem>
+                    </div>
+                  </div>
                 </IonCardContent>
               </IonCard>
             ))}
@@ -524,8 +530,17 @@ const MemberIGA: React.FC = () => {
               </IonButtons>
             </IonToolbar>
           </IonHeader>
-          <IonContent className="ion-padding">
-            <IonItem>
+          <IonContent className="ion-padding app-record-modal-content">
+            <div className="app-record-modal-stack">
+            <IonCard className="app-record-modal-hero">
+              <IonCardContent>
+                <IonLabel>
+                  <h2>{editingRow ? "Edit Member IGA" : "Add Member IGA"}</h2>
+                  <p>{beneficiaryMeta?.hh_head_name || beneficiaryMeta?.hh_code || sppCode || "-"}</p>
+                </IonLabel>
+              </IonCardContent>
+            </IonCard>
+            <IonItem className="app-record-modal-item">
               <IonLabel position="stacked">Beneficiary Name</IonLabel>
               <IonLabel style={{ color: "var(--ion-text-color)" }}>
                 <h2 style={{ margin: "8px 0 0" }}>
@@ -533,7 +548,7 @@ const MemberIGA: React.FC = () => {
                 </h2>
               </IonLabel>
             </IonItem>
-            <IonItem>
+            <IonItem className="app-record-modal-item">
               <IonLabel position="stacked">ML Code</IonLabel>
               <IonLabel style={{ color: "var(--ion-text-color)" }}>
                 <h2 style={{ margin: "8px 0 0" }}>
@@ -541,7 +556,7 @@ const MemberIGA: React.FC = () => {
                 </h2>
               </IonLabel>
             </IonItem>
-            <IonItem>
+            <IonItem className="app-record-modal-item">
               <IonLabel position="stacked">Business Category</IonLabel>
               <IonSelect
                 value={form.bus_category}
@@ -564,7 +579,7 @@ const MemberIGA: React.FC = () => {
                 ))}
               </IonSelect>
             </IonItem>
-            <IonItem>
+            <IonItem className="app-record-modal-item">
               <IonLabel position="stacked">IGA Type</IonLabel>
               <IonSelect
                 value={form.type}
@@ -586,10 +601,11 @@ const MemberIGA: React.FC = () => {
                 ))}
               </IonSelect>
             </IonItem>
-            <IonItem>
+            <IonItem className="app-record-modal-item">
               <IonLabel position="stacked">Amount Invested</IonLabel>
               <IonInput
                 inputmode="numeric"
+                placeholder="Enter amount invested"
                 value={form.amount_invested}
                 onIonInput={(e) =>
                   setForm((prev) => ({
@@ -599,10 +615,11 @@ const MemberIGA: React.FC = () => {
                 }
               />
             </IonItem>
-            <IonItem>
+            <IonItem className="app-record-modal-item">
               <IonLabel position="stacked">Month</IonLabel>
               <IonSelect
                 value={form.imonth}
+                placeholder="Select month"
                 onIonChange={(e) =>
                   setForm((prev) => ({
                     ...prev,
@@ -617,10 +634,11 @@ const MemberIGA: React.FC = () => {
                 ))}
               </IonSelect>
             </IonItem>
-            <IonItem>
+            <IonItem className="app-record-modal-item">
               <IonLabel position="stacked">Year</IonLabel>
               <IonSelect
                 value={form.iyear}
+                placeholder="Select year"
                 onIonChange={(e) =>
                   setForm((prev) => ({
                     ...prev,
@@ -641,7 +659,7 @@ const MemberIGA: React.FC = () => {
               color="success"
               disabled={saving}
               onClick={handleSave}
-              style={{ marginTop: 16 }}
+              className="app-record-modal-save"
             >
               {saving ? (
                 <IonSpinner name="crescent" />
@@ -651,6 +669,7 @@ const MemberIGA: React.FC = () => {
                 "Add Member IGA"
               )}
             </IonButton>
+            </div>
           </IonContent>
         </IonModal>
 
@@ -663,20 +682,33 @@ const MemberIGA: React.FC = () => {
               </IonButtons>
             </IonToolbar>
           </IonHeader>
-          <IonContent className="ion-padding">
-            <IonItem lines="none">
+          <IonContent className="ion-padding app-record-modal-content">
+            <div className="app-record-modal-stack">
+            <IonCard className="app-record-modal-hero">
+              <IonCardContent>
+                <IonLabel>
+                  <h2>
+                    {igaTypeNameById[String(viewRow?.type || "")] ||
+                      businessCategoryNameById[String(viewRow?.bus_category || "")] ||
+                      "Member IGA"}
+                  </h2>
+                  <p>{beneficiaryMeta?.hh_head_name || beneficiaryMeta?.hh_code || sppCode || "-"}</p>
+                </IonLabel>
+              </IonCardContent>
+            </IonCard>
+            <IonItem lines="none" className="app-record-modal-item">
               <IonLabel>
                 <h3>Beneficiary Name</h3>
                 <p>{beneficiaryMeta?.hh_head_name || "-"}</p>
               </IonLabel>
             </IonItem>
-            <IonItem lines="none">
+            <IonItem lines="none" className="app-record-modal-item">
               <IonLabel>
                 <h3>ML Code</h3>
                 <p>{beneficiaryMeta?.hh_code || "-"}</p>
               </IonLabel>
             </IonItem>
-            <IonItem lines="none">
+            <IonItem lines="none" className="app-record-modal-item">
               <IonLabel>
                 <h3>Business Category</h3>
                 <p>
@@ -686,19 +718,19 @@ const MemberIGA: React.FC = () => {
                 </p>
               </IonLabel>
             </IonItem>
-            <IonItem lines="none">
+            <IonItem lines="none" className="app-record-modal-item">
               <IonLabel>
                 <h3>IGA Type</h3>
                 <p>{igaTypeNameById[String(viewRow?.type || "")] || viewRow?.type || "-"}</p>
               </IonLabel>
             </IonItem>
-            <IonItem lines="none">
+            <IonItem lines="none" className="app-record-modal-item">
               <IonLabel>
                 <h3>Amount Invested</h3>
                 <p>{formatAmountDisplay(viewRow?.amount_invested)}</p>
               </IonLabel>
             </IonItem>
-            <IonItem lines="none">
+            <IonItem lines="none" className="app-record-modal-item">
               <IonLabel>
                 <h3>Period</h3>
                 <p>
@@ -706,8 +738,51 @@ const MemberIGA: React.FC = () => {
                 </p>
               </IonLabel>
             </IonItem>
+            </div>
           </IonContent>
         </IonModal>
+
+        <IonActionSheet
+          isOpen={!!actionRow}
+          onDidDismiss={() => setActionRow(null)}
+          header={
+            actionRow
+              ? igaTypeNameById[String(actionRow.type || "")] ||
+                businessCategoryNameById[String(actionRow.bus_category || "")] ||
+                "Member IGA"
+              : "Member IGA"
+          }
+          subHeader={
+            actionRow
+              ? `Period: ${monthName(actionRow.imonth)} ${actionRow.iyear || "-"}`
+              : undefined
+          }
+          buttons={[
+            {
+              text: "View Details",
+              icon: eyeOutline,
+              handler: () => {
+                if (actionRow) setViewRow(actionRow);
+              },
+            },
+            {
+              text: "Edit Member IGA",
+              icon: createOutline,
+              handler: () => {
+                if (actionRow) openEditModal(actionRow);
+              },
+            },
+            {
+              text: "Delete Member IGA",
+              role: "destructive",
+              icon: trashOutline,
+              handler: () => {
+                if (actionRow) setDeleteTarget(actionRow);
+              },
+            },
+            { text: "Cancel", role: "cancel" },
+          ]}
+        />
 
         <IonAlert
           isOpen={!!deleteTarget}
@@ -727,7 +802,44 @@ const MemberIGA: React.FC = () => {
           message={actionMessage}
           buttons={["OK"]}
         />
+        </div>
       </IonContent>
+  );
+
+  if (embedded) {
+    return (
+      <IonModal isOpen={isOpen} onDidDismiss={handleClose}>
+        <IonHeader>
+          <IonToolbar color="success">
+            <IonButtons slot="start">
+              <IonButton onClick={handleClose} color="light">
+                <IonIcon icon={arrowBack} />
+              </IonButton>
+            </IonButtons>
+            <IonTitle style={{ color: "white" }}>Member IGA</IonTitle>
+            <IonButtons slot="end">
+              <IonButton onClick={handleClose}>Close</IonButton>
+            </IonButtons>
+          </IonToolbar>
+        </IonHeader>
+        {content}
+      </IonModal>
+    );
+  }
+
+  return (
+    <IonPage>
+      <IonHeader>
+        <IonToolbar color="success">
+          <IonButtons slot="start">
+            <IonButton onClick={handleClose} color="light">
+              <IonIcon icon={arrowBack} />
+            </IonButton>
+          </IonButtons>
+          <IonTitle style={{ color: "white" }}>Member IGA</IonTitle>
+        </IonToolbar>
+      </IonHeader>
+      {content}
     </IonPage>
   );
 };

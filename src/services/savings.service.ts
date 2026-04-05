@@ -1,4 +1,5 @@
 import { apiGet, apiPatch, apiPost, updateCachedCollection } from "./api";
+import { toLocalDateOnly } from "../utils/date";
 
 export type GroupSaving = {
   RecID?: number;
@@ -30,11 +31,6 @@ const DEFAULT_GROUP_SAVINGS_TYPE: SavingsType = {
   savings_name: "Group Savings",
 };
 
-const DEFAULT_MEMBER_SAVINGS_TYPE: SavingsType = {
-  TypeID: "00",
-  savings_name: "Member Savings",
-};
-
 const mergeUniqueSavingsTypes = (types: SavingsType[]) => {
   const seen = new Set<string>();
   const merged: SavingsType[] = [];
@@ -57,9 +53,7 @@ export const getDefaultGroupSavingsTypes = (): SavingsType[] => [
   DEFAULT_GROUP_SAVINGS_TYPE,
 ];
 
-export const getDefaultMemberSavingsTypes = (): SavingsType[] => [
-  DEFAULT_MEMBER_SAVINGS_TYPE,
-];
+export const getDefaultMemberSavingsTypes = (): SavingsType[] => [];
 
 const prependCachedItem = <T>(items: T[], item: T) => [item, ...items];
 
@@ -174,13 +168,11 @@ export const fetchSavingsTypes = async (): Promise<SavingsType[]> => {
     return mergeUniqueSavingsTypes([
       ...safeRows,
       DEFAULT_GROUP_SAVINGS_TYPE,
-      DEFAULT_MEMBER_SAVINGS_TYPE,
     ]);
   } catch (error) {
     console.error("fetchSavingsTypes error:", error);
     return mergeUniqueSavingsTypes([
       DEFAULT_GROUP_SAVINGS_TYPE,
-      DEFAULT_MEMBER_SAVINGS_TYPE,
     ]);
   }
 };
@@ -198,11 +190,16 @@ export const fetchMemberSavings = async (
 
     const safeRows = Array.isArray(rows) ? rows : [];
 
-    return safeRows.filter(
-      (r) =>
-        String(r.groupCode || "") === String(groupCode) &&
-        String(r.sppCode || "") === String(sppCode),
-    );
+    return safeRows
+      .filter(
+        (r) =>
+          String(r.groupCode || "") === String(groupCode) &&
+          String(r.sppCode || "") === String(sppCode),
+      )
+      .map((row) => ({
+        ...row,
+        date: toLocalDateOnly(row.date),
+      }));
   } catch (error) {
     console.error("fetchMemberSavings error:", error);
     return [];

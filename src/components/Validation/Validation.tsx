@@ -48,6 +48,7 @@ import {
 } from "../../services/beneficiaries.service";
 import { subscribeSyncUpdates } from "../../data/sync";
 import MobileDateInput from "../form/MobileDateInput";
+import { getMaxDobLocalDateOnly } from "../../utils/date";
 
 import "./Validation.css";
 
@@ -65,13 +66,7 @@ const MIN_AGE_YEARS = 18;
    HELPERS
 ================================ */
 const getMaxDobISO = () => {
-  const today = new Date();
-  const max = new Date(
-    today.getFullYear() - MIN_AGE_YEARS,
-    today.getMonth(),
-    today.getDate(),
-  );
-  return max.toISOString();
+  return getMaxDobLocalDateOnly(MIN_AGE_YEARS);
 };
 
 const cleanNatId = (val: any) => {
@@ -101,7 +96,10 @@ const isAllocatedMember = (member: Beneficiary) => {
 };
 
 const toDateOnly = (date: Date) => {
-  return date.toISOString().split("T")[0];
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 };
 
 /* ===============================
@@ -629,13 +627,14 @@ const GroupAssignment: React.FC = () => {
 
       <IonContent fullscreen className="ion-padding validation-page">
         {/* FILTER CARD */}
-        <IonCard>
+        <IonCard className="validation-filter-card">
           <IonCardHeader>
             <IonCardTitle>Filter Beneficiaries</IonCardTitle>
           </IonCardHeader>
 
           <IonCardContent>
-            <IonItem>
+            <div className="validation-filter-grid">
+            <IonItem className="validation-filter-item">
               <IonLabel position="stacked">Region</IonLabel>
               <IonSelect
                 value={region}
@@ -649,7 +648,7 @@ const GroupAssignment: React.FC = () => {
               </IonSelect>
             </IonItem>
 
-            <IonItem>
+            <IonItem className="validation-filter-item">
               <IonLabel position="stacked">District</IonLabel>
               <IonSelect
                 value={district}
@@ -664,7 +663,7 @@ const GroupAssignment: React.FC = () => {
               </IonSelect>
             </IonItem>
 
-            <IonItem>
+            <IonItem className="validation-filter-item">
               <IonLabel position="stacked">Traditional Authority</IonLabel>
               <IonSelect
                 value={ta}
@@ -679,7 +678,7 @@ const GroupAssignment: React.FC = () => {
               </IonSelect>
             </IonItem>
 
-            <IonItem>
+            <IonItem className="validation-filter-item">
               <IonLabel position="stacked">Village Cluster</IonLabel>
               <IonSelect
                 value={vc}
@@ -696,6 +695,7 @@ const GroupAssignment: React.FC = () => {
                 ))}
               </IonSelect>
             </IonItem>
+            </div>
           </IonCardContent>
         </IonCard>
 
@@ -713,13 +713,13 @@ const GroupAssignment: React.FC = () => {
         />
 
         {/* GROUP DETAILS */}
-        <IonCard className="group-details-card">
+        <IonCard className="group-details-card validation-details-card">
           <IonCardHeader>
             <IonCardTitle>Group Details</IonCardTitle>
           </IonCardHeader>
 
           <IonCardContent>
-            <IonItem>
+            <IonItem className="validation-group-name-item">
               <IonLabel position="stacked" className="big-label">
                 Group Name *
               </IonLabel>
@@ -732,14 +732,13 @@ const GroupAssignment: React.FC = () => {
               />
             </IonItem>
 
-            <IonItem lines="none">
+            <div className="validation-selection-summary">
               <IonLabel>Selected Beneficiaries</IonLabel>
-              <IonBadge slot="end" color="success">
-                {selectedCount}
-              </IonBadge>
-            </IonItem>
+              <IonBadge color="success">{selectedCount} picked</IonBadge>
+            </div>
 
             <IonSearchbar
+              className="validation-searchbar"
               value={searchQuery}
               debounce={200}
               placeholder="Search beneficiaries"
@@ -747,7 +746,7 @@ const GroupAssignment: React.FC = () => {
             />
 
             {selectableMembers.length > 0 && (
-              <IonItem lines="none">
+              <IonItem lines="none" className="validation-select-all-item">
                 <IonCheckbox
                   slot="start"
                   checked={allSelected}
@@ -758,7 +757,7 @@ const GroupAssignment: React.FC = () => {
               </IonItem>
             )}
 
-            <IonList>
+            <IonList className="validation-beneficiary-list">
               {loadingBeneficiaries ? (
                 <IonItem lines="none">
                   <IonSpinner name="crescent" style={{ marginRight: 10 }} />
@@ -784,7 +783,7 @@ const GroupAssignment: React.FC = () => {
                     validateDOB18Plus(m.dob) !== "";
 
                   return (
-                    <IonItem key={m.sppCode}>
+                    <IonItem key={m.sppCode} className="validation-beneficiary-item">
                       <IonCheckbox
                         slot="start"
                         checked={selected}
@@ -792,11 +791,12 @@ const GroupAssignment: React.FC = () => {
                         onIonChange={() => toggleMember(m)}
                       />
 
-                      <IonLabel>
+                      <IonLabel className="validation-beneficiary-copy">
                         <h2>{m.hh_head_name}</h2>
                         <p>{m.hh_code}</p>
 
                         <IonBadge
+                          className="validation-beneficiary-badge"
                           color={
                             isAllocated
                               ? "medium"
@@ -883,6 +883,14 @@ const GroupAssignment: React.FC = () => {
           </IonHeader>
 
           <IonContent className="ion-padding validation-modal">
+            {editingMember && (
+              <IonCard className="validation-edit-card validation-edit-hero-card">
+                <IonCardContent>
+                  <h2>{editingMember.hh_head_name || "Beneficiary"}</h2>
+                  <p>{editingMember.hh_code || editingMember.sppCode || "-"}</p>
+                </IonCardContent>
+              </IonCard>
+            )}
             {editingMember && (
               <IonCard className="validation-edit-card">
                 <IonCardContent className="validation-edit-card-content">

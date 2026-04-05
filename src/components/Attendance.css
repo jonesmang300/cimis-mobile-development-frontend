@@ -1,0 +1,138 @@
+.meetings-list {
+  display: grid;
+  gap: 14px;
+  padding: 0;
+  background: transparent;
+}
+
+.meetings-list-card {
+  margin: 0;
+  border-radius: 20px;
+  border: 1px solid rgba(46, 184, 92, 0.12);
+  box-shadow: 0 12px 24px rgba(17, 24, 20, 0.05);
+  --background: linear-gradient(180deg, #ffffff 0%, #fbfdfb 100%);
+}
+
+.meetings-list-card__content {
+  display: block;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+.meetings-list-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.meetings-list-card__copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.meetings-list-card__copy ion-label {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.meetings-list-card__copy h2 {
+  margin: 0 0 6px;
+  color: #18251b;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.meetings-list-card__copy p {
+  margin: 0;
+  color: #5a6c5f;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.meetings-list-card__menu {
+  flex-shrink: 0;
+}
+
+.meetings-list-card__date {
+  color: #5a6c5f;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.meetings-list-card__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: #eef8f0;
+  color: #2b7f46;
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.meetings-list-card__badge ion-icon {
+  font-size: 0.95rem;
+}
+
+.meeting-participant-item .meeting-participant-item__label h3 {
+  margin: 0 0 6px;
+  color: #18251b;
+  font-size: 1rem;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.meeting-participant-item .meeting-participant-item__label p {
+  margin: 0;
+  color: #5a6c5f !important;
+  font-size: 0.92rem;
+  font-weight: 400 !important;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+@media (max-width: 576px) {
+  .meetings-list-card {
+    border-radius: 18px;
+  }
+
+  .meetings-list-card__content {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .meetings-list-card__header {
+    gap: 10px;
+  }
+
+  .meetings-list-card__copy h2 {
+    font-size: 0.98rem;
+  }
+
+  .meetings-list-card__copy p {
+    font-size: 0.84rem;
+  }
+
+  .meetings-list-card__date {
+    font-size: 0.84rem;
+  }
+
+  .meetings-list-card__badge {
+    padding: 7px 9px;
+    font-size: 0.76rem;
+  }
+
+  .meeting-participant-item .meeting-participant-item__label h3 {
+    font-size: 0.98rem;
+  }
+
+  .meeting-participant-item .meeting-participant-item__label p {
+    font-size: 0.88rem;
+  }
+}

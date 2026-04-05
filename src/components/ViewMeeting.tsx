@@ -12,6 +12,7 @@ import {
   IonItem,
   IonLabel,
   IonList,
+  IonModal,
   IonPage,
   IonSpinner,
   IonTitle,
@@ -144,85 +145,89 @@ const ViewMeeting: React.FC = () => {
 
   return (
     <IonPage>
-      <IonHeader>
-        <IonToolbar color="success">
-          <IonButtons slot="start">
-            <IonButton onClick={() => history.goBack()} color="light">
-              <IonIcon icon={arrowBack} />
-            </IonButton>
-          </IonButtons>
-          <IonTitle style={{ color: "white" }}>View Meeting</IonTitle>
-        </IonToolbar>
-      </IonHeader>
+      <IonModal isOpen onDidDismiss={() => history.goBack()}>
+        <IonHeader>
+          <IonToolbar color="success">
+            <IonButtons slot="start">
+              <IonButton onClick={() => history.goBack()} color="light">
+                <IonIcon icon={arrowBack} />
+              </IonButton>
+            </IonButtons>
+            <IonTitle style={{ color: "white" }}>View Meeting</IonTitle>
+          </IonToolbar>
+        </IonHeader>
 
-      <IonContent className="ion-padding">
-        <IonCard>
-          <IonCardContent>
-            <IonLabel>
-              <h2>{selectedGroupName || "No group selected"}</h2>
-              <p>{selectedGroupID || "-"}</p>
-            </IonLabel>
-          </IonCardContent>
-        </IonCard>
-
-        {loading ? (
-          <div style={{ textAlign: "center", paddingTop: 24 }}>
-            <IonSpinner name="crescent" />
-          </div>
-        ) : !meeting ? (
-          <IonCard>
-            <IonCardContent>
-              <IonLabel color="medium">Meeting not found.</IonLabel>
-            </IonCardContent>
-          </IonCard>
-        ) : (
-          <>
-            <IonCard>
-              <IonCardHeader>
-                <IonCardTitle>Meeting</IonCardTitle>
-              </IonCardHeader>
+        <IonContent className="ion-padding">
+          <div className="app-detail-modal-shell">
+            <IonCard className="app-detail-hero-card">
               <IonCardContent>
-                <IonItem lines="none">
-                  <IonLabel>
-                    <h2>{meeting.purpose || "-"}</h2>
-                    <p>Date: {formatDateLong(meeting.meetingdate)}</p>
-                    <p>Minutes: {meeting.minutes || "-"}</p>
-                  </IonLabel>
-                </IonItem>
+                <IonLabel>
+                  <h2>{selectedGroupName || "No group selected"}</h2>
+                  <p>{selectedGroupID || "-"}</p>
+                </IonLabel>
               </IonCardContent>
             </IonCard>
 
-            <IonCard>
-              <IonCardHeader>
-                <IonCardTitle>Attendance Register</IonCardTitle>
-              </IonCardHeader>
-              <IonCardContent>
-                {attachedMembers.length === 0 ? (
-                  <IonItem lines="none">
-                    <IonLabel color="medium">
-                      No members attached to this meeting yet.
-                    </IonLabel>
-                  </IonItem>
-                ) : (
-                  <IonList>
-                    {attachedMembers.map((member, index) => (
-                      <IonItem
-                        key={`${member?.sppCode || "member"}-${index}`}
-                        lines="none"
-                      >
-                        <IonLabel>
-                          <h3>{member?.hh_head_name || member?.sppCode || "-"}</h3>
-                          <p>ML Code: {member?.hh_code || "-"}</p>
+            {loading ? (
+              <div style={{ textAlign: "center", paddingTop: 24 }}>
+                <IonSpinner name="crescent" />
+              </div>
+            ) : !meeting ? (
+              <IonCard>
+                <IonCardContent>
+                  <IonLabel color="medium">Meeting not found.</IonLabel>
+                </IonCardContent>
+              </IonCard>
+            ) : (
+              <>
+                <IonCard>
+                  <IonCardHeader>
+                    <IonCardTitle>Meeting</IonCardTitle>
+                  </IonCardHeader>
+                  <IonCardContent>
+                    <IonItem lines="none">
+                      <IonLabel>
+                        <h2>{meeting.purpose || "-"}</h2>
+                        <p>Date: {formatDateLong(meeting.meetingdate)}</p>
+                        <p>Minutes: {meeting.minutes || "-"}</p>
+                      </IonLabel>
+                    </IonItem>
+                  </IonCardContent>
+                </IonCard>
+
+                <IonCard>
+                  <IonCardHeader>
+                    <IonCardTitle>Attendance Register</IonCardTitle>
+                  </IonCardHeader>
+                  <IonCardContent>
+                    {attachedMembers.length === 0 ? (
+                      <IonItem lines="none">
+                        <IonLabel color="medium">
+                          No members attached to this meeting yet.
                         </IonLabel>
                       </IonItem>
-                    ))}
-                  </IonList>
-                )}
-              </IonCardContent>
-            </IonCard>
-          </>
-        )}
-      </IonContent>
+                    ) : (
+                      <IonList>
+                        {attachedMembers.map((member, index) => (
+                          <IonItem
+                            key={`${member?.sppCode || "member"}-${index}`}
+                            lines="none"
+                          >
+                            <IonLabel>
+                              <h3>{member?.hh_head_name || member?.sppCode || "-"}</h3>
+                              <p>ML Code: {member?.hh_code || "-"}</p>
+                            </IonLabel>
+                          </IonItem>
+                        ))}
+                      </IonList>
+                    )}
+                  </IonCardContent>
+                </IonCard>
+              </>
+            )}
+          </div>
+        </IonContent>
+      </IonModal>
     </IonPage>
   );
 };

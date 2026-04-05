@@ -1,6 +1,7 @@
 import { apiGet, apiPost, apiPatch, updateCachedCollection } from "./api";
 import { isOnline } from "../plugins/network";
 import { getStableDeviceId } from "../utils/device";
+import { extractDateOnly } from "../utils/date";
 import {
   saveOfflineGroup,
   saveOfflineGroupMembers,
@@ -65,6 +66,22 @@ const createGroupOffline = async (
   const tempGroupId = generateTempGroupId(payload.projectID, deviceId);
 
   await saveOfflineGroup(clientId, tempGroupId, { ...payload, deviceId }, "pending");
+  await updateCachedCollection<any>("/groups", (items) =>
+    upsertByKey(
+      items,
+      {
+        ...payload,
+        groupID: tempGroupId,
+        id: tempGroupId,
+        districtID: payload.DistrictID,
+        taID: payload.TAID,
+        deviceId,
+        offline: true,
+        syncStatus: "pending",
+      },
+      "groupID",
+    ),
+  );
 
   return {
     id: tempGroupId,
@@ -170,12 +187,7 @@ const upsertByKey = <T extends Record<string, any>>(
 
 const toDateOnly = (date?: string | null) => {
   if (!date) return null;
-
-  try {
-    return new Date(date).toISOString().slice(0, 10);
-  } catch {
-    return null;
-  }
+  return extractDateOnly(date) || null;
 };
 
 /* ===============================

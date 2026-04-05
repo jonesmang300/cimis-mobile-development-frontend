@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Redirect, Route } from "react-router-dom";
 import {
   IonApp,
@@ -52,7 +52,7 @@ import {
 } from "ionicons/icons";
 
 import { useAuth, AuthProvider } from "./components/context/AuthContext";
-import { onNetworkChange } from "./plugins/network";
+import { isOnline, onNetworkChange } from "./plugins/network";
 import {
   getFailedOfflineGroupError,
   startSyncService,
@@ -77,6 +77,8 @@ const AppContent: React.FC = () => {
   const [failedSyncCount, setFailedSyncCount] = useState<number>(0);
   const [failedSyncMessage, setFailedSyncMessage] = useState("");
   const [failedSyncGroupId, setFailedSyncGroupId] = useState("");
+  const [routeReloadKey, setRouteReloadKey] = useState(0);
+  const wasOfflineRef = useRef(false);
 
   useEffect(() => {
     const refreshSyncError = async () => {
@@ -87,6 +89,10 @@ const AppContent: React.FC = () => {
     };
 
     const unsubscribeNet = onNetworkChange((connected) => {
+      if (connected && wasOfflineRef.current) {
+        setRouteReloadKey((current) => current + 1);
+      }
+      wasOfflineRef.current = !connected;
       setOnline(connected);
       setShowToast(!connected);
       refreshSyncError().catch(() => null);
@@ -98,6 +104,14 @@ const AppContent: React.FC = () => {
     });
 
     refreshSyncError().catch(() => null);
+    isOnline()
+      .then((connected) => {
+        setOnline(connected);
+        wasOfflineRef.current = !connected;
+      })
+      .catch(() => {
+        wasOfflineRef.current = false;
+      });
     startSyncService();
 
     return () => {
@@ -126,7 +140,7 @@ const AppContent: React.FC = () => {
                 )}
               </div>
             )}
-            <IonRouterOutlet>
+            <IonRouterOutlet key={routeReloadKey}>
               {/* MAIN TABS */}
               <Route exact path="/home" component={Home} />
               <Route exact path="/validation" component={Transactions} />
